@@ -46,26 +46,45 @@ public class PokedexController {
 
     @GetMapping("/pokedex")
     public String pokedex(@RequestParam(defaultValue = "0") int page, 
-                          @RequestParam(required = false) String query, 
+                          @RequestParam(required = false) String query,
+                          @RequestParam(required = false) String tipo, // <--- Nuevo
+                          @RequestParam(required = false) Integer gen,  // <--- Nuevo
                           Model model) {
         
-        List<PokemonDTO> lista;
-        
-        if (query != null && !query.isEmpty()) {
-            // Modo Búsqueda
-            lista = pokemonService.buscarPokemon(query);
-            model.addAttribute("isSearch", true); // Para ocultar botones de paginación
+        List<PokemonDTO> listaFiltrada;
+        boolean hayFiltrosActivos = (query != null && !query.isEmpty()) || 
+                                    (tipo != null && !tipo.isEmpty()) || 
+                                    (gen != null && gen > 0);
+
+        if (hayFiltrosActivos) {
+            // MODO BÚSQUEDA / FILTRO
+            if (query != null && !query.isEmpty()) {
+                listaFiltrada = pokemonService.buscarPokemon(query);
+            } else {
+                // Usamos el nuevo filtro combinado
+                listaFiltrada = pokemonService.filtrarCombinado(tipo, gen);
+            }
+            
+            model.addAttribute("isSearch", true); // Ocultamos paginación estándar
+            model.addAttribute("pokemons", listaFiltrada); // Mostramos todos los resultados juntos
+            
         } else {
-            // Modo Normal
-            lista = pokemonService.obtenerListaPaginada(page, 20);
+            // MODO NORMAL (Paginado)
+            listaFiltrada = pokemonService.obtenerListaPaginada(page, 20);
             model.addAttribute("isSearch", false);
+            model.addAttribute("pokemons", listaFiltrada);
         }
 
-        model.addAttribute("pokemons", lista);
+        // Variables para la vista
         model.addAttribute("currentPage", page);
         model.addAttribute("hasPrevious", page > 0);
-        model.addAttribute("hasNext", lista.size() == 20); // Aproximado
+        
+        // Calculamos hasNext solo para el modo normal (aproximado)
+        model.addAttribute("hasNext", !hayFiltrosActivos && listaFiltrada.size() == 20); 
+        
         model.addAttribute("queryActual", query);
+        model.addAttribute("tipoActual", tipo); // Para mantener el select seleccionado
+        model.addAttribute("genActual", gen);   // Para mantener el select seleccionado
         
         return "pokedex";
     }

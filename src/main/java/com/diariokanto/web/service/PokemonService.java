@@ -317,4 +317,67 @@ public class PokemonService {
         
         return "Especial";
     }
+
+    // ==========================================
+    // NUEVA LÓGICA DE FILTRADO COMBINADO
+    // ==========================================
+
+    public List<PokemonDTO> filtrarCombinado(String tipo, Integer gen) {
+        // Empezamos con la lista completa (solo originales < 10000)
+        List<PokemonDTO> resultado = masterList.stream()
+                .filter(p -> p.getId() < 10000)
+                .collect(Collectors.toList());
+
+        // 1. FILTRO POR TIPO (Si se seleccionó uno)
+        if (tipo != null && !tipo.isEmpty()) {
+            // Obtenemos los nombres de los pokémon de ese tipo desde la API
+            Set<String> nombresDeTipo = obtenerNombresPorTipo(tipo);
+            
+            // Filtramos nuestra lista manteniendo solo los que están en ese Set
+            resultado = resultado.stream()
+                    .filter(p -> nombresDeTipo.contains(p.getNombre()))
+                    .collect(Collectors.toList());
+        }
+
+        // 2. FILTRO POR GENERACIÓN (Si se seleccionó una)
+        if (gen != null && gen > 0) {
+            resultado = resultado.stream()
+                    .filter(p -> perteneceAGeneracion(p.getId(), gen))
+                    .collect(Collectors.toList());
+        }
+
+        return resultado;
+    }
+
+    // Método auxiliar para consultar la API de tipos (caché simple recomendada aquí si fuera prod)
+    private Set<String> obtenerNombresPorTipo(String tipo) {
+        try {
+            String url = "https://pokeapi.co/api/v2/type/" + tipo;
+            Map data = restTemplate.getForObject(url, Map.class);
+            List<Map> pokemonList = (List<Map>) data.get("pokemon");
+            
+            return pokemonList.stream()
+                    .map(entry -> (String) ((Map) entry.get("pokemon")).get("name"))
+                    .collect(Collectors.toSet());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HashSet<>();
+        }
+    }
+
+    // Rangos de IDs oficiales por generación
+    private boolean perteneceAGeneracion(Long id, int gen) {
+        return switch (gen) {
+            case 1 -> id >= 1 && id <= 151;
+            case 2 -> id >= 152 && id <= 251;
+            case 3 -> id >= 252 && id <= 386;
+            case 4 -> id >= 387 && id <= 493;
+            case 5 -> id >= 494 && id <= 649;
+            case 6 -> id >= 650 && id <= 721;
+            case 7 -> id >= 722 && id <= 809;
+            case 8 -> id >= 810 && id <= 905;
+            case 9 -> id >= 906 && id <= 1025;
+            default -> false;
+        };
+    }
 }

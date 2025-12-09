@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 
 import com.diariokanto.web.dto.NoticiaDTO;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -138,6 +139,17 @@ public class NoticiaService {
             return Arrays.asList(response);
         } catch (Exception e) {
             return List.of();
+        }
+    }
+
+    // En com.diariokanto.web.service.NoticiaService
+    public List<NoticiaDTO> buscarPorCategoria(String categoria) {
+        try {
+            String url = apiUrl + "/noticias?categoria=" + categoria;
+            NoticiaDTO[] response = restTemplate.getForObject(url, NoticiaDTO[].class);
+            return response != null ? Arrays.asList(response) : new ArrayList<>();
+        } catch (Exception e) {
+            return new ArrayList<>();
         }
     }
 }

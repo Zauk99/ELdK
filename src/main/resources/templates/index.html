@@ -89,15 +89,23 @@
     <div class="main-content-area">
       <div class="news-header">
         <h2>Últimas Noticias</h2>
-        <div id="filterMenu" class="filter-dropdown-content" ...>
-          <a th:href="@{/}" class="filter-item">... Ver Todo</a>
+        <div class="filter-dropdown-container" style="position: relative;">
 
-          <a th:each="cat : ${listaCategorias}" th:href="@{/(categoria=${cat.nombre})}" class="filter-item">
+          <button onclick="toggleFilter()" class="poke-button" style="background-color: #333; border: 1px solid #555;">
+            <i class="fas fa-filter"></i>
+            <span th:text="${categoriaActual != null ? categoriaActual : 'Filtrar'}">Filtrar</span>
+            <i class="fas fa-chevron-down" style="font-size: 0.8em; margin-left: 5px;"></i>
+          </button>
 
-            <i class="fas fa-gamepad" th:if="${cat.nombre == 'Videojuegos'}"></i>
+          <div id="filterMenu" class="dropdown-menu hidden" style="right: 0; min-width: 150px;">
+            <a th:href="@{/}" class="dropdown-item" style="color: #aaa;">
+              Ver Todo
+            </a>
 
-            <span th:text="${cat.nombre}" style="margin-left: 5px;">Categoría</span>
-          </a>
+            <a th:each="cat : ${listaCategorias}" th:href="@{/(categoria=${cat.nombre})}" class="dropdown-item">
+              <span th:text="${cat.nombre}">Categoría</span>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -132,6 +140,19 @@
   <script>
     const searchInput = document.getElementById('newsSearchInput');
     const resultsBox = document.getElementById('newsSearchResults');
+
+    function toggleFilter() {
+        document.getElementById('filterMenu').classList.toggle('hidden');
+    }
+    
+    // Cerrar si clicamos fuera
+    window.addEventListener('click', function(e) {
+        const btn = document.querySelector('button[onclick="toggleFilter()"]');
+        const menu = document.getElementById('filterMenu');
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
 
     searchInput.addEventListener('input', function () {
       const query = this.value.trim();

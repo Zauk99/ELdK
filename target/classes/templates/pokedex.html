@@ -90,28 +90,97 @@
       <section class="pokedex-section" id="pokedex-content">
         <div class="pokedex-header">
           <h2>Pokédex</h2>
-          <div class="filter-group">
-            <div class="filter-dropdown-container">
-              <button id="filter-btn" class="poke-button filter-toggle">
-                Filtrar
-              </button>
-              <div id="filter-menu" class="dropdown-menu hidden">
-                <div class="dropdown-item has-submenu">
-                  <span>Filtrar por Tipo</span>
-                  <i class="fas fa-chevron-right"></i>
-                  <div class="submenu type-submenu">
-                    <a href="#" class="submenu-item" data-filter="type" data-value="all">Todos los Tipos</a>
-                  </div>
-                </div>
-                <div class="dropdown-item has-submenu">
-                  <span>Filtrar por Generación</span>
-                  <i class="fas fa-chevron-right"></i>
-                  <div class="submenu generation-submenu">
-                    <a href="#" class="submenu-item" data-filter="generation" data-value="all">Todas las
-                      Generaciones</a>
-                  </div>
-                </div>
+          <div class="filter-dropdown-container" style="position: relative;">
+
+            <button id="filterBtn" onclick="toggleFilterPanel()" class="poke-button"
+              style="background-color: #333; border: 1px solid #555;padding: 10px 20px; gap: 10px;">
+              <i class="fas fa-sliders-h"></i> Filtrar
+              <span th:if="${tipoActual != null or (genActual != null and genActual > 0)}"
+                style="background: #FFDE00; color: #222; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8em; margin-left: 5px;">!</span>
+            </button>
+
+            <div id="filterPanel" class="filter-panel hidden">
+
+              <div class="filter-header">
+                <h3>Filtros</h3>
+                <button onclick="toggleFilterPanel()" class="close-btn"><i class="fas fa-times"></i></button>
               </div>
+
+              <form th:action="@{/pokedex}" method="get" id="advancedFilterForm">
+
+                <div class="filter-section">
+                  <div class="filter-section-header" onclick="toggleSection('typesSection')">
+                    <span>Tipo</span>
+                    <i class="fas fa-chevron-down" id="arrow-typesSection"></i>
+                  </div>
+                  <div id="typesSection" class="filter-options hidden">
+                    <div class="checkbox-grid">
+                      <label class="filter-option">
+                        <input type="radio" name="tipo" value="" th:checked="${tipoActual == null}">
+                        <span>Todos</span>
+                      </label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="normal"
+                          th:checked="${tipoActual == 'normal'}"> Normal</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="fire"
+                          th:checked="${tipoActual == 'fire'}"> Fuego</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="water"
+                          th:checked="${tipoActual == 'water'}"> Agua</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="grass"
+                          th:checked="${tipoActual == 'grass'}"> Planta</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="electric"
+                          th:checked="${tipoActual == 'electric'}"> Eléctrico</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="psychic"
+                          th:checked="${tipoActual == 'psychic'}"> Psíquico</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="ice"
+                          th:checked="${tipoActual == 'ice'}"> Hielo</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="dragon"
+                          th:checked="${tipoActual == 'dragon'}"> Dragón</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="dark"
+                          th:checked="${tipoActual == 'dark'}"> Siniestro</label>
+                      <label class="filter-option"><input type="radio" name="tipo" value="fairy"
+                          th:checked="${tipoActual == 'fairy'}"> Hada</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="filter-section">
+                  <div class="filter-section-header" onclick="toggleSection('genSection')">
+                    <span>Generación</span>
+                    <i class="fas fa-chevron-down" id="arrow-genSection"></i>
+                  </div>
+                  <div id="genSection" class="filter-options hidden">
+                    <div class="radio-list">
+                      <label class="filter-option full-width">
+                        <input type="radio" name="gen" value="0" th:checked="${genActual == null or genActual == 0}">
+                        Todas las Generaciones
+                      </label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="1"
+                          th:checked="${genActual == 1}"> Gen 1 (Kanto)</label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="2"
+                          th:checked="${genActual == 2}"> Gen 2 (Johto)</label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="3"
+                          th:checked="${genActual == 3}"> Gen 3 (Hoenn)</label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="4"
+                          th:checked="${genActual == 4}"> Gen 4 (Sinnoh)</label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="5"
+                          th:checked="${genActual == 5}"> Gen 5 (Unova/Teselia)</label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="6"
+                          th:checked="${genActual == 6}"> Gen 6 (Kalos)</label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="7"
+                          th:checked="${genActual == 7}"> Gen 7 (Alola)</label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="8"
+                          th:checked="${genActual == 8}"> Gen 8 (Galar)</label>
+                      <label class="filter-option full-width"><input type="radio" name="gen" value="9"
+                          th:checked="${genActual == 9}"> Gen 9 (Paldea)</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="filter-footer">
+                  <a th:href="@{/pokedex}" class="reset-link">Eliminar filtros</a>
+                  <button type="submit" class="apply-btn">Ver Resultados</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -167,6 +236,39 @@
       input.value = '';
       input.value = val;
     }
+
+    // Abrir/Cerrar Panel Principal
+    function toggleFilterPanel() {
+      const panel = document.getElementById('filterPanel');
+      panel.classList.toggle('hidden');
+    }
+
+    // Acordeón para las secciones (Tipos, Generación)
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      const arrow = document.getElementById('arrow-' + sectionId);
+
+      if (section.classList.contains('hidden')) {
+        section.classList.remove('hidden');
+        arrow.classList.remove('fa-chevron-down');
+        arrow.classList.add('fa-chevron-up');
+      } else {
+        section.classList.add('hidden');
+        arrow.classList.remove('fa-chevron-up');
+        arrow.classList.add('fa-chevron-down');
+      }
+    }
+
+    // Cerrar si clicamos fuera
+    document.addEventListener('click', function (e) {
+      const panel = document.getElementById('filterPanel');
+      const btn = document.getElementById('filterBtn');
+
+      // Si el panel está abierto y el clic NO fue en el panel NI en el botón
+      if (!panel.classList.contains('hidden') && !panel.contains(e.target) && !btn.contains(e.target)) {
+        panel.classList.add('hidden');
+      }
+    });
   </script>
 </body>
 <footer class="main-footer">

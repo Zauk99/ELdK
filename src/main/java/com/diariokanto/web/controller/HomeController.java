@@ -1,6 +1,7 @@
 package com.diariokanto.web.controller;
 
 import com.diariokanto.web.dto.UsuarioDTO;
+import com.diariokanto.web.service.CategoriaService;
 import com.diariokanto.web.service.ComentarioService;
 import com.diariokanto.web.service.NoticiaService;
 import com.diariokanto.web.dto.NoticiaDTO;
@@ -13,9 +14,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 @Controller
 public class HomeController {
 
+    @Autowired
+    private CategoriaService categoriaService; // <--- ¡AQUÍ ESTÁ LA CLAVE
+    // !
     @Autowired
     private NoticiaService noticiaService;
 
@@ -45,10 +50,10 @@ public class HomeController {
     }
 
     @PostMapping("/noticia/{id}/comentar")
-    public String publicarComentario(@PathVariable Long id, 
-                                     @RequestParam String texto, 
-                                     Authentication authentication) { // 1. Usamos Authentication
-        
+    public String publicarComentario(@PathVariable Long id,
+            @RequestParam String texto,
+            Authentication authentication) { // 1. Usamos Authentication
+
         if (authentication != null && authentication.isAuthenticated()) {
             String email;
             Object principal = authentication.getPrincipal();
@@ -71,7 +76,8 @@ public class HomeController {
     // ... imports ...
 
     @PostMapping("/comentarios/eliminar/{id}")
-    public String eliminarComentario(@PathVariable Long id, @RequestHeader(value = "Referer", required = false) String referer) {
+    public String eliminarComentario(@PathVariable Long id,
+            @RequestHeader(value = "Referer", required = false) String referer) {
         // Llamamos al servicio de comentarios que ya tenías
         comentarioService.eliminarComentario(id);
         // Volvemos a la página desde donde se pulsó el botón
@@ -80,10 +86,32 @@ public class HomeController {
 
     // 1. Modificar el index para filtrar si pulsas Enter
     @GetMapping("/")
-    public String index(@RequestParam(required = false) String busqueda, Model model) {
-        var noticias = noticiaService.obtenerNoticias(busqueda);
+    public String index(Model model,
+            @RequestParam(required = false) String busqueda,
+            @RequestParam(required = false) String categoria) {
+
+        List<NoticiaDTO> noticias;
+
+        // Lógica de filtrado
+        if (busqueda != null && !busqueda.isEmpty()) {
+            noticias = noticiaService.obtenerNoticias(busqueda);
+            model.addAttribute("busquedaActual", busqueda);
+        } else if (categoria != null && !categoria.isEmpty()) {
+            // Reutilizamos el método de búsqueda de noticias, ya que la API ahora
+            // recibe ?categoria=... en el mismo endpoint /api/noticias
+            // (Nota: Asegúrate de que tu NoticiaService.obtenerNoticias o similar
+            // pueda mandar el parámetro 'categoria' a la API, o crea uno específico)
+            noticias = noticiaService.buscarPorCategoria(categoria);
+            model.addAttribute("categoriaActual", categoria);
+        } else {
+            noticias = noticiaService.obtenerNoticias();
+        }
+
         model.addAttribute("listaNoticias", noticias);
-        model.addAttribute("busquedaActual", busqueda); // Para mantener el texto en el input
+
+        // Pasamos las categorías para el menú desplegable
+        model.addAttribute("listaCategorias", categoriaService.listarTodas());
+
         return "index";
     }
 
@@ -91,7 +119,7 @@ public class HomeController {
     // 👇👇 AQUÍ ESTABA EL ERROR 👇👇
     @GetMapping("/api/busqueda-noticias")
     @ResponseBody
-    public List<NoticiaDTO> buscarNoticiasApi(@RequestParam String query) { 
+    public List<NoticiaDTO> buscarNoticiasApi(@RequestParam String query) {
         // Antes ponía: List<NoticiaService.NoticiaDTO> -> ESO ESTÁ MAL AHORA
         // Ahora debe ser: List<NoticiaDTO>
         return noticiaService.obtenerNoticias(query);
