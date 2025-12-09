@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>El Diario de Kanto - Iniciar Sesión / Registro</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="icon" th:src="@{/img/Logo.png}" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-area">
+                <a th:href="@{/}" class="site-title-link">
+                    <img th:src="@{/img/Logo.png}" alt="Logo de El Diario de Kanto" width="100px">
+                </a>
+            </div>
+            <a th:href="@{/}">
+                <button class="login-button">
+                    Volver
+                </button>
+            </a>
+        </div>
+    </header>
+
+    <main class="content-container">
+        <div class="auth-container">
+
+            <div th:if="${param.error}"
+                style="background-color: #d32f2f; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
+                <span th:text="${param.error}">Error en el registro</span>
+            </div>
+
+            <div th:if="${param.registrado}"
+                style="background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
+                ¡Cuenta creada! Inicia sesión ahora.
+            </div>
+
+            <div class="auth-tabs">
+                <button id="login-tab" class="auth-tab-button active">
+                    <i class="fas fa-user-check"></i> Iniciar Sesión
+                </button>
+                <button id="register-tab" class="auth-tab-button">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </button>
+            </div>
+
+            <div id="login-form-pane" class="form-pane">
+                <form class="auth-form" th:action="@{/login}" method="post">
+                    <div class="form-group-full">
+                        <input type="text" name="username" placeholder="Correo o Nombre de Usuario" required />
+                    </div>
+                    <div class="form-group-full">
+                        <input type="password" name="password" placeholder="Contraseña" required />
+                    </div>
+                    <button type="submit" class="auth-submit-button">
+                        <i class="fas fa-sign-in-alt"></i> Entrar
+                    </button>
+                    <div th:if="${param.error}" style="color: red; text-align: center; margin-top: 10px;">
+                        Usuario o contraseña incorrectos
+                    </div>
+
+                    <p class="toggle-message">
+                        ¿Olvidaste tu contraseña? <a href="#">Recuperar</a>
+                    </p>
+                </form>
+            </div>
+
+            <div id="register-form-pane" class="form-pane hidden">
+
+                <form class="auth-form" th:action="@{/registro}" method="post" enctype="multipart/form-data">
+
+                    <div class="form-group-full">
+                        <input type="text" name="nombreCompleto" placeholder="Nombre Completo" maxlength="50" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <label style="color: #ccc; font-size: 0.9em; display: block; margin-bottom: 5px;">Foto de Perfil
+                            (Opcional)</label>
+                        <input type="file" name="ficheroFoto" accept="image/*"
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <input type="text" name="username" placeholder="Nombre de Usuario (7-15 caracteres)"
+                            minlength="7" maxlength="15" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <input type="email" name="email" placeholder="Correo Electrónico" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <input type="text" name="movil" placeholder="Móvil" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <input type="password" name="password" placeholder="Contraseña (Mín. 8 caracteres)"
+                            minlength="8" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <input type="password" placeholder="Repetir Contraseña" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    </div>
+
+                    <button type="submit" class="auth-submit-button">
+                        <i class="fas fa-check-circle"></i> Crear Cuenta
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content-wrapper">
+            <div class="footer-info">
+                <img th:src="@{/img/Logo.png}" alt="Logo" class="footer-logo">
+                <p class="description">
+                    Tu portal informativo sobre Pokémon favorito.<br>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tu script de pestañas funciona bien, no hace falta tocarlo
+        document.addEventListener('DOMContentLoaded', function () {
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginPane = document.getElementById('login-form-pane');
+            const registerPane = document.getElementById('register-form-pane');
+
+            function showForm(paneToShow, tabToActivate) {
+                loginPane.classList.add('hidden');
+                registerPane.classList.add('hidden');
+                loginTab.classList.remove('active');
+                registerTab.classList.remove('active');
+                paneToShow.classList.remove('hidden');
+                tabToActivate.classList.add('active');
+            }
+
+            loginTab.addEventListener('click', () => showForm(loginPane, loginTab));
+            registerTab.addEventListener('click', () => showForm(registerPane, registerTab));
+        });
+    </script>
+</body>
+
+</html>

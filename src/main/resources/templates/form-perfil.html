@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil | El Diario de Kanto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-area"><a th:href="@{/}" class="site-title-link"><img th:src="@{/img/Logo.png}" alt="Logo"
+                        width="100px"></a></div>
+        </div>
+    </header>
+
+    <main class="content-container">
+        <div class="auth-container" style="max-width: 900px; margin-top: 40px;">
+
+            <h2 style="color: #FFDE00; text-align: center; margin-bottom: 30px;">
+                <i class="fas fa-id-card"></i> Editar Perfil
+            </h2>
+
+            <div th:if="${param.exito}"
+                style="background-color: #4CAF50; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+                ¡Datos actualizados correctamente!
+            </div>
+            <div th:if="${param.passExito}"
+                style="background-color: #4CAF50; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+                ¡Contraseña cambiada con éxito!
+            </div>
+            <div th:if="${param.error}"
+                style="background-color: #d32f2f; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+                <i class="fas fa-exclamation-triangle"></i> <span th:text="${param.error}">Error</span>
+            </div>
+
+            <form th:action="@{/perfil/guardar}" method="post" enctype="multipart/form-data"
+                style="display: flex; gap: 40px; flex-wrap: wrap;">
+
+                <div style="flex: 1; min-width: 250px; text-align: center;">
+                    <div style="position: relative; display: inline-block;">
+                        <img th:src="${usuario.fotoPerfilUrl}" id="imgPreview"
+                            style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #FFDE00; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+                        <label for="fileInput"
+                            style="position: absolute; bottom: 10px; right: 10px; background: #FFDE00; color: #333; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s;">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <input type="file" id="fileInput" name="ficheroFoto" accept="image/*" style="display: none;"
+                            onchange="previewImage(this)">
+                    </div>
+                </div>
+
+                <div style="flex: 2; min-width: 300px;">
+
+                    <div class="form-group-full">
+                        <label
+                            style="color: #FFDE00; font-size: 0.9em; margin-bottom: 5px; display: block;">Email</label>
+                        <input type="text" th:value="${usuario.email}" disabled
+                            style="width: 100%; padding: 12px; background: #222; color: #666; border: 1px solid #444; border-radius: 5px; cursor: not-allowed;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <label
+                            style="color: #FFDE00; font-size: 0.9em; margin-bottom: 5px; display: block;">Móvil</label>
+                        <input type="text" th:value="${usuario.movil}" disabled
+                            style="width: 100%; padding: 12px; background: #222; color: #666; border: 1px solid #444; border-radius: 5px; cursor: not-allowed;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <label style="color: #ccc; font-size: 0.9em; margin-bottom: 5px; display: block;">Nombre de
+                            Usuario</label>
+
+                        <input type="text" name="username" th:value="${usuario.username}" required minlength="7"
+                            maxlength="15"
+                            style="width: 100%; padding: 12px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;"
+                            th:classappend="${param.errorField != null and param.errorField[0] == 'username'} ? 'input-error' : ''" />
+
+                        <small class="error-text"
+                            th:if="${param.errorField != null and param.errorField[0] == 'username'}">
+                            <i class="fas fa-times-circle"></i> Ese nombre de usuario ya está en uso.
+                        </small>
+                    </div>
+
+                    <div class="form-group-full">
+                        <label style="color: #ccc; font-size: 0.9em; margin-bottom: 5px; display: block;">Nombre
+                            Completo</label>
+                        <input type="text" name="nombreCompleto" th:value="${usuario.nombreCompleto}" required
+                            style="width: 100%; padding: 12px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    </div>
+
+                    <div class="form-group-full">
+                        <label style="color: #FFDE00; font-size: 0.9em; margin-bottom: 5px; display: block;"><i
+                                class="fas fa-heart"></i> Pokémon Favorito</label>
+                        <input type="text" list="pokemonsList" name="pokemonFavorito"
+                            th:value="${usuario.pokemonFavorito}" placeholder="Escribe para buscar..."
+                            style="width: 100%; padding: 12px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                        <datalist id="pokemonsList">
+                            <option th:each="p : ${listaPokemon}" th:value="${#strings.capitalize(p.nombre)}"></option>
+                        </datalist>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="submit" class="auth-submit-button" style="flex: 2;">
+                            Guardar Cambios
+                        </button>
+
+                        <a th:href="@{/perfil}" class="poke-button"
+                            style="background-color: #d32f2f; text-align: center; padding: 12px;">
+                            Cancelar
+                        </a>
+
+                        <a th:href="@{/perfil/cambiar-password}" class="poke-button"
+                            style="flex: 1; background-color: #444; text-align: center; font-size: 0.9rem; padding: 12px;">
+                            <i class="fas fa-key"></i> Cambiar Contraseña
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('imgPreview').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Incluir JS del header si es necesario para el menú
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuBtn = document.getElementById('userMenuBtn');
+            const dropdown = document.getElementById('userDropdown');
+            if (menuBtn && dropdown) {
+                menuBtn.addEventListener('click', function (e) { e.stopPropagation(); dropdown.classList.toggle('show'); });
+                document.addEventListener('click', function (e) { if (!dropdown.contains(e.target)) dropdown.classList.remove('show'); });
+            }
+        });
+    </script>
+</body>
+
+</html>
