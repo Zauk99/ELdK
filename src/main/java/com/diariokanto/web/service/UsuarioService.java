@@ -3,6 +3,8 @@ package com.diariokanto.web.service;
 import com.diariokanto.web.dto.UsuarioDTO;
 import com.diariokanto.web.dto.UsuarioRegistroDTO;
 
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,6 +46,7 @@ public class UsuarioService {
             body.add("email", dto.getEmail());
             body.add("password", dto.getPassword());
             body.add("movil", dto.getMovil());
+            body.add("pokemonFavorito", dto.getPokemonFavorito());
 
             // --- CAMBIO CLAVE AQUÍ ---
             if (foto != null && !foto.isEmpty()) {

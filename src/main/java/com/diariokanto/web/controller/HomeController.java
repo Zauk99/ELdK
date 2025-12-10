@@ -24,12 +24,6 @@ public class HomeController {
     @Autowired
     private NoticiaService noticiaService;
 
-    // En HomeController.java
-    @GetMapping("/login")
-    public String login() {
-        return "login"; // Busca el archivo templates/login.html
-    }
-
     // Inyecta el servicio nuevo
     @Autowired
     private ComentarioService comentarioService;

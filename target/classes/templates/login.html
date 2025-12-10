@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>El Diario de Kanto - Iniciar Sesión / Registro</title>
+    <title>El Diario de Kanto - Acceso</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link rel="icon" th:src="@{/img/Logo.png}" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
@@ -16,28 +16,31 @@
         <div class="header-container">
             <div class="logo-area">
                 <a th:href="@{/}" class="site-title-link">
-                    <img th:src="@{/img/Logo.png}" alt="Logo de El Diario de Kanto" width="100px">
+                    <img th:src="@{/img/Logo.png}" alt="Logo" width="100px">
                 </a>
             </div>
             <a th:href="@{/}">
-                <button class="login-button">
-                    Volver
-                </button>
+                <button class="login-button">Volver</button>
             </a>
         </div>
     </header>
 
     <main class="content-container">
-        <div class="auth-container">
+        <div class="auth-container" style="max-width: 550px;">
 
             <div th:if="${param.error}"
-                style="background-color: #d32f2f; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
-                <span th:text="${param.error}">Error en el registro</span>
+                style="background-color: rgba(211, 47, 47, 0.2); color: #ff8a80; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; border: 1px solid #d32f2f;">
+                <i class="fas fa-exclamation-circle"></i> Credenciales incorrectas
             </div>
 
-            <div th:if="${param.registrado}"
-                style="background-color: #4CAF50; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;">
-                ¡Cuenta creada! Inicia sesión ahora.
+            <div th:if="${error}"
+                style="background-color: rgba(211, 47, 47, 0.2); color: #ff8a80; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; border: 1px solid #d32f2f;">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Error</span>
+            </div>
+
+            <div th:if="${param.registroExito}"
+                style="background-color: rgba(76, 175, 80, 0.2); color: #81c784; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; border: 1px solid #4CAF50;">
+                <i class="fas fa-check-circle"></i> ¡Cuenta creada! Bienvenido.
             </div>
 
             <div class="auth-tabs">
@@ -71,69 +74,103 @@
             </div>
 
             <div id="register-form-pane" class="form-pane hidden">
+                
+                <form class="auth-form" th:action="@{/registro}" method="post" enctype="multipart/form-data" th:object="${usuario}" 
+                      onsubmit="return validateRegister(event)"
+                      style="display: flex; flex-direction: column; gap: 12px;">
 
-                <form class="auth-form" th:action="@{/registro}" method="post" enctype="multipart/form-data">
+                    <div style="display: flex; gap: 15px; align-items: center; justify-content: center;">
+                        <div style="position: relative; width: 90px; height: 90px; flex-shrink: 0;">
+                            <img id="imgPreview" th:src="@{/img/default-avatar.png}" 
+                                 style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #FFDE00; background: #222;">
+                            <label for="fileInput" 
+                                   style="position: absolute; bottom: 0; right: 0; background: #FFDE00; color: #222; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #222;">
+                                <i class="fas fa-camera" style="font-size: 0.9em;"></i>
+                            </label>
+                            <input type="file" id="fileInput" name="ficheroFoto" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                        </div>
 
-                    <div class="form-group-full">
-                        <input type="text" name="nombreCompleto" placeholder="Nombre Completo" maxlength="50" required
-                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                        <div style="flex-grow: 1;">
+                            <div style="margin-bottom: 8px;">
+                                <input type="text" th:field="*{username}" placeholder="Usuario (7-15 chars)" minlength="7" maxlength="15" required
+                                    style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 0.9em;" />
+                            </div>
+                            <div style="position: relative;">
+                                <i class="fas fa-search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #FFDE00; font-size: 0.8em;"></i>
+                                <input type="text" list="pokemonsList" th:field="*{pokemonFavorito}" placeholder="Pokémon Favorito..."
+                                    style="width: 100%; padding: 10px; background: #333; color: #FFDE00; border: 1px solid #FFDE00; border-radius: 5px; font-weight: bold; font-size: 0.9em;" />
+                                <datalist id="pokemonsList">
+                                    <option th:each="p : ${listaPokemon}" th:value="${#strings.capitalize(p.nombre)}"></option>
+                                </datalist>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group-full">
-                        <label style="color: #ccc; font-size: 0.9em; display: block; margin-bottom: 5px;">Foto de Perfil
-                            (Opcional)</label>
-                        <input type="file" name="ficheroFoto" accept="image/*"
-                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <input type="text" th:field="*{nombreCompleto}" placeholder="Nombre Completo" maxlength="50" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 0.9em;" />
+                        
+                        <input type="text" th:field="*{movil}" placeholder="Móvil" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 0.9em;" />
                     </div>
 
-                    <div class="form-group-full">
-                        <input type="text" name="username" placeholder="Nombre de Usuario (7-15 caracteres)"
-                            minlength="7" maxlength="15" required
-                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    <input type="email" th:field="*{email}" placeholder="Correo Electrónico" required
+                        style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 0.9em;" />
+
+                    <div style="position: relative; width: 100%;">
+                        <input type="password" id="regPass1" th:field="*{password}" placeholder="Contraseña (Mín 8)" minlength="8" required
+                            style="width: 100%; padding: 10px; padding-right: 40px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 0.9em;" />
+                        
+                        <i class="fas fa-eye" id="toggleRegPass" onclick="togglePassword('regPass1', this)"
+                           style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; z-index: 10;"></i>
                     </div>
 
-                    <div class="form-group-full">
-                        <input type="email" name="email" placeholder="Correo Electrónico" required
-                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    <div>
+                        <input type="password" id="regPass2" placeholder="Repetir Contraseña" required
+                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 0.9em;" />
                     </div>
 
-                    <div class="form-group-full">
-                        <input type="text" name="movil" placeholder="Móvil" required
-                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
+                    <div id="passMismatchError" style="display: none; color: #ff8a80; background: rgba(255,0,0,0.1); padding: 8px; border-radius: 4px; text-align: center; border: 1px solid #ff8a80; font-size: 0.9em;">
+                        <i class="fas fa-times-circle"></i> Las contraseñas no coinciden
                     </div>
 
-                    <div class="form-group-full">
-                        <input type="password" name="password" placeholder="Contraseña (Mín. 8 caracteres)"
-                            minlength="8" required
-                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
-                    </div>
-
-                    <div class="form-group-full">
-                        <input type="password" placeholder="Repetir Contraseña" required
-                            style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;" />
-                    </div>
-
-                    <button type="submit" class="auth-submit-button">
+                    <button type="submit" class="auth-submit-button" style="margin-top: 5px;">
                         <i class="fas fa-check-circle"></i> Crear Cuenta
                     </button>
                 </form>
             </div>
+
         </div>
     </main>
 
     <footer class="main-footer">
-        <div class="footer-content-wrapper">
-            <div class="footer-info">
-                <img th:src="@{/img/Logo.png}" alt="Logo" class="footer-logo">
-                <p class="description">
-                    Tu portal informativo sobre Pokémon favorito.<br>
-                </p>
-            </div>
-        </div>
-    </footer>
+  <div class="footer-content-wrapper">
+    <div class="footer-info">
+      <img src="img/Logo.png" alt="Logo de la Pokédex" class="footer-logo">
+      <p class="description">
+        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br>
+        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus
+        Pokémon favoritos.
+        <br>¡Atrapa la información!
+      </p>
+    </div>
 
-    <script>
-        // Tu script de pestañas funciona bien, no hace falta tocarlo
+    <div class="footer-meta">
+      <p class="creator">
+        Creado por: Pablo Herrera Domínguez
+      </p>
+      <p class="copyright">
+        ©2025 El Diario de Kanto. Todos los derechos reservados.
+      </p>
+      <p class="disclaimer">
+        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de
+        Nintendo, Game Freak y The Pokémon Company.
+      </p>
+    </div>
+  </div>
+</footer>
+
+    <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function () {
             const loginTab = document.getElementById('login-tab');
             const registerTab = document.getElementById('register-tab');
@@ -149,10 +186,61 @@
                 tabToActivate.classList.add('active');
             }
 
-            loginTab.addEventListener('click', () => showForm(loginPane, loginTab));
-            registerTab.addEventListener('click', () => showForm(registerPane, registerTab));
+            if(loginTab && registerTab) {
+                loginTab.addEventListener('click', () => showForm(loginPane, loginTab));
+                registerTab.addEventListener('click', () => showForm(registerPane, registerTab));
+            }
+
+            // Recuperar error desde el servidor
+            const hasError = /*[[${error != null}]]*/ false;
+            if (hasError) {
+                showForm(registerPane, registerTab);
+            }
         });
+
+        // Previsualizar Foto
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('imgPreview');
+                    if(img) img.src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Alternar visibilidad contraseña
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                icon.style.color = "#FFDE00"; 
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                icon.style.color = "#888"; 
+            }
+        }
+
+        // Validar contraseñas
+        function validateRegister(event) {
+            const p1 = document.getElementById('regPass1');
+            const p2 = document.getElementById('regPass2');
+            const errorDiv = document.getElementById('passMismatchError');
+
+            if (p1 && p2 && p1.value !== p2.value) {
+                event.preventDefault(); 
+                errorDiv.style.display = 'block';
+                return false;
+            }
+            
+            errorDiv.style.display = 'none';
+            return true;
+        }
     </script>
 </body>
-
 </html>

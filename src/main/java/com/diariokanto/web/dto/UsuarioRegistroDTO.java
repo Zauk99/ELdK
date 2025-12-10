@@ -9,4 +9,5 @@ public class UsuarioRegistroDTO {
     private String username; // <--- EL NUEVO CAMPO
     private String password;
     private String movil;
+    private String pokemonFavorito;
 }
