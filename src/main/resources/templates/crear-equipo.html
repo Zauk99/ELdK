@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Team Builder | El Diario de Kanto</title>
@@ -8,107 +8,40 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     
     <style>
-        /* Estilos del Wizard */
         .hidden { display: none !important; }
         .step-indicator { color: #888; font-size: 0.9em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
         .step-indicator span.active { color: #FFDE00; font-weight: bold; border-bottom: 2px solid #FFDE00; padding-bottom: 2px; }
         
-        /* Tarjetas Paso 2 */
         .pokemon-detail-card { background: #2a2a2a; border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
-        .pokemon-detail-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 15px; }
-        .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .pokemon-detail-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #444; padding-bottom: 15px; margin-bottom: 15px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        
+        /* Imagen */
+        .poke-img-container { width: 80px; height: 80px; background: #151515; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #444; overflow: hidden; }
+        .poke-img-container img { width: 90%; height: auto; }
+        
+        /* Shiny toggle */
+        .shiny-toggle { cursor: pointer; color: #555; font-size: 1.2em; transition: color 0.3s; }
+        .shiny-toggle.active { color: #FFD700; text-shadow: 0 0 5px rgba(255, 215, 0, 0.6); }
 
-        /* === PANEL SHOWDOWN FLOTANTE (MEJORADO) === */
-        .showdown-panel {
-            position: absolute;
-            width: 400px; /* MÁS ANCHO para que quepa el texto */
-            max-height: 600px;
-            background-color: #1a1a1a;
-            border: 1px solid #FFDE00;
-            border-radius: 6px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.95);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            font-family: 'Roboto', sans-serif;
-        }
-
-        .panel-header {
-            background: #333;
-            padding: 10px 15px;
-            border-bottom: 1px solid #444;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #FFDE00;
-            font-weight: bold;
-            font-size: 0.95em;
-            flex-shrink: 0;
-        }
-
-        /* Lista scrollable */
-        .panel-body {
-            flex-grow: 1;
-            overflow-y: auto;
-            background: #252525;
-            max-height: 250px; /* Altura máxima de la lista */
-        }
-
+        /* Panel Showdown */
+        .showdown-panel { position: absolute; width: 400px; max-height: 500px; background-color: #1a1a1a; border: 1px solid #FFDE00; border-radius: 6px; box-shadow: 0 10px 40px rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; overflow: hidden; font-family: 'Roboto', sans-serif; }
+        .panel-header { background: #333; padding: 10px; display: flex; justify-content: space-between; align-items: center; color: #FFDE00; font-weight: bold; }
+        .panel-body { flex-grow: 1; overflow-y: auto; background: #252525; max-height: 250px; }
         .panel-list { list-style: none; padding: 0; margin: 0; }
-        
-        .panel-list li {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #333;
-            color: #ddd;
-            font-size: 0.95em;
-            transition: background 0.1s;
-        }
-
+        .panel-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #333; color: #ddd; }
         .panel-list li:hover { background-color: #3f51b5; color: white; }
-
-        /* Caja de Descripción (ADAPTABLE) */
-        .panel-description {
-            flex-shrink: 0;
-            padding: 15px;
-            background: #111;
-            border-top: 1px solid #FFDE00;
-            color: #ccc;
-            font-size: 0.9em;
-            line-height: 1.5;
-            min-height: 100px; /* Altura mínima */
-            max-height: 250px; /* Puede crecer si el texto es largo */
-            overflow-y: auto;  /* Solo scroll si es ETERNO */
-        }
-
-        /* Etiquetas de stats en el panel */
-        .move-stat-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            background: #444;
-            color: white;
-            font-size: 0.85em;
-            margin-right: 8px;
-            border: 1px solid #666;
-            font-weight: bold;
-        }
+        .panel-description { padding: 15px; background: #111; border-top: 1px solid #FFDE00; color: #ccc; font-size: 0.9em; min-height: 100px; }
         
-        .cat-physical { background-color: #D32F2F; border-color: #E57373; }
-        .cat-special { background-color: #1976D2; border-color: #64B5F6; }
-        .cat-status { background-color: #757575; border-color: #BDBDBD; }
+        /* Badges */
+        .move-stat-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; background: #444; color: white; font-size: 0.85em; margin-right: 8px; border: 1px solid #666; }
+        .cat-physical { background-color: #D32F2F; } .cat-special { background-color: #1976D2; } .cat-status { background-color: #757575; }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="header-container">
-            <div class="logo-area">
-                <a th:href="@{/}" class="site-title-link">
-                    <img th:src="@{/img/Logo.png}" alt="Logo" width="100px">
-                </a>
-            </div>
-            
+            <div class="logo-area"><a th:href="@{/}" class="site-title-link"><img th:src="@{/img/Logo.png}" alt="Logo" width="100px"></a></div>
             <div style="display: flex; align-items: center;">
                 <div sec:authorize="isAuthenticated()" class="user-menu-container">
                     <button id="userMenuBtn" class="user-button">
@@ -140,67 +73,51 @@
             </div>
 
             <div id="paso1">
-                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px;">
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 20px;">
                     <div>
                         <label style="color: #aaa; font-size: 0.9em;">Nombre del Equipo</label>
-                        <input type="text" id="nombreEquipo" placeholder="Ej: Kanto Champs" 
-                               style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 1.1em; font-weight: bold;">
+                        <input type="text" id="nombreEquipo" placeholder="Ej: Kanto Champs" style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 1.1em; font-weight: bold;">
                     </div>
                     <div>
                         <label style="color: #aaa; font-size: 0.9em;">Descripción</label>
-                        <input type="text" id="descEquipo" placeholder="Breve descripción de la estrategia..." 
-                               style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
+                        <input type="text" id="descEquipo" placeholder="Breve descripción..." style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
                     </div>
                 </div>
+                
+                <div style="margin-bottom: 30px; display: flex; align-items: center; gap: 10px;">
+                    <label style="color: #FFDE00; font-weight: bold;">Visibilidad:</label>
+                    <select id="esPublico" style="padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
+                        <option value="true">🌍 Público (Visible en Comunidad)</option>
+                        <option value="false">🔒 Privado (Solo para mí)</option>
+                    </select>
+                </div>
 
-                <div id="selection-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
-                    </div>
+                <div id="selection-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;"></div>
 
                 <div style="text-align: right; border-top: 1px solid #333; padding-top: 20px;">
                     <a th:href="@{/equipos}" class="poke-button" style="background-color: #d32f2f; float: left;">Cancelar</a>
-                    <button onclick="irAPaso2()" class="auth-submit-button" style="width: auto; padding: 12px 40px; background-color: #FFDE00; color: #222;">
-                        Siguiente: Configurar Detalles <i class="fas fa-arrow-right"></i>
-                    </button>
+                    <button onclick="irAPaso2()" class="auth-submit-button" style="width: auto; padding: 12px 40px; background-color: #FFDE00; color: #222;">Siguiente <i class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
 
             <div id="paso2" class="hidden">
-                <p style="color: #ccc; margin-bottom: 20px;">
-                    <i class="fas fa-info-circle"></i> Haz clic en los campos de <b>Habilidad</b>, <b>Objeto</b> o <b>Movimientos</b> para ver opciones.
-                </p>
-                
-                <div id="detalles-container">
-                    </div>
-
+                <p style="color: #ccc; margin-bottom: 20px;"><i class="fas fa-info-circle"></i> Configura los detalles. Pulsa la estrella <i class="fas fa-star" style="color:gold"></i> para shiny.</p>
+                <div id="detalles-container"></div>
                 <div style="display: flex; justify-content: space-between; border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
-                    <button onclick="volverAPaso1()" class="poke-button" style="background-color: #444;">
-                        <i class="fas fa-arrow-left"></i> Volver a Selección
-                    </button>
-                    <button onclick="guardarEquipoFinal()" class="auth-submit-button" style="width: auto; padding: 12px 40px; background-color: #4CAF50; color: white;">
-                        <i class="fas fa-save"></i> Guardar Equipo Definitivo
-                    </button>
+                    <button onclick="volverAPaso1()" class="poke-button" style="background-color: #444;"><i class="fas fa-arrow-left"></i> Volver</button>
+                    <button onclick="guardarEquipoFinal()" class="auth-submit-button" style="width: auto; padding: 12px 40px; background-color: #4CAF50; color: white;"><i class="fas fa-save"></i> Guardar Equipo</button>
                 </div>
             </div>
-
         </div>
     </main>
 
     <div id="showdown-panel" class="showdown-panel hidden">
         <div class="panel-header">
             <span id="panel-title">Opciones</span>
-            <button onclick="cerrarPanel()" style="background:none; border:none; color:#888; cursor:pointer;">
-                <i class="fas fa-times"></i>
-            </button>
+            <button onclick="cerrarPanel()" style="background:none; border:none; color:#888; cursor:pointer;"><i class="fas fa-times"></i></button>
         </div>
-        <div class="panel-body">
-            <ul id="panel-list" class="panel-list">
-                </ul>
-        </div>
-        <div id="panel-description" class="panel-description">
-            <p style="color: #aaa; font-style: italic; margin: 0; text-align: center; padding-top: 20px;">
-                Pasa el ratón por una opción para ver sus datos en español.
-            </p>
-        </div>
+        <div class="panel-body"><ul id="panel-list" class="panel-list"></ul></div>
+        <div id="panel-description" class="panel-description"></div>
     </div>
 
     <datalist id="allPokemonList">
@@ -210,34 +127,59 @@
     <script th:src="@{/js/main.js}"></script>
 
     <script th:inline="javascript">
-        // --- CACHÉ DE DATOS ---
-        const detailsCache = {}; 
+        // --- UTILIDADES DE IMAGEN ---
+        function getPokemonImage(name, isShiny) {
+            if (!name) return "/img/pokeball-icon.png";
+            let slug = name.toLowerCase().trim().replace(/ /g, '-');
+            if (slug === 'mimikyu') slug = 'mimikyu-disguised';
+            if (slug === 'aegislash') slug = 'aegislash-shield';
+            if (slug === 'giratina') slug = 'giratina-altered';
+            if (slug === 'deoxys') slug = 'deoxys-normal';
 
-        // --- INICIALIZACIÓN PASO 1 ---
+            const baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home";
+            return isShiny ? `${baseUrl}/shiny/${slug}.png` : `${baseUrl}/${slug}.png`;
+        }
+
+        // --- CACHÉ Y DATOS ---
+        const detailsCache = {};
+        let equipoTemporal = { nombre: "", descripcion: "", publico: true, miembros: [] };
+        const naturalezas = ["Firme", "Alegre", "Modesta", "Miedosa", "Osada", "Serena", "Cauta", "Agitada", "Rara", "Activa"];
+        const optsNaturaleza = naturalezas.map(n => `<option value="${n}">${n}</option>`).join('');
+
+        // --- INICIALIZACIÓN ---
         const selectionGrid = document.getElementById('selection-grid');
         for(let i=0; i<6; i++) {
             selectionGrid.innerHTML += `
-                <div class="pokemon-slot" id="select-slot-${i}" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; display: flex; gap: 10px; align-items: center;">
-                    <div style="font-size: 1.5em; font-weight: bold; color: #444; width: 30px;">${i+1}</div>
+                <div class="pokemon-slot" id="select-slot-${i}" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; display: flex; gap: 15px; align-items: center;">
+                    <div style="font-size: 1.5em; font-weight: bold; color: #444; width: 20px;">${i+1}</div>
+                    <div style="width: 50px; height: 50px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #333;">
+                        <img id="prev-img-${i}" src="/img/pokeball-icon.png" style="max-width: 90%; opacity: 0.5;" onerror="this.src='/img/Logo.png'">
+                    </div>
                     <div style="flex-grow: 1;">
-                        <input type="text" class="poke-search-simple" id="poke-name-${i}" list="allPokemonList" placeholder="Elige Pokémon..." 
-                               style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; font-weight: bold;">
+                        <input type="text" class="poke-search-simple" id="poke-name-${i}" list="allPokemonList" placeholder="Elige Pokémon..." oninput="actualizarPreview(${i})" style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; font-weight: bold;">
                     </div>
                     <button onclick="limpiarInput(${i})" style="background: none; border: none; color: #d32f2f; cursor: pointer;"><i class="fas fa-trash"></i></button>
-                </div>
-            `;
+                </div>`;
         }
 
+        function actualizarPreview(i) {
+            const input = document.getElementById(`poke-name-${i}`);
+            const img = document.getElementById(`prev-img-${i}`);
+            const val = input.value.trim();
+            if(val.length > 2) {
+                img.src = getPokemonImage(val, false);
+                img.style.opacity = "1";
+            } else {
+                img.src = "/img/pokeball-icon.png";
+                img.style.opacity = "0.5";
+            }
+        }
         function limpiarInput(i) {
             document.getElementById(`poke-name-${i}`).value = '';
+            actualizarPreview(i);
         }
 
-        // DATOS TEMPORALES
-        let equipoTemporal = { nombre: "", descripcion: "", miembros: [] };
-        const naturalezas = ["Firme", "Alegre", "Modesta", "Miedosa", "Osada", "Serena", "Cauta", "Agitada", "Rara", "Activa"]; 
-        const optsNaturaleza = naturalezas.map(n => `<option value="${n}">${n}</option>`).join('');
-
-        // --- TRANSICIÓN WIZARD ---
+        // --- TRANSICIÓN ---
         function irAPaso2() {
             const nombre = document.getElementById('nombreEquipo').value;
             if(!nombre) { alert("Ponle un nombre a tu equipo."); return; }
@@ -245,19 +187,17 @@
             const elegidos = [];
             for(let i=0; i<6; i++) {
                 const val = document.getElementById(`poke-name-${i}`).value;
-                if(val && val.trim() !== "") {
-                    elegidos.push({ index: i, nombre: val });
-                }
+                if(val && val.trim() !== "") elegidos.push({ index: i, nombre: val });
             }
 
             if(elegidos.length === 0) { alert("Elige al menos 1 Pokémon."); return; }
 
             equipoTemporal.nombre = nombre;
             equipoTemporal.descripcion = document.getElementById('descEquipo').value;
+            equipoTemporal.publico = document.getElementById('esPublico').value === 'true'; // Guardar estado público
             equipoTemporal.miembros = elegidos;
 
             renderizarDetalles(elegidos);
-
             document.getElementById('paso1').classList.add('hidden');
             document.getElementById('paso2').classList.remove('hidden');
             document.getElementById('labelPaso1').classList.remove('active');
@@ -276,15 +216,23 @@
         function renderizarDetalles(miembros) {
             const container = document.getElementById('detalles-container');
             container.innerHTML = "";
-
             miembros.forEach((m, i) => {
                 const nombreCap = m.nombre.charAt(0).toUpperCase() + m.nombre.slice(1);
-                
+                const imgUrl = getPokemonImage(m.nombre, false);
                 const html = `
                 <div class="pokemon-detail-card" id="detail-card-${i}">
                     <div class="pokemon-detail-header">
-                        <div style="background: #333; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #FFDE00; border: 2px solid #444;">${i+1}</div>
-                        <h3 style="margin: 0; color: white;">${nombreCap}</h3>
+                        <div class="poke-img-container">
+                            <img id="detail-img-${i}" src="${imgUrl}" alt="${nombreCap}">
+                        </div>
+                        <div style="flex-grow: 1; margin-left: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <h3 style="margin: 0; color: white;">${nombreCap}</h3>
+                                <i class="fas fa-star shiny-toggle" id="shiny-btn-${i}" onclick="toggleShiny(${i}, '${m.nombre}')"></i>
+                                <input type="hidden" class="d-shiny-val" id="shiny-val-${i}" value="false">
+                            </div>
+                            <span style="color: #666; font-size: 0.8em; font-weight: bold;">#${i+1}</span>
+                        </div>
                         <input type="hidden" class="d-nombre" value="${m.nombre}">
                     </div>
                     <div class="detail-grid">
@@ -298,7 +246,7 @@
                         </div>
                         <div>
                             <label style="color:#aaa; font-size:0.8em;">Naturaleza</label>
-                            <select class="d-naturaleza" style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; margin-bottom:10px;">
+                            <select class="d-naturaleza" style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px;">
                                 <option value="">Neutra</option>${optsNaturaleza}
                             </select>
                         </div>
@@ -315,9 +263,18 @@
             });
         }
 
-        // ===============================================
-        //  LÓGICA "SHOWDOWN" MEJORADA
-        // ===============================================
+        // --- SHINY TOGGLE ---
+        function toggleShiny(index, nombre) {
+            const img = document.getElementById(`detail-img-${index}`);
+            const btn = document.getElementById(`shiny-btn-${index}`);
+            const inputVal = document.getElementById(`shiny-val-${index}`);
+            const newState = !(inputVal.value === "true");
+            inputVal.value = newState;
+            if (newState) { btn.classList.add('active'); img.src = getPokemonImage(nombre, true); } 
+            else { btn.classList.remove('active'); img.src = getPokemonImage(nombre, false); }
+        }
+
+        // --- SHOWDOWN PANEL LOGIC ---
         const objetosComunes = ["Leftovers", "Life Orb", "Choice Scarf", "Choice Band", "Choice Specs", "Assault Vest", "Sitrus Berry", "Lum Berry", "Rocky Helmet", "Black Sludge", "Eviolite", "Focus Sash"];
 
         function abrirSelector(input, tipo, slotIndex) {
@@ -327,18 +284,14 @@
             const panel = document.getElementById('showdown-panel');
             const rect = input.getBoundingClientRect();
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            
-            // Ajustamos posición para que se vea bien
-            panel.style.top = (rect.top + scrollTop - 80) + 'px';
+            panel.style.top = (rect.top + scrollTop - 100) + 'px';
             panel.style.left = (rect.right + 15) + 'px'; 
             panel.classList.remove('hidden');
             
             document.getElementById('panel-title').innerText = `Elegir ${tipo}`;
             const lista = document.getElementById('panel-list');
-            const descBox = document.getElementById('panel-description');
-            
-            lista.innerHTML = '<li style="color:#888; text-align:center; padding:10px;">Cargando lista...</li>';
-            descBox.innerHTML = '<p style="color:#aaa; text-align:center;">Pasa el ratón por una opción para ver sus datos.</p>';
+            lista.innerHTML = '<li style="color:#888; text-align:center;">Cargando...</li>';
+            document.getElementById('panel-description').innerHTML = '<p style="color:#aaa; text-align:center;">Pasa el ratón para ver detalles.</p>';
 
             if (tipo === 'Objeto') {
                 mostrarOpcionesSimple(objetosComunes, input, 'item');
@@ -346,21 +299,9 @@
                 fetch(`https://pokeapi.co/api/v2/pokemon/${nombrePoke.toLowerCase()}`)
                     .then(res => res.json())
                     .then(data => {
-                        let opciones = [];
-                        let apiCategory = '';
-                        
-                        if(tipo === 'Habilidad') {
-                            opciones = data.abilities.map(a => a.ability.name);
-                            apiCategory = 'ability';
-                        } else {
-                            opciones = data.moves.map(m => m.move.name);
-                            apiCategory = 'move';
-                        }
+                        let opciones = (tipo === 'Habilidad') ? data.abilities.map(a => a.ability.name) : data.moves.map(m => m.move.name);
                         opciones.sort();
-                        mostrarOpcionesSimple(opciones, input, apiCategory);
-                    })
-                    .catch(err => {
-                        lista.innerHTML = '<li style="color:red; text-align:center;">Error cargando datos</li>';
+                        mostrarOpcionesSimple(opciones, input, (tipo === 'Habilidad' ? 'ability' : 'move'));
                     });
             }
         }
@@ -368,120 +309,67 @@
         function mostrarOpcionesSimple(opciones, inputDestino, categoriaApi) {
             const lista = document.getElementById('panel-list');
             lista.innerHTML = '';
-            
             opciones.forEach(slug => {
                 const textoVisible = slug.replace(/-/g, ' ').toUpperCase();
-
                 const li = document.createElement('li');
                 li.textContent = textoVisible; 
-                
-                li.onclick = () => {
-                    inputDestino.value = textoVisible;
-                    cerrarPanel();
-                };
-
-                // HOVER: Carga detalles corrigiendo el SLUG para la API
-                li.onmouseenter = () => {
-                    cargarDetalles(categoriaApi, slug);
-                };
-                
+                li.onclick = () => { inputDestino.value = textoVisible; cerrarPanel(); };
+                li.onmouseenter = () => { cargarDetalles(categoriaApi, slug); };
                 lista.appendChild(li);
             });
         }
 
         function cargarDetalles(categoria, slug) {
             const descBox = document.getElementById('panel-description');
-            
-            // CORRECCIÓN CRÍTICA: Convertir nombre visual a slug de API (minúsculas y guiones)
-            // Ejemplo: "Choice Scarf" -> "choice-scarf"
             const apiSlug = slug.toLowerCase().replace(/ /g, '-');
             const cacheKey = `${categoria}:${apiSlug}`;
 
-            if (detailsCache[cacheKey]) {
-                pintarDetalles(detailsCache[cacheKey]);
-                return;
-            }
-
-            descBox.innerHTML = '<p style="color:#FFDE00; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</p>';
+            if (detailsCache[cacheKey]) { pintarDetalles(detailsCache[cacheKey]); return; }
+            descBox.innerHTML = '<p style="color:#FFDE00; text-align:center;">Cargando...</p>';
 
             fetch(`https://pokeapi.co/api/v2/${categoria}/${apiSlug}`)
-                .then(res => {
-                    if (!res.ok) throw new Error("404");
-                    return res.json();
-                })
+                .then(res => { if(!res.ok) throw new Error("404"); return res.json(); })
                 .then(data => {
                     const info = procesarInfoApi(data, categoria);
                     detailsCache[cacheKey] = info;
                     pintarDetalles(info);
                 })
-                .catch(err => {
-                    descBox.innerHTML = '<p style="color:red; text-align:center;">Detalles no disponibles.</p>';
-                });
+                .catch(err => { descBox.innerHTML = '<p style="color:red; text-align:center;">Detalles no disponibles.</p>'; });
         }
 
         function procesarInfoApi(data, categoria) {
             const nombreObj = data.names.find(n => n.language.name === 'es');
             const nombreEsp = nombreObj ? nombreObj.name : data.name;
-
             const flavorObj = data.flavor_text_entries.find(f => f.language.name === 'es');
-            let descripcion = flavorObj ? flavorObj.flavor_text : "Descripción no disponible en español.";
-            descripcion = descripcion.replace(/\n|\f/g, ' ');
-
+            let descripcion = flavorObj ? flavorObj.flavor_text.replace(/\n|\f/g, ' ') : "Descripción no disponible en español.";
+            
             let extraHtml = '';
-
             if (categoria === 'move') {
-                const power = data.power ? data.power : '-';
-                const accuracy = data.accuracy ? data.accuracy : '-';
-                const pp = data.pp;
                 const type = data.type.name;
                 const damageClass = data.damage_class.name; 
-
-                let classCss = 'cat-status';
-                let classText = 'Estado';
-                if (damageClass === 'physical') { classCss = 'cat-physical'; classText = 'Físico'; }
-                if (damageClass === 'special') { classCss = 'cat-special'; classText = 'Especial'; }
-
-                extraHtml = `
-                    <div style="margin-bottom: 8px; display: flex; gap: 5px; flex-wrap: wrap;">
-                        <span class="move-stat-badge ${classCss}">${classText}</span>
-                        <span class="move-stat-badge" style="border-color:var(--type-${type}); color:var(--type-${type})">${type.toUpperCase()}</span>
-                        <span class="move-stat-badge">Pot: ${power}</span>
-                        <span class="move-stat-badge">Pre: ${accuracy}</span>
-                        <span class="move-stat-badge">PP: ${pp}</span>
-                    </div>
-                `;
+                let classCss = (damageClass === 'physical') ? 'cat-physical' : (damageClass === 'special' ? 'cat-special' : 'cat-status');
+                extraHtml = `<div style="margin-bottom:8px; display:flex; gap:5px;"><span class="move-stat-badge ${classCss}">${damageClass.toUpperCase()}</span><span class="move-stat-badge" style="border-color:var(--type-${type});color:var(--type-${type})">${type.toUpperCase()}</span><span class="move-stat-badge">Pot: ${data.power||'-'}</span></div>`;
             }
-
             return { nombre: nombreEsp, desc: descripcion, extra: extraHtml };
         }
 
         function pintarDetalles(info) {
-            const descBox = document.getElementById('panel-description');
-            descBox.innerHTML = `
-                <strong style="color: #FFDE00; font-size: 1.1em; display:block; margin-bottom:5px;">${info.nombre}</strong>
-                ${info.extra}
-                <p style="margin:0; color:#ddd;">${info.desc}</p>
-            `;
+            document.getElementById('panel-description').innerHTML = `<strong style="color:#FFDE00; font-size:1.1em; display:block; margin-bottom:5px;">${info.nombre}</strong>${info.extra}<p style="margin:0; color:#ddd;">${info.desc}</p>`;
         }
 
-        function cerrarPanel() {
-            document.getElementById('showdown-panel').classList.add('hidden');
-        }
-
+        function cerrarPanel() { document.getElementById('showdown-panel').classList.add('hidden'); }
         document.addEventListener('click', function(e) {
             const panel = document.getElementById('showdown-panel');
-            if (!panel.classList.contains('hidden') && !e.target.closest('.showdown-panel') && !e.target.hasAttribute('readonly')) {
-                cerrarPanel();
-            }
+            if (!panel.classList.contains('hidden') && !e.target.closest('.showdown-panel') && !e.target.hasAttribute('readonly')) cerrarPanel();
         });
 
+        // --- GUARDADO FINAL ---
         function guardarEquipoFinal() {
-            // ... (código igual al anterior) ...
-            // Solo para no alargar la respuesta, copia la función de guardado anterior aquí
-             const container = document.getElementById('detalles-container');
+            const container = document.getElementById('detalles-container');
             const cards = container.querySelectorAll('.pokemon-detail-card');
             
-            const listaFinalMiembros = [];
+            const listaFinalMiembros = []; // DEFINIDA AQUÍ, ANTES DEL FOREACH
+
             cards.forEach(card => {
                 const miembro = {
                     nombrePokemon: card.querySelector('.d-nombre').value,
@@ -497,9 +385,11 @@
                 listaFinalMiembros.push(miembro);
             });
 
+            // AHORA SÍ PODEMOS USAR listaFinalMiembros
             const equipoDTO = {
                 nombre: equipoTemporal.nombre,
                 descripcion: equipoTemporal.descripcion,
+                publico: equipoTemporal.publico,
                 miembros: listaFinalMiembros
             };
 
@@ -510,39 +400,10 @@
             })
             .then(res => res.text())
             .then(data => {
-                if(data === "OK") {
-                    window.location.href = "/equipos";
-                } else {
-                    alert("Error al guardar: " + data);
-                }
+                if(data === "OK") { window.location.href = "/equipos"; } 
+                else { alert("Error al guardar: " + data); }
             });
         }
     </script>
 </body>
-<footer class="main-footer">
-  <div class="footer-content-wrapper">
-    <div class="footer-info">
-      <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo">
-      <p class="description">
-        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br>
-        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus
-        Pokémon favoritos.
-        <br>¡Atrapa la información!
-      </p>
-    </div>
-
-    <div class="footer-meta">
-      <p class="creator">
-        Creado por: Pablo Herrera Domínguez
-      </p>
-      <p class="copyright">
-        ©2025 El Diario de Kanto. Todos los derechos reservados.
-      </p>
-      <p class="disclaimer">
-        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de
-        Nintendo, Game Freak y The Pokémon Company.
-      </p>
-    </div>
-  </div>
-</footer>
 </html>

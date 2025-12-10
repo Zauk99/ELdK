@@ -9,5 +9,6 @@ public class EquipoDTO {
     private Long id;
     private String nombre;
     private String descripcion;
+    private boolean publico;
     private List<MiembroEquipoDTO> miembros = new ArrayList<>();
 }

@@ -4,6 +4,9 @@ import com.diariokanto.web.dto.EquipoDTO;
 import com.diariokanto.web.dto.UsuarioDTO;
 import com.diariokanto.web.service.EquipoService;
 import com.diariokanto.web.service.PokemonService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -16,14 +19,6 @@ public class EquipoController {
 
     @Autowired private EquipoService equipoService;
     @Autowired private PokemonService pokemonService; // Para el autocompletado de nombres
-
-    // 1. Ver mis equipos (Lista)
-    @GetMapping("/mis-equipos")
-    public String verMisEquipos(Model model, Authentication auth) {
-        UsuarioDTO usuario = (UsuarioDTO) auth.getPrincipal();
-        model.addAttribute("equipos", equipoService.obtenerMisEquipos(usuario.getEmail()));
-        return "mis-equipos";
-    }
 
     // 2. Vista del Constructor (Formulario)
     @GetMapping("/crear")
@@ -51,5 +46,14 @@ public class EquipoController {
     public String verEquiposComunidad(Model model) {
         model.addAttribute("equipos", equipoService.obtenerTodos());
         return "equipos";
+    }
+
+    @GetMapping("/mis-equipos")
+    public String verMisEquipos(Model model, Authentication auth) {
+        UsuarioDTO usuario = (UsuarioDTO) auth.getPrincipal();
+        // Llama al servicio que pide /api/equipos/mis-equipos?email=...
+        List<EquipoDTO> misEquipos = equipoService.obtenerMisEquipos(usuario.getEmail());
+        model.addAttribute("equipos", misEquipos);
+        return "mis-equipos";
     }
 }

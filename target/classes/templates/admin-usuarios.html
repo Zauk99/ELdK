@@ -61,6 +61,11 @@
                             <i class="fas fa-heart" style="margin-right: 10px;"></i> Mis Favoritos (Pronto)
                         </a>
                     </li>
+                    <li>
+                        <a th:href="@{/equipos/mis-equipos}">
+                            <i class="fas fa-users" style="margin-right: 10px;"></i> Mis Equipos
+                        </a>
+                    </li>
                     <li sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/admin/usuarios}" class="active">
                             <i class="fas fa-users-cog" style="margin-right: 10px;"></i> Gestión Usuarios
