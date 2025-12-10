@@ -23,4 +23,7 @@ public class PokemonDetalleDTO {
     // 👇👇 NUEVOS CAMPOS 👇👇
     private List<PokemonDTO> lineaEvolutiva = new ArrayList<>();
     private List<PokemonDTO> variaciones = new ArrayList<>();
+    // En com.diariokanto.web.dto.PokemonDetalleDTO
+    private List<String> movimientos; // Nombres de los ataques
+
 }

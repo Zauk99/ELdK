@@ -1,6 +1,7 @@
 package com.diariokanto.web.controller;
 
 import com.diariokanto.web.dto.PokemonDTO;
+import com.diariokanto.web.dto.PokemonDetalleDTO;
 import com.diariokanto.web.service.PokemonService;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class PokedexController {
@@ -87,5 +89,13 @@ public class PokedexController {
         model.addAttribute("genActual", gen);   // Para mantener el select seleccionado
         
         return "pokedex";
+    }
+
+    // En PokedexController.java
+    @GetMapping("/api/internal/pokemon-options/{id}")
+    @ResponseBody
+    public PokemonDetalleDTO obtenerOpcionesCombate(@PathVariable Long id) {
+        // Reutilizamos tu servicio existente
+        return pokemonService.obtenerDetalle(id); 
     }
 }

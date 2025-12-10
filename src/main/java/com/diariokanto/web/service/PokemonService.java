@@ -217,6 +217,22 @@ public class PokemonService {
             estadisticas.put(nombreEsp, (Integer)s.get("base_stat"));
         }
         dto.setEstadisticas(estadisticas);
+
+        // Dentro de procesarStatsYTipos o donde proceses el detalle
+    // Añade esto para capturar los movimientos:
+    
+    // 4. MOVIMIENTOS (Añadir esto en obtenerDetalle o procesarStatsYTipos)
+    List<Map> movesList = (List<Map>) data.get("moves");
+    List<String> movimientos = new ArrayList<>();
+    if (movesList != null) {
+        for (Map m : movesList) {
+            Map moveInfo = (Map) m.get("move");
+            String moveName = (String) moveInfo.get("name");
+            // Formatear nombre (ej: "thunder-punch" -> "Thunder Punch")
+            movimientos.add(moveName.replace("-", " ")); 
+        }
+    }
+    dto.setMovimientos(movimientos);
     }
 
     // Recursividad para la cadena evolutiva con soporte regional

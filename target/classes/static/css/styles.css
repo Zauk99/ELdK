@@ -1852,3 +1852,70 @@ a {
     background-color: #ffeb3b;
     transform: scale(1.05);
 }
+
+/* Panel Showdown */
+.showdown-panel {
+    position: absolute;
+    width: 300px;
+    max-height: 400px;
+    background-color: #222;
+    border: 1px solid #FFDE00; /* Borde dorado */
+    border-radius: 8px;
+    box-shadow: 5px 5px 20px rgba(0,0,0,0.8);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.showdown-panel.hidden {
+    display: none;
+}
+
+.panel-header {
+    background: #333;
+    padding: 8px 15px;
+    border-bottom: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #FFDE00;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.panel-body {
+    flex-grow: 1;
+    overflow-y: auto; /* Scroll si hay muchas opciones */
+    max-height: 250px;
+}
+
+.panel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.panel-list li {
+    padding: 8px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+    color: #ddd;
+    font-size: 0.9em;
+    transition: background 0.1s;
+}
+
+.panel-list li:hover {
+    background-color: #3f51b5; /* Azul al pasar ratón */
+    color: white;
+}
+
+.panel-description {
+    padding: 10px 15px;
+    background: #1a1a1a;
+    border-top: 1px solid #444;
+    min-height: 60px;
+    font-size: 0.85em;
+    color: #ccc;
+    line-height: 1.4;
+}

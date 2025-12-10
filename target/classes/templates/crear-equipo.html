@@ -6,6 +6,99 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    
+    <style>
+        /* Estilos del Wizard */
+        .hidden { display: none !important; }
+        .step-indicator { color: #888; font-size: 0.9em; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .step-indicator span.active { color: #FFDE00; font-weight: bold; border-bottom: 2px solid #FFDE00; padding-bottom: 2px; }
+        
+        /* Tarjetas Paso 2 */
+        .pokemon-detail-card { background: #2a2a2a; border: 1px solid #444; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .pokemon-detail-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 15px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+
+        /* === PANEL SHOWDOWN FLOTANTE (MEJORADO) === */
+        .showdown-panel {
+            position: absolute;
+            width: 400px; /* MÁS ANCHO para que quepa el texto */
+            max-height: 600px;
+            background-color: #1a1a1a;
+            border: 1px solid #FFDE00;
+            border-radius: 6px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .panel-header {
+            background: #333;
+            padding: 10px 15px;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #FFDE00;
+            font-weight: bold;
+            font-size: 0.95em;
+            flex-shrink: 0;
+        }
+
+        /* Lista scrollable */
+        .panel-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            background: #252525;
+            max-height: 250px; /* Altura máxima de la lista */
+        }
+
+        .panel-list { list-style: none; padding: 0; margin: 0; }
+        
+        .panel-list li {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+            color: #ddd;
+            font-size: 0.95em;
+            transition: background 0.1s;
+        }
+
+        .panel-list li:hover { background-color: #3f51b5; color: white; }
+
+        /* Caja de Descripción (ADAPTABLE) */
+        .panel-description {
+            flex-shrink: 0;
+            padding: 15px;
+            background: #111;
+            border-top: 1px solid #FFDE00;
+            color: #ccc;
+            font-size: 0.9em;
+            line-height: 1.5;
+            min-height: 100px; /* Altura mínima */
+            max-height: 250px; /* Puede crecer si el texto es largo */
+            overflow-y: auto;  /* Solo scroll si es ETERNO */
+        }
+
+        /* Etiquetas de stats en el panel */
+        .move-stat-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #444;
+            color: white;
+            font-size: 0.85em;
+            margin-right: 8px;
+            border: 1px solid #666;
+            font-weight: bold;
+        }
+        
+        .cat-physical { background-color: #D32F2F; border-color: #E57373; }
+        .cat-special { background-color: #1976D2; border-color: #64B5F6; }
+        .cat-status { background-color: #757575; border-color: #BDBDBD; }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -15,24 +108,18 @@
                     <img th:src="@{/img/Logo.png}" alt="Logo" width="100px">
                 </a>
             </div>
-
+            
             <div style="display: flex; align-items: center;">
                 <div sec:authorize="isAuthenticated()" class="user-menu-container">
                     <button id="userMenuBtn" class="user-button">
-                        <img th:src="${#authentication.principal.fotoPerfilUrl}" alt="Avatar" class="user-avatar"
-                            style="object-fit: cover;">
+                        <img th:src="${#authentication.principal.fotoPerfilUrl}" alt="Avatar" class="user-avatar" style="object-fit: cover;">
                         <span th:text="${#authentication.principal.username}">Usuario</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div id="userDropdown" class="user-dropdown-content">
-                        <a th:href="@{/perfil}" class="dropdown-item"
-                            style="display: block; padding: 12px 16px; color: white; text-decoration: none; border-bottom: 1px solid #444; text-align: left;">
-                            <i class="fas fa-user" style="width: 20px;"></i> Ver Perfil
-                        </a>
+                        <a th:href="@{/perfil}" class="dropdown-item"><i class="fas fa-user"></i> Ver Perfil</a>
                         <form th:action="@{/logout}" method="post" style="margin: 0;">
-                            <button type="submit" style="width: 100%; text-align: left; padding: 12px 16px;">
-                                <i class="fas fa-sign-out-alt" style="width: 20px;"></i> Cerrar Sesión
-                            </button>
+                            <button type="submit"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
                         </form>
                     </div>
                 </div>
@@ -41,35 +128,80 @@
     </header>
 
     <main class="content-container">
-        <div style="background: #222; padding: 20px; border-radius: 10px; border: 1px solid #444;">
-            <h2 style="color: #FFDE00; border-bottom: 1px solid #444; padding-bottom: 10px; margin-top: 0;">
-                <i class="fas fa-tools"></i> Nuevo Equipo
-            </h2>
+        <div style="background: #222; padding: 30px; border-radius: 10px; border: 1px solid #444; max-width: 1000px; margin: 0 auto;">
             
-            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px;">
-                <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo (Ej: Kanto Champs)" 
-                       style="padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 1.1em;">
-                <input type="text" id="descEquipo" placeholder="Descripción breve de la estrategia..." 
-                       style="padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <h2 style="color: #FFDE00; margin: 0;"><i class="fas fa-tools"></i> Team Builder</h2>
+                <div class="step-indicator">
+                    <span id="labelPaso1" class="active">1. Selección</span>
+                    <span style="margin: 0 10px;">></span>
+                    <span id="labelPaso2">2. Estrategia</span>
+                </div>
             </div>
 
-            <div id="team-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div id="paso1">
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px;">
+                    <div>
+                        <label style="color: #aaa; font-size: 0.9em;">Nombre del Equipo</label>
+                        <input type="text" id="nombreEquipo" placeholder="Ej: Kanto Champs" 
+                               style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px; font-size: 1.1em; font-weight: bold;">
+                    </div>
+                    <div>
+                        <label style="color: #aaa; font-size: 0.9em;">Descripción</label>
+                        <input type="text" id="descEquipo" placeholder="Breve descripción de la estrategia..." 
+                               style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
+                    </div>
                 </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333;">
-                
-                <a th:href="@{/equipos}" class="poke-button" 
-                   style="background-color: #d32f2f; border: 1px solid #b71c1c; padding: 12px 20px;">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
+                <div id="selection-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    </div>
 
-                <button onclick="guardarEquipo()" class="auth-submit-button" 
-                        style="width: auto; padding: 12px 30px; margin: 0; background-color: #FFDE00; color: #222;">
-                    <i class="fas fa-save"></i> Guardar Equipo
-                </button>
+                <div style="text-align: right; border-top: 1px solid #333; padding-top: 20px;">
+                    <a th:href="@{/equipos}" class="poke-button" style="background-color: #d32f2f; float: left;">Cancelar</a>
+                    <button onclick="irAPaso2()" class="auth-submit-button" style="width: auto; padding: 12px 40px; background-color: #FFDE00; color: #222;">
+                        Siguiente: Configurar Detalles <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
             </div>
+
+            <div id="paso2" class="hidden">
+                <p style="color: #ccc; margin-bottom: 20px;">
+                    <i class="fas fa-info-circle"></i> Haz clic en los campos de <b>Habilidad</b>, <b>Objeto</b> o <b>Movimientos</b> para ver opciones.
+                </p>
+                
+                <div id="detalles-container">
+                    </div>
+
+                <div style="display: flex; justify-content: space-between; border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+                    <button onclick="volverAPaso1()" class="poke-button" style="background-color: #444;">
+                        <i class="fas fa-arrow-left"></i> Volver a Selección
+                    </button>
+                    <button onclick="guardarEquipoFinal()" class="auth-submit-button" style="width: auto; padding: 12px 40px; background-color: #4CAF50; color: white;">
+                        <i class="fas fa-save"></i> Guardar Equipo Definitivo
+                    </button>
+                </div>
+            </div>
+
         </div>
     </main>
+
+    <div id="showdown-panel" class="showdown-panel hidden">
+        <div class="panel-header">
+            <span id="panel-title">Opciones</span>
+            <button onclick="cerrarPanel()" style="background:none; border:none; color:#888; cursor:pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="panel-body">
+            <ul id="panel-list" class="panel-list">
+                </ul>
+        </div>
+        <div id="panel-description" class="panel-description">
+            <p style="color: #aaa; font-style: italic; margin: 0; text-align: center; padding-top: 20px;">
+                Pasa el ratón por una opción para ver sus datos en español.
+            </p>
+        </div>
+    </div>
 
     <datalist id="allPokemonList">
         <option th:each="p : ${listaPokemon}" th:value="${p.nombre}"></option>
@@ -78,65 +210,308 @@
     <script th:src="@{/js/main.js}"></script>
 
     <script th:inline="javascript">
-        // Inicializar 6 slots vacíos
-        const teamGrid = document.getElementById('team-grid');
-        for(let i=0; i<6; i++) {
-            teamGrid.innerHTML += `
-                <div class="pokemon-slot" id="slot-${i}" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; position: relative;">
-                    <h4 style="color: #ccc; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 5px;">
-                        <i class="fas fa-chess-pawn"></i> Pokémon ${i+1}
-                    </h4>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="font-size: 0.85em; color: #FFDE00; display: block; margin-bottom: 5px;">Especie</label>
-                        <div style="position: relative;">
-                            <input type="text" class="poke-search" data-index="${i}" list="allPokemonList" placeholder="Ej: Pikachu..." 
-                                   style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; font-weight: bold;">
-                            <i class="fas fa-search" style="position: absolute; right: 10px; top: 12px; color: #666;"></i>
-                        </div>
-                    </div>
+        // --- CACHÉ DE DATOS ---
+        const detailsCache = {}; 
 
-                    <div style="margin-bottom: 10px;">
-                        <label style="font-size: 0.85em; color: #aaa; display: block; margin-bottom: 5px;">Mote (Opcional)</label>
-                        <input type="text" class="poke-mote" placeholder="Apodo" 
-                               style="width: 100%; padding: 8px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;">
+        // --- INICIALIZACIÓN PASO 1 ---
+        const selectionGrid = document.getElementById('selection-grid');
+        for(let i=0; i<6; i++) {
+            selectionGrid.innerHTML += `
+                <div class="pokemon-slot" id="select-slot-${i}" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; display: flex; gap: 10px; align-items: center;">
+                    <div style="font-size: 1.5em; font-weight: bold; color: #444; width: 30px;">${i+1}</div>
+                    <div style="flex-grow: 1;">
+                        <input type="text" class="poke-search-simple" id="poke-name-${i}" list="allPokemonList" placeholder="Elige Pokémon..." 
+                               style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; font-weight: bold;">
                     </div>
+                    <button onclick="limpiarInput(${i})" style="background: none; border: none; color: #d32f2f; cursor: pointer;"><i class="fas fa-trash"></i></button>
                 </div>
             `;
         }
 
-        function guardarEquipo() {
+        function limpiarInput(i) {
+            document.getElementById(`poke-name-${i}`).value = '';
+        }
+
+        // DATOS TEMPORALES
+        let equipoTemporal = { nombre: "", descripcion: "", miembros: [] };
+        const naturalezas = ["Firme", "Alegre", "Modesta", "Miedosa", "Osada", "Serena", "Cauta", "Agitada", "Rara", "Activa"]; 
+        const optsNaturaleza = naturalezas.map(n => `<option value="${n}">${n}</option>`).join('');
+
+        // --- TRANSICIÓN WIZARD ---
+        function irAPaso2() {
             const nombre = document.getElementById('nombreEquipo').value;
-            const descripcion = document.getElementById('descEquipo').value;
-            
-            if(!nombre) { alert("Ponle un nombre al equipo!"); return; }
+            if(!nombre) { alert("Ponle un nombre a tu equipo."); return; }
 
-            const miembros = [];
+            const elegidos = [];
             for(let i=0; i<6; i++) {
-                const root = document.getElementById(`slot-${i}`);
-                const nombrePoke = root.querySelector('.poke-search').value;
-                const mote = root.querySelector('.poke-mote').value;
-
-                if(nombrePoke) {
-                    miembros.push({ nombrePokemon: nombrePoke, mote: mote });
+                const val = document.getElementById(`poke-name-${i}`).value;
+                if(val && val.trim() !== "") {
+                    elegidos.push({ index: i, nombre: val });
                 }
             }
 
-            if(miembros.length === 0) { alert("Elige al menos 1 Pokémon!"); return; }
+            if(elegidos.length === 0) { alert("Elige al menos 1 Pokémon."); return; }
 
-            const equipoDTO = { nombre, descripcion, miembros };
+            equipoTemporal.nombre = nombre;
+            equipoTemporal.descripcion = document.getElementById('descEquipo').value;
+            equipoTemporal.miembros = elegidos;
+
+            renderizarDetalles(elegidos);
+
+            document.getElementById('paso1').classList.add('hidden');
+            document.getElementById('paso2').classList.remove('hidden');
+            document.getElementById('labelPaso1').classList.remove('active');
+            document.getElementById('labelPaso2').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function volverAPaso1() {
+            document.getElementById('paso2').classList.add('hidden');
+            document.getElementById('paso1').classList.remove('hidden');
+            document.getElementById('labelPaso2').classList.remove('active');
+            document.getElementById('labelPaso1').classList.add('active');
+            cerrarPanel();
+        }
+
+        function renderizarDetalles(miembros) {
+            const container = document.getElementById('detalles-container');
+            container.innerHTML = "";
+
+            miembros.forEach((m, i) => {
+                const nombreCap = m.nombre.charAt(0).toUpperCase() + m.nombre.slice(1);
+                
+                const html = `
+                <div class="pokemon-detail-card" id="detail-card-${i}">
+                    <div class="pokemon-detail-header">
+                        <div style="background: #333; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #FFDE00; border: 2px solid #444;">${i+1}</div>
+                        <h3 style="margin: 0; color: white;">${nombreCap}</h3>
+                        <input type="hidden" class="d-nombre" value="${m.nombre}">
+                    </div>
+                    <div class="detail-grid">
+                        <div>
+                            <label style="color:#aaa; font-size:0.8em;">Mote</label>
+                            <input type="text" class="d-mote" placeholder="${nombreCap}" style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; margin-bottom:10px;">
+                            <label style="color:#aaa; font-size:0.8em;">Objeto</label>
+                            <input type="text" class="d-objeto" placeholder="Ej: Restos" onclick="abrirSelector(this, 'Objeto', ${i})" readonly style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; margin-bottom:10px; cursor:pointer;">
+                            <label style="color:#aaa; font-size:0.8em;">Habilidad</label>
+                            <input type="text" class="d-habilidad" placeholder="Ej: Intimidación" onclick="abrirSelector(this, 'Habilidad', ${i})" readonly style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; cursor:pointer;">
+                        </div>
+                        <div>
+                            <label style="color:#aaa; font-size:0.8em;">Naturaleza</label>
+                            <select class="d-naturaleza" style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; margin-bottom:10px;">
+                                <option value="">Neutra</option>${optsNaturaleza}
+                            </select>
+                        </div>
+                        <div>
+                            <label style="color:#FFDE00; font-size:0.8em; font-weight:bold; display:block; margin-bottom:5px;">Set de Movimientos</label>
+                            <input type="text" class="d-move-1" placeholder="- Movimiento 1" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; padding:6px; background:#111; color:#ddd; border:1px solid #555; border-radius:4px; margin-bottom:5px; cursor:pointer;">
+                            <input type="text" class="d-move-2" placeholder="- Movimiento 2" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; padding:6px; background:#111; color:#ddd; border:1px solid #555; border-radius:4px; margin-bottom:5px; cursor:pointer;">
+                            <input type="text" class="d-move-3" placeholder="- Movimiento 3" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; padding:6px; background:#111; color:#ddd; border:1px solid #555; border-radius:4px; margin-bottom:5px; cursor:pointer;">
+                            <input type="text" class="d-move-4" placeholder="- Movimiento 4" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; padding:6px; background:#111; color:#ddd; border:1px solid #555; border-radius:4px; cursor:pointer;">
+                        </div>
+                    </div>
+                </div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        // ===============================================
+        //  LÓGICA "SHOWDOWN" MEJORADA
+        // ===============================================
+        const objetosComunes = ["Leftovers", "Life Orb", "Choice Scarf", "Choice Band", "Choice Specs", "Assault Vest", "Sitrus Berry", "Lum Berry", "Rocky Helmet", "Black Sludge", "Eviolite", "Focus Sash"];
+
+        function abrirSelector(input, tipo, slotIndex) {
+            const nombrePoke = document.querySelector(`#detail-card-${slotIndex} .d-nombre`).value;
+            if (!nombrePoke) return;
+
+            const panel = document.getElementById('showdown-panel');
+            const rect = input.getBoundingClientRect();
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            
+            // Ajustamos posición para que se vea bien
+            panel.style.top = (rect.top + scrollTop - 80) + 'px';
+            panel.style.left = (rect.right + 15) + 'px'; 
+            panel.classList.remove('hidden');
+            
+            document.getElementById('panel-title').innerText = `Elegir ${tipo}`;
+            const lista = document.getElementById('panel-list');
+            const descBox = document.getElementById('panel-description');
+            
+            lista.innerHTML = '<li style="color:#888; text-align:center; padding:10px;">Cargando lista...</li>';
+            descBox.innerHTML = '<p style="color:#aaa; text-align:center;">Pasa el ratón por una opción para ver sus datos.</p>';
+
+            if (tipo === 'Objeto') {
+                mostrarOpcionesSimple(objetosComunes, input, 'item');
+            } else {
+                fetch(`https://pokeapi.co/api/v2/pokemon/${nombrePoke.toLowerCase()}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let opciones = [];
+                        let apiCategory = '';
+                        
+                        if(tipo === 'Habilidad') {
+                            opciones = data.abilities.map(a => a.ability.name);
+                            apiCategory = 'ability';
+                        } else {
+                            opciones = data.moves.map(m => m.move.name);
+                            apiCategory = 'move';
+                        }
+                        opciones.sort();
+                        mostrarOpcionesSimple(opciones, input, apiCategory);
+                    })
+                    .catch(err => {
+                        lista.innerHTML = '<li style="color:red; text-align:center;">Error cargando datos</li>';
+                    });
+            }
+        }
+
+        function mostrarOpcionesSimple(opciones, inputDestino, categoriaApi) {
+            const lista = document.getElementById('panel-list');
+            lista.innerHTML = '';
+            
+            opciones.forEach(slug => {
+                const textoVisible = slug.replace(/-/g, ' ').toUpperCase();
+
+                const li = document.createElement('li');
+                li.textContent = textoVisible; 
+                
+                li.onclick = () => {
+                    inputDestino.value = textoVisible;
+                    cerrarPanel();
+                };
+
+                // HOVER: Carga detalles corrigiendo el SLUG para la API
+                li.onmouseenter = () => {
+                    cargarDetalles(categoriaApi, slug);
+                };
+                
+                lista.appendChild(li);
+            });
+        }
+
+        function cargarDetalles(categoria, slug) {
+            const descBox = document.getElementById('panel-description');
+            
+            // CORRECCIÓN CRÍTICA: Convertir nombre visual a slug de API (minúsculas y guiones)
+            // Ejemplo: "Choice Scarf" -> "choice-scarf"
+            const apiSlug = slug.toLowerCase().replace(/ /g, '-');
+            const cacheKey = `${categoria}:${apiSlug}`;
+
+            if (detailsCache[cacheKey]) {
+                pintarDetalles(detailsCache[cacheKey]);
+                return;
+            }
+
+            descBox.innerHTML = '<p style="color:#FFDE00; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</p>';
+
+            fetch(`https://pokeapi.co/api/v2/${categoria}/${apiSlug}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("404");
+                    return res.json();
+                })
+                .then(data => {
+                    const info = procesarInfoApi(data, categoria);
+                    detailsCache[cacheKey] = info;
+                    pintarDetalles(info);
+                })
+                .catch(err => {
+                    descBox.innerHTML = '<p style="color:red; text-align:center;">Detalles no disponibles.</p>';
+                });
+        }
+
+        function procesarInfoApi(data, categoria) {
+            const nombreObj = data.names.find(n => n.language.name === 'es');
+            const nombreEsp = nombreObj ? nombreObj.name : data.name;
+
+            const flavorObj = data.flavor_text_entries.find(f => f.language.name === 'es');
+            let descripcion = flavorObj ? flavorObj.flavor_text : "Descripción no disponible en español.";
+            descripcion = descripcion.replace(/\n|\f/g, ' ');
+
+            let extraHtml = '';
+
+            if (categoria === 'move') {
+                const power = data.power ? data.power : '-';
+                const accuracy = data.accuracy ? data.accuracy : '-';
+                const pp = data.pp;
+                const type = data.type.name;
+                const damageClass = data.damage_class.name; 
+
+                let classCss = 'cat-status';
+                let classText = 'Estado';
+                if (damageClass === 'physical') { classCss = 'cat-physical'; classText = 'Físico'; }
+                if (damageClass === 'special') { classCss = 'cat-special'; classText = 'Especial'; }
+
+                extraHtml = `
+                    <div style="margin-bottom: 8px; display: flex; gap: 5px; flex-wrap: wrap;">
+                        <span class="move-stat-badge ${classCss}">${classText}</span>
+                        <span class="move-stat-badge" style="border-color:var(--type-${type}); color:var(--type-${type})">${type.toUpperCase()}</span>
+                        <span class="move-stat-badge">Pot: ${power}</span>
+                        <span class="move-stat-badge">Pre: ${accuracy}</span>
+                        <span class="move-stat-badge">PP: ${pp}</span>
+                    </div>
+                `;
+            }
+
+            return { nombre: nombreEsp, desc: descripcion, extra: extraHtml };
+        }
+
+        function pintarDetalles(info) {
+            const descBox = document.getElementById('panel-description');
+            descBox.innerHTML = `
+                <strong style="color: #FFDE00; font-size: 1.1em; display:block; margin-bottom:5px;">${info.nombre}</strong>
+                ${info.extra}
+                <p style="margin:0; color:#ddd;">${info.desc}</p>
+            `;
+        }
+
+        function cerrarPanel() {
+            document.getElementById('showdown-panel').classList.add('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('showdown-panel');
+            if (!panel.classList.contains('hidden') && !e.target.closest('.showdown-panel') && !e.target.hasAttribute('readonly')) {
+                cerrarPanel();
+            }
+        });
+
+        function guardarEquipoFinal() {
+            // ... (código igual al anterior) ...
+            // Solo para no alargar la respuesta, copia la función de guardado anterior aquí
+             const container = document.getElementById('detalles-container');
+            const cards = container.querySelectorAll('.pokemon-detail-card');
+            
+            const listaFinalMiembros = [];
+            cards.forEach(card => {
+                const miembro = {
+                    nombrePokemon: card.querySelector('.d-nombre').value,
+                    mote: card.querySelector('.d-mote').value,
+                    objeto: card.querySelector('.d-objeto').value,
+                    habilidad: card.querySelector('.d-habilidad').value,
+                    naturaleza: card.querySelector('.d-naturaleza').value,
+                    movimiento1: card.querySelector('.d-move-1').value,
+                    movimiento2: card.querySelector('.d-move-2').value,
+                    movimiento3: card.querySelector('.d-move-3').value,
+                    movimiento4: card.querySelector('.d-move-4').value
+                };
+                listaFinalMiembros.push(miembro);
+            });
+
+            const equipoDTO = {
+                nombre: equipoTemporal.nombre,
+                descripcion: equipoTemporal.descripcion,
+                miembros: listaFinalMiembros
+            };
 
             fetch('/equipos/guardar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(equipoDTO)
             })
             .then(res => res.text())
             .then(data => {
                 if(data === "OK") {
-                    window.location.href = "/equipos"; 
+                    window.location.href = "/equipos";
                 } else {
                     alert("Error al guardar: " + data);
                 }
@@ -144,4 +519,30 @@
         }
     </script>
 </body>
+<footer class="main-footer">
+  <div class="footer-content-wrapper">
+    <div class="footer-info">
+      <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo">
+      <p class="description">
+        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br>
+        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus
+        Pokémon favoritos.
+        <br>¡Atrapa la información!
+      </p>
+    </div>
+
+    <div class="footer-meta">
+      <p class="creator">
+        Creado por: Pablo Herrera Domínguez
+      </p>
+      <p class="copyright">
+        ©2025 El Diario de Kanto. Todos los derechos reservados.
+      </p>
+      <p class="disclaimer">
+        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de
+        Nintendo, Game Freak y The Pokémon Company.
+      </p>
+    </div>
+  </div>
+</footer>
 </html>

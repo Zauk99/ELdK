@@ -124,17 +124,31 @@
     </main>
 
     <footer class="main-footer">
-        <div class="footer-content-wrapper">
-            <div class="footer-info">
-                <img th:src="@{/img/Logo.png}" alt="Logo" class="footer-logo">
-                <p class="description">Tu portal informativo sobre Pokémon favorito.</p>
-            </div>
-            <div class="footer-meta">
-                <p class="creator">Creado por: Pablo Herrera Domínguez</p>
-                <p class="copyright">©2025 El Diario de Kanto.</p>
-            </div>
-        </div>
-    </footer>
+  <div class="footer-content-wrapper">
+    <div class="footer-info">
+      <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo">
+      <p class="description">
+        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br>
+        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus
+        Pokémon favoritos.
+        <br>¡Atrapa la información!
+      </p>
+    </div>
+
+    <div class="footer-meta">
+      <p class="creator">
+        Creado por: Pablo Herrera Domínguez
+      </p>
+      <p class="copyright">
+        ©2025 El Diario de Kanto. Todos los derechos reservados.
+      </p>
+      <p class="disclaimer">
+        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de
+        Nintendo, Game Freak y The Pokémon Company.
+      </p>
+    </div>
+  </div>
+</footer>
     
     <script th:src="@{/js/main.js}"></script>
 </body>
