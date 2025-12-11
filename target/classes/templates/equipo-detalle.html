@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${equipo.nombre + ' | Detalles'}">Detalles Equipo</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        .pokemon-detail-card { background: #2a2a2a; border: 1px solid #444; border-radius: 8px; padding: 20px; height: 100%; display: flex; flex-direction: column; }
+        .pokemon-header { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #444; padding-bottom: 15px; margin-bottom: 15px; }
+        .poke-img-box { width: 70px; height: 70px; background: #111; border-radius: 50%; border: 2px solid #555; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .data-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+        .label { color: #888; }
+        .value { color: #ddd; font-weight: bold; }
+        .moves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .move-badge { background: #333; color: #ccc; padding: 6px; border-radius: 4px; text-align: center; font-size: 0.85rem; border: 1px solid #444; }
+        .back-btn-container { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-area">
+                <a th:href="@{/}" class="site-title-link">
+                    <img th:src="@{/img/Logo.png}" alt="Logo" width="100px">
+                </a>
+            </div>
+
+            <div sec:authorize="isAuthenticated()" class="user-menu-container">
+                <button id="userMenuBtn" class="user-button">
+                    <img th:src="${#authentication.principal.fotoPerfilUrl}" alt="Avatar" class="user-avatar" style="object-fit: cover;">
+                    <span th:text="${#authentication.principal.username}">Usuario</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div id="userDropdown" class="user-dropdown-content">
+                    <a th:href="@{/perfil}" class="dropdown-item"><i class="fas fa-user"></i> Ver Perfil</a>
+                    <form th:action="@{/logout}" method="post" style="margin: 0;">
+                        <button type="submit"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <br>
+        <nav class="secondary-nav-bar">
+            <div class="nav-tabs-wrapper">
+                <a th:href="@{/}" class="nav-item"><i class="fas fa-newspaper"></i> Noticias</a>
+                <a th:href="@{/pokedex}" class="nav-item"><i class="fas fa-globe"></i> Pokédex</a>
+                <a th:href="@{/equipos}" class="nav-item active"><i class="fas fa-users"></i> Equipos</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="content-container">
+        <div class="main-content-area">
+            
+            <div class="back-btn-container">
+                <a th:href="@{/equipos}" class="poke-button" style="display: inline-flex; width: auto; padding: 8px 15px;">
+                    <i class="fas fa-arrow-left"></i> Volver a Equipos
+                </a>
+            </div>
+
+            <div style="background: #222; padding: 20px; border-radius: 10px; border-bottom: 3px solid #FFDE00; margin-bottom: 30px;">
+                <h1 style="color: #FFDE00; margin: 0;" th:text="${equipo.nombre}">Nombre Equipo</h1>
+                <p style="color: #ccc; margin: 5px 0 0 0;" th:text="${equipo.descripcion}">Descripción...</p>
+                <div style="margin-top: 10px;">
+                     <span th:if="${equipo.publico}" style="background:#4CAF50; color:white; padding:2px 8px; border-radius:4px; font-size:0.8em;">Público</span>
+                     <span th:if="${!equipo.publico}" style="background:#d32f2f; color:white; padding:2px 8px; border-radius:4px; font-size:0.8em;">Privado</span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div th:each="m : ${equipo.miembros}" class="pokemon-detail-card">
+                    <div class="pokemon-header">
+                        <div class="poke-img-box">
+                             <img th:src="@{'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + ${pokemonIds.get(#strings.toLowerCase(m.nombrePokemon))} + '.png'}" 
+                                  style="width: 90%; height: auto;"
+                                  onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';">
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; color: white;" th:text="${#strings.capitalize(m.nombrePokemon)}">Pikachu</h3>
+                            <span style="color: #aaa; font-style: italic; font-size: 0.9em;" 
+                                  th:text="${m.mote != null && !m.mote.isEmpty() ? '(' + m.mote + ')' : ''}"></span>
+                        </div>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Objeto:</span>
+                        <span class="value" style="color: #FFDE00;" th:text="${m.objeto}">Restos</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Habilidad:</span>
+                        <span class="value" th:text="${m.habilidad}">Presión</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Naturaleza:</span>
+                        <span class="value" th:text="${m.naturaleza}">Firme</span>
+                    </div>
+                    <div class="moves-grid">
+                        <div class="move-badge" th:text="${m.movimiento1}">-</div>
+                        <div class="move-badge" th:text="${m.movimiento2}">-</div>
+                        <div class="move-badge" th:text="${m.movimiento3}">-</div>
+                        <div class="move-badge" th:text="${m.movimiento4}">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="main-footer">
+      <div class="footer-content-wrapper">
+        <div class="footer-info">
+          <img
+            th:src="@{/img/Logo.png}"
+            alt="Logo de la Pokédex"
+            class="footer-logo"
+          />
+          <p class="description">
+            Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+            de Kanto!<br />
+            Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+            evolutivas de todos tus Pokémon favoritos.
+            <br />¡Atrapa la información!
+          </p>
+        </div>
+
+        <div class="footer-meta">
+          <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+          <p class="copyright">
+            ©2025 El Diario de Kanto. Todos los derechos reservados.
+          </p>
+          <p class="disclaimer">
+            Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+            sus nombres son marcas registradas de Nintendo, Game Freak y The
+            Pokémon Company.
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

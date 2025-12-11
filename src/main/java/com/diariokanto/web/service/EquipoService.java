@@ -25,12 +25,16 @@ public class EquipoService {
 
     public List<EquipoDTO> obtenerMisEquipos(String emailUsuario) {
         try {
-            String url = apiUrl + "/equipos/usuario?email=" + emailUsuario;
+            // CORRECCIÓN: Cambiamos "/equipos/usuario" por "/equipos/mis-equipos"
+            // para que coincida con tu API Backend.
+            String url = apiUrl + "/equipos/mis-equipos?email=" + emailUsuario;
+
             EquipoDTO[] response = restTemplate.getForObject(url, EquipoDTO[].class);
             return Arrays.asList(response);
         } catch (Exception e) {
-            return List.of();
-        }
+            e.printStackTrace(); // Añade esto para ver errores en la consola si fallara algo más
+        return List.of();
+    }
     }
 
     public List<Map> obtenerTodos() {
@@ -40,6 +44,24 @@ public class EquipoService {
             return Arrays.asList(response);
         } catch (Exception e) {
             return List.of();
+        }
+    }
+
+    public EquipoDTO obtenerPorId(Long id) {
+        try {
+            String url = apiUrl + "/equipos/" + id;
+            return restTemplate.getForObject(url, EquipoDTO.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void eliminarEquipo(Long id, String emailUsuario) {
+        try {
+            // Llamamos a la API pasando el email para validar la propiedad
+            restTemplate.delete(apiUrl + "/equipos/" + id + "?email=" + emailUsuario);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

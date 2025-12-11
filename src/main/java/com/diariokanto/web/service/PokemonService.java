@@ -74,6 +74,11 @@ public class PokemonService {
     public List<PokemonDTO> getTodosLosNombres() {
         return this.masterList;
     }
+    // --- AÑADE ESTE MÉTODO ---
+    // Método alias para mantener coherencia con el controlador de Equipos
+    public List<PokemonDTO> obtenerTodos() {
+        return this.masterList;
+    }
 
     public List<PokemonDTO> obtenerListaPaginada(int page, int limit) {
         // Filtramos para mostrar solo los originales en la paginación

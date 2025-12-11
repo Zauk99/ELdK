@@ -33,7 +33,7 @@ public class WebSecurityConfig {
                                 "/css/**",
                                 "/img/**",
                                 "/admin/**",
-                                "/equipos/**",
+                                "/equipos",
                                 "/js/**")
                         .permitAll()
                         .anyRequest().authenticated())
