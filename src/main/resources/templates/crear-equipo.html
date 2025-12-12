@@ -394,86 +394,120 @@
     <script th:src="@{/js/main.js}"></script>
 
     <script th:inline="javascript">
-        /*<![CDATA[*/
+      /*<![CDATA[*/
 
-        // ==========================================
-        // 1. DATOS Y CONFIGURACIÓN INICIAL
-        // ==========================================
+      // ==========================================
+      // 1. DATOS Y CONFIGURACIÓN INICIAL
+      // ==========================================
 
-        // Recibimos los JSON del controlador de forma segura
-        const rawJson = /*[[${pokemonDbJson}]]*/ '{}';
-        const pokemonDb = JSON.parse(rawJson);
+      // Recibimos los JSON del controlador de forma segura
+      const rawJson = /*[[${pokemonDbJson}]]*/ "{}";
+      const pokemonDb = JSON.parse(rawJson);
 
-        const rawEquipo = /*[[${equipoJson}]]*/ 'null';
-        const equipoEditar = JSON.parse(rawEquipo);
+      const rawEquipo = /*[[${equipoJson}]]*/ "null";
+      const equipoEditar = JSON.parse(rawEquipo);
 
-        let equipoTemporal = { id: null, nombre: "", descripcion: "", publico: true, miembros: [] };
-        const detailsCache = {};
+      let equipoTemporal = {
+        id: null,
+        nombre: "",
+        descripcion: "",
+        publico: true,
+        miembros: [],
+      };
+      const detailsCache = {};
 
-        // DICCIONARIO DE TRADUCCIONES (Centralizado)
-        const DICCIONARIO = {
-            clases: {
-                'physical': 'Físico',
-                'special': 'Especial',
-                'status': 'Estado'
-            },
-            tipos: {
-                'normal': 'Normal', 'fighting': 'Lucha', 'flying': 'Volador',
-                'poison': 'Veneno', 'ground': 'Tierra', 'rock': 'Roca',
-                'bug': 'Bicho', 'ghost': 'Fantasma', 'steel': 'Acero',
-                'fire': 'Fuego', 'water': 'Agua', 'grass': 'Planta',
-                'electric': 'Eléctrico', 'psychic': 'Psíquico', 'ice': 'Hielo',
-                'dragon': 'Dragón', 'dark': 'Siniestro', 'fairy': 'Hada',
-                'unknown': '???', 'shadow': 'Oscuro'
-            }
-        };
+      // DICCIONARIO DE TRADUCCIONES (Centralizado)
+      const DICCIONARIO = {
+        clases: {
+          physical: "Físico",
+          special: "Especial",
+          status: "Estado",
+        },
+        tipos: {
+          normal: "Normal",
+          fighting: "Lucha",
+          flying: "Volador",
+          poison: "Veneno",
+          ground: "Tierra",
+          rock: "Roca",
+          bug: "Bicho",
+          ghost: "Fantasma",
+          steel: "Acero",
+          fire: "Fuego",
+          water: "Agua",
+          grass: "Planta",
+          electric: "Eléctrico",
+          psychic: "Psíquico",
+          ice: "Hielo",
+          dragon: "Dragón",
+          dark: "Siniestro",
+          fairy: "Hada",
+          unknown: "???",
+          shadow: "Oscuro",
+        },
+      };
 
-        // Diccionario manual para objetos comunes (Más rápido y preciso)
-        const objetosComunes = [
-            { id: "leftovers", nombre: "Restos" },
-            { id: "life-orb", nombre: "Vidasfera" },
-            { id: "choice-scarf", nombre: "Pañuelo Elección" },
-            { id: "choice-band", nombre: "Cinta Elección" },
-            { id: "choice-specs", nombre: "Gafas Elección" },
-            { id: "assault-vest", nombre: "Chaleco Asalto" },
-            { id: "sitrus-berry", nombre: "Baya Zidra" },
-            { id: "lum-berry", nombre: "Baya Ziuela" },
-            { id: "rocky-helmet", nombre: "Casco Dentado" },
-            { id: "black-sludge", nombre: "Lodo Negro" },
-            { id: "eviolite", nombre: "Mineral Evolutivo" },
-            { id: "focus-sash", nombre: "Banda Focus" }
-        ];
+      // Diccionario manual para objetos comunes (Más rápido y preciso)
+      const objetosComunes = [
+        { id: "leftovers", nombre: "Restos" },
+        { id: "life-orb", nombre: "Vidasfera" },
+        { id: "choice-scarf", nombre: "Pañuelo Elección" },
+        { id: "choice-band", nombre: "Cinta Elección" },
+        { id: "choice-specs", nombre: "Gafas Elección" },
+        { id: "assault-vest", nombre: "Chaleco Asalto" },
+        { id: "sitrus-berry", nombre: "Baya Zidra" },
+        { id: "lum-berry", nombre: "Baya Ziuela" },
+        { id: "rocky-helmet", nombre: "Casco Dentado" },
+        { id: "black-sludge", nombre: "Lodo Negro" },
+        { id: "eviolite", nombre: "Mineral Evolutivo" },
+        { id: "focus-sash", nombre: "Banda Focus" },
+      ];
 
-        const naturalezas = ["Firme", "Alegre", "Modesta", "Miedosa", "Osada", "Serena", "Cauta", "Agitada", "Rara", "Activa"];
-        const optsNaturaleza = naturalezas.map(n => `<option value="${n}">${n}</option>`).join('');
+      const naturalezas = [
+        "Firme",
+        "Alegre",
+        "Modesta",
+        "Miedosa",
+        "Osada",
+        "Serena",
+        "Cauta",
+        "Agitada",
+        "Rara",
+        "Activa",
+      ];
+      const optsNaturaleza = naturalezas
+        .map((n) => `<option value="${n}">${n}</option>`)
+        .join("");
 
+      // ==========================================
+      // 2. UTILIDADES DE IMAGEN
+      // ==========================================
+      function getPokemonImage(name, isShiny) {
+        if (!name)
+          return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
 
-        // ==========================================
-        // 2. UTILIDADES DE IMAGEN
-        // ==========================================
-        function getPokemonImage(name, isShiny) {
-            if (!name) return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
-            
-            const cleanName = name.toLowerCase().trim();
-            const id = pokemonDb[cleanName];
+        const cleanName = name.toLowerCase().trim();
+        const id = pokemonDb[cleanName];
 
-            if (!id) {
-                return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
-            }
-
-            const baseUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork";
-            return isShiny ? `${baseUrl}/shiny/${id}.png` : `${baseUrl}/${id}.png`;
+        if (!id) {
+          return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
         }
 
+        const baseUrl =
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork";
+        return isShiny ? `${baseUrl}/shiny/${id}.png` : `${baseUrl}/${id}.png`;
+      }
 
-        // ==========================================
-        // 3. INICIALIZACIÓN DE VISTA (PASO 1)
-        // ==========================================
-        const selectionGrid = document.getElementById('selection-grid');
-        for(let i=0; i<6; i++) {
-            selectionGrid.innerHTML += `
+      // ==========================================
+      // 3. INICIALIZACIÓN DE VISTA (PASO 1)
+      // ==========================================
+      const selectionGrid = document.getElementById("selection-grid");
+      for (let i = 0; i < 6; i++) {
+        selectionGrid.innerHTML += `
                 <div class="pokemon-slot" id="select-slot-${i}" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; display: flex; gap: 15px; align-items: center;">
-                    <div style="font-size: 1.5em; font-weight: bold; color: #444; width: 20px;">${i+1}</div>
+                    <div style="font-size: 1.5em; font-weight: bold; color: #444; width: 20px;">${
+                      i + 1
+                    }</div>
                     <div style="width: 50px; height: 50px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #333;">
                         <img id="prev-img-${i}" 
                              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" 
@@ -485,230 +519,357 @@
                     </div>
                     <button onclick="limpiarInput(${i})" style="background: none; border: none; color: #d32f2f; cursor: pointer;"><i class="fas fa-trash"></i></button>
                 </div>`;
-        }
+      }
 
-        function actualizarPreview(i) {
-            const input = document.getElementById(`poke-name-${i}`);
-            const img = document.getElementById(`prev-img-${i}`);
-            const val = input.value.trim();
-            
-            // Usamos nuestra función inteligente para obtener la URL
-            img.src = getPokemonImage(val, false);
-            
-            if(val.length > 2 && pokemonDb[val.toLowerCase()]) {
-                img.style.opacity = "1";
-            } else {
-                img.style.opacity = "0.5";
+      function actualizarPreview(i) {
+        const input = document.getElementById(`poke-name-${i}`);
+        const img = document.getElementById(`prev-img-${i}`);
+        const val = input.value.trim();
+
+        // Usamos nuestra función inteligente para obtener la URL
+        img.src = getPokemonImage(val, false);
+
+        if (val.length > 2 && pokemonDb[val.toLowerCase()]) {
+          img.style.opacity = "1";
+        } else {
+          img.style.opacity = "0.5";
+        }
+      }
+
+      function limpiarInput(i) {
+        document.getElementById(`poke-name-${i}`).value = "";
+        actualizarPreview(i);
+      }
+
+      // ==========================================
+      // 4. LÓGICA DE TRANSICIÓN Y EDICIÓN
+      // ==========================================
+
+      function cargarDatosEdicion() {
+        if (!equipoEditar) return;
+
+        // 1. Rellenar Paso 1
+        document.getElementById("nombreEquipo").value = equipoEditar.nombre;
+        document.getElementById("descEquipo").value = equipoEditar.descripcion;
+        document.getElementById("esPublico").value =
+          equipoEditar.publico.toString();
+
+        equipoTemporal.id = equipoEditar.id;
+
+        // 2. Rellenar Slots
+        if (equipoEditar.miembros && equipoEditar.miembros.length > 0) {
+          equipoEditar.miembros.forEach((m, index) => {
+            if (index < 6) {
+              const input = document.getElementById(`poke-name-${index}`);
+              input.value = m.nombrePokemon;
+              actualizarPreview(index);
             }
+          });
         }
 
-        function limpiarInput(i) {
-            document.getElementById(`poke-name-${i}`).value = '';
-            actualizarPreview(i);
+        document.querySelector("h2").innerHTML =
+          '<i class="fas fa-edit"></i> Editar Equipo';
+      }
+
+      function irAPaso2() {
+        const nombre = document.getElementById("nombreEquipo").value;
+        if (!nombre) {
+          alert("Ponle un nombre a tu equipo.");
+          return;
         }
 
-
-        // ==========================================
-        // 4. LÓGICA DE TRANSICIÓN Y EDICIÓN
-        // ==========================================
-
-        function cargarDatosEdicion() {
-            if (!equipoEditar) return; 
-
-            // 1. Rellenar Paso 1
-            document.getElementById('nombreEquipo').value = equipoEditar.nombre;
-            document.getElementById('descEquipo').value = equipoEditar.descripcion;
-            document.getElementById('esPublico').value = equipoEditar.publico.toString();
-            
-            equipoTemporal.id = equipoEditar.id; 
-
-            // 2. Rellenar Slots
-            if (equipoEditar.miembros && equipoEditar.miembros.length > 0) {
-                equipoEditar.miembros.forEach((m, index) => {
-                    if (index < 6) {
-                        const input = document.getElementById(`poke-name-${index}`);
-                        input.value = m.nombrePokemon; 
-                        actualizarPreview(index);
-                    }
-                });
-            }
-            
-            document.querySelector('h2').innerHTML = '<i class="fas fa-edit"></i> Editar Equipo';
+        const elegidos = [];
+        for (let i = 0; i < 6; i++) {
+          const val = document.getElementById(`poke-name-${i}`).value;
+          if (val && val.trim() !== "")
+            elegidos.push({ index: i, nombre: val });
         }
 
-        function irAPaso2() {
-            const nombre = document.getElementById('nombreEquipo').value;
-            if(!nombre) { alert("Ponle un nombre a tu equipo."); return; }
+        if (elegidos.length === 0) {
+          alert("Elige al menos 1 Pokémon.");
+          return;
+        }
 
-            const elegidos = [];
-            for(let i=0; i<6; i++) {
-                const val = document.getElementById(`poke-name-${i}`).value;
-                if(val && val.trim() !== "") elegidos.push({ index: i, nombre: val });
-            }
+        equipoTemporal.nombre = nombre;
+        equipoTemporal.descripcion =
+          document.getElementById("descEquipo").value;
+        equipoTemporal.publico =
+          document.getElementById("esPublico").value === "true";
 
-            if(elegidos.length === 0) { alert("Elige al menos 1 Pokémon."); return; }
+        renderizarDetalles(elegidos);
 
-            equipoTemporal.nombre = nombre;
-            equipoTemporal.descripcion = document.getElementById('descEquipo').value;
-            equipoTemporal.publico = document.getElementById('esPublico').value === 'true';
-            
-            renderizarDetalles(elegidos);
-
-            // PRE-RELLENAR SI ESTAMOS EDITANDO
+        // PRE-RELLENAR SI ESTAMOS EDITANDO
+        // PRE-RELLENAR DATOS SI ESTAMOS EDITANDO
             if (equipoEditar && equipoEditar.miembros) {
                 elegidos.forEach((elegido, i) => {
                     const miembroOriginal = equipoEditar.miembros[i]; 
+                    
+                    // Verificamos que coincida el nombre por seguridad
                     if (miembroOriginal && miembroOriginal.nombrePokemon.toLowerCase() === elegido.nombre.toLowerCase()) {
                         const card = document.getElementById(`detail-card-${i}`);
                         if(card) {
+                            // Textos básicos
                             if(miembroOriginal.mote) card.querySelector('.d-mote').value = miembroOriginal.mote;
                             if(miembroOriginal.objeto) card.querySelector('.d-objeto').value = miembroOriginal.objeto;
                             if(miembroOriginal.habilidad) card.querySelector('.d-habilidad').value = miembroOriginal.habilidad;
                             if(miembroOriginal.naturaleza) card.querySelector('.d-naturaleza').value = miembroOriginal.naturaleza;
                             
+                            // Movimientos
                             if(miembroOriginal.movimiento1) card.querySelector('.d-move-1').value = miembroOriginal.movimiento1;
                             if(miembroOriginal.movimiento2) card.querySelector('.d-move-2').value = miembroOriginal.movimiento2;
                             if(miembroOriginal.movimiento3) card.querySelector('.d-move-3').value = miembroOriginal.movimiento3;
                             if(miembroOriginal.movimiento4) card.querySelector('.d-move-4').value = miembroOriginal.movimiento4;
+
+                            // --- NUEVO: CARGAR EVS ---
+                            // Función auxiliar para actualizar input y slider a la vez
+                            const setEV = (stat, valor) => {
+                                const inputNum = document.getElementById(`ev-${stat}-${i}`);
+                                const inputRange = card.querySelector(`.ev-slider[data-target="ev-${stat}-${i}"]`);
+                                if (inputNum && inputRange) {
+                                    inputNum.value = valor || 0;
+                                    inputRange.value = valor || 0;
+                                }
+                            };
+
+                            setEV('hp', miembroOriginal.hpEv);
+                            setEV('attack', miembroOriginal.attackEv);
+                            setEV('defense', miembroOriginal.defenseEv);
+                            setEV('spAttack', miembroOriginal.spAttackEv);
+                            setEV('spDefense', miembroOriginal.spDefenseEv);
+                            setEV('speed', miembroOriginal.speedEv);
+                            
+                            // Actualizar el contador de "Restantes" visualmente
+                            // Disparamos el evento oninput manualmente en uno de ellos
+                            const trigger = document.getElementById(`ev-hp-${i}`);
+                            if(trigger) updateEV(trigger, i);
+                            // -------------------------
                         }
                     }
                 });
             }
 
-            document.getElementById('paso1').classList.add('hidden');
-            document.getElementById('paso2').classList.remove('hidden');
-            document.getElementById('labelPaso1').classList.remove('active');
-            document.getElementById('labelPaso2').classList.add('active');
-            window.scrollTo(0, 0);
-        }
+        document.getElementById("paso1").classList.add("hidden");
+        document.getElementById("paso2").classList.remove("hidden");
+        document.getElementById("labelPaso1").classList.remove("active");
+        document.getElementById("labelPaso2").classList.add("active");
+        window.scrollTo(0, 0);
+      }
 
-        function volverAPaso1() {
-            document.getElementById('paso2').classList.add('hidden');
-            document.getElementById('paso1').classList.remove('hidden');
-            document.getElementById('labelPaso2').classList.remove('active');
-            document.getElementById('labelPaso1').classList.add('active');
-            cerrarPanel();
-        }
+      function volverAPaso1() {
+        document.getElementById("paso2").classList.add("hidden");
+        document.getElementById("paso1").classList.remove("hidden");
+        document.getElementById("labelPaso2").classList.remove("active");
+        document.getElementById("labelPaso1").classList.add("active");
+        cerrarPanel();
+      }
 
-        function renderizarDetalles(miembros) {
-            const container = document.getElementById('detalles-container');
-            container.innerHTML = "";
-            miembros.forEach((m, i) => {
-                const nombreCap = m.nombre.charAt(0).toUpperCase() + m.nombre.slice(1);
-                const imgUrl = getPokemonImage(m.nombre, false);
-                
-                const html = `
+      // --- RENDERIZADO DE DETALLES CON EVs ---
+      function renderizarDetalles(miembros) {
+        const container = document.getElementById("detalles-container");
+        container.innerHTML = "";
+
+        const stats = ["HP", "Atk", "Def", "SpA", "SpD", "Spe"];
+        const statsKeys = [
+          "hp",
+          "attack",
+          "defense",
+          "spAttack",
+          "spDefense",
+          "speed",
+        ]; // Para el DTO
+
+        miembros.forEach((m, i) => {
+          const nombreCap =
+            m.nombre.charAt(0).toUpperCase() + m.nombre.slice(1);
+          const imgUrl = getPokemonImage(m.nombre, false);
+
+          // Generamos las 6 filas de EVs
+          let evsHtml = "";
+          stats.forEach((stat, idx) => {
+            // key será: ev-hp-0, ev-attack-0, etc.
+            const key = `ev-${statsKeys[idx]}-${i}`;
+            evsHtml += `
+                    <div class="ev-row">
+                        <span class="ev-label">${stat}</span>
+                        <input type="range" min="0" max="252" value="0" class="ev-slider" data-target="${key}" oninput="updateEV(this, ${i})">
+                        <input type="number" min="0" max="252" value="0" class="ev-input" id="${key}" oninput="updateEV(this, ${i})">
+                    </div>`;
+          });
+
+          const html = `
                 <div class="pokemon-detail-card" id="detail-card-${i}">
                     <div class="pokemon-detail-header">
                         <div class="poke-img-container">
-                            <img id="detail-img-${i}" 
-                                 src="${imgUrl}" 
-                                 alt="${nombreCap}" 
-                                 style="width: 100%; height: auto;"
-                                 onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';">
+                            <img id="detail-img-${i}" src="${imgUrl}" alt="${nombreCap}" style="width:90%;" onerror="this.src='/img/pokeball-icon.png'">
                         </div>
-                        <div style="flex-grow: 1; margin-left: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <h3 style="margin: 0; color: white;">${nombreCap}</h3>
-                                <i class="fas fa-star shiny-toggle" id="shiny-btn-${i}" onclick="toggleShiny(${i}, '${m.nombre}')"></i>
-                                <input type="hidden" class="d-shiny-val" id="shiny-val-${i}" value="false">
-                            </div>
-                            <span style="color: #666; font-size: 0.8em; font-weight: bold;">#${i+1}</span>
+                        <div style="flex-grow:1; margin-left:10px;">
+                            <h3 style="margin:0; color:white;">${nombreCap}</h3>
+                            <i class="fas fa-star shiny-toggle" id="shiny-btn-${i}" onclick="toggleShiny(${i}, '${m.nombre}')"></i>
+                            <input type="hidden" class="d-shiny-val" id="shiny-val-${i}" value="false">
+                            <input type="hidden" class="d-nombre" value="${m.nombre}">
                         </div>
-                        <input type="hidden" class="d-nombre" value="${m.nombre}">
                     </div>
-                    <div class="detail-grid">
+
+                    <div class="detail-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        
                         <div>
                             <label style="color:#aaa; font-size:0.8em;">Mote</label>
-                            <input type="text" class="d-mote" placeholder="${nombreCap}" style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; margin-bottom:10px;">
+                            <input type="text" class="d-mote" placeholder="${nombreCap}" style="width:100%; margin-bottom:10px; background:#111; color:white; border:1px solid #555; padding:5px;">
+                            
                             <label style="color:#aaa; font-size:0.8em;">Objeto</label>
-                            <input type="text" class="d-objeto" placeholder="Ej: Restos" onclick="abrirSelector(this, 'Objeto', ${i})" readonly style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; margin-bottom:10px; cursor:pointer;">
+                            <input type="text" class="d-objeto" placeholder="Ej: Restos" onclick="abrirSelector(this, 'Objeto', ${i})" readonly style="width:100%; margin-bottom:10px; background:#111; color:white; border:1px solid #555; padding:5px; cursor:pointer;">
+                            
                             <label style="color:#aaa; font-size:0.8em;">Habilidad</label>
-                            <input type="text" class="d-habilidad" placeholder="Ej: Intimidación" onclick="abrirSelector(this, 'Habilidad', ${i})" readonly style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; cursor:pointer;">
+                            <input type="text" class="d-habilidad" placeholder="Habilidad" onclick="abrirSelector(this, 'Habilidad', ${i})" readonly style="width:100%; background:#111; color:white; border:1px solid #555; padding:5px; cursor:pointer;">
                         </div>
+
                         <div>
                             <label style="color:#aaa; font-size:0.8em;">Naturaleza</label>
-                            <select class="d-naturaleza" style="width:100%; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px;">
+                            <select class="d-naturaleza" style="width:100%; margin-bottom:10px; background:#111; color:white; border:1px solid #555; padding:5px;">
                                 <option value="Neutra">Neutra</option>${optsNaturaleza}
                             </select>
+
+                            <div class="ev-container">
+                                <div style="font-size:0.8em; color:#FFDE00; margin-bottom:5px;">EVs (Esfuerzo)</div>
+                                ${evsHtml}
+                                <div class="total-evs" id="ev-total-${i}">Restantes: 508</div>
+                            </div>
                         </div>
+
                         <div>
-                            <label style="color:#FFDE00; font-size:0.8em; font-weight:bold; display:block; margin-bottom:5px;">Set de Movimientos</label>
-                            <input type="text" class="d-move-1" placeholder="- Movimiento 1" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; padding:6px; background:#111; color:#ddd; border:1px solid #555; border-radius:4px; margin-bottom:5px; cursor:pointer;">
-                            <input type="text" class="d-move-2" placeholder="- Movimiento 2" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; padding:6px; background:#111; color:#ddd; border:1px solid #555; border-radius:4px; margin-bottom:5px; cursor:pointer;">
-                            <input type="text" class="d-move-3" placeholder="- Movimiento 3" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; padding:6px; background:#111; color:#ddd; border:1px solid #555; border-radius:4px; margin-bottom:5px; cursor:pointer;">
-                            <input type="text" class="d-move-4" placeholder="- Movimiento 4" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; padding:6px; background:#111; color:#ddd; border:1px solid #555; border-radius:4px; cursor:pointer;">
+                            <label style="color:#FFDE00; font-size:0.8em; font-weight:bold;">Set de Movimientos</label>
+                            <input type="text" class="d-move-1" placeholder="- Movimiento 1" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; margin:5px 0; background:#111; color:#ddd; border:1px solid #555; padding:5px; cursor:pointer;">
+                            <input type="text" class="d-move-2" placeholder="- Movimiento 2" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; margin:5px 0; background:#111; color:#ddd; border:1px solid #555; padding:5px; cursor:pointer;">
+                            <input type="text" class="d-move-3" placeholder="- Movimiento 3" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; margin:5px 0; background:#111; color:#ddd; border:1px solid #555; padding:5px; cursor:pointer;">
+                            <input type="text" class="d-move-4" placeholder="- Movimiento 4" onclick="abrirSelector(this, 'Movimiento', ${i})" readonly style="width:100%; margin:5px 0; background:#111; color:#ddd; border:1px solid #555; padding:5px; cursor:pointer;">
                         </div>
                     </div>
                 </div>`;
-                container.innerHTML += html;
-            });
+          container.innerHTML += html;
+        });
+      }
+
+      // --- LÓGICA DE CONTROL DE EVS ---
+      function updateEV(element, cardIndex) {
+        const isSlider = element.type === "range";
+        const targetId = isSlider ? element.dataset.target : element.id;
+
+        // Sincronizar Slider <-> Input
+        let partner;
+        if (isSlider) {
+          partner = document.getElementById(targetId); // El input numérico
+        } else {
+          partner = document.querySelector(
+            `.ev-slider[data-target="${targetId}"]`
+          );
         }
 
+        let val = parseInt(element.value) || 0;
 
-        // ==========================================
-        // 5. SHINY TOGGLE
-        // ==========================================
-        function toggleShiny(index, nombre) {
-            const img = document.getElementById(`detail-img-${index}`);
-            const btn = document.getElementById(`shiny-btn-${index}`);
-            const inputVal = document.getElementById(`shiny-val-${index}`);
-            const newState = !(inputVal.value === "true");
-            inputVal.value = newState;
-            if (newState) { btn.classList.add('active'); img.src = getPokemonImage(nombre, true); } 
-            else { btn.classList.remove('active'); img.src = getPokemonImage(nombre, false); }
+        // 1. Limitar a 252 individualmente
+        if (val > 252) val = 252;
+        if (val < 0) val = 0;
+
+        // 2. Calcular total actual
+        const inputs = document.querySelectorAll(
+          `#detail-card-${cardIndex} .ev-input`
+        );
+        let currentTotal = 0;
+        inputs.forEach((inp) => {
+          if (inp.id !== targetId) currentTotal += parseInt(inp.value) || 0;
+        });
+
+        // 3. Comprobar límite global (508)
+        const MAX_TOTAL = 508;
+        if (currentTotal + val > MAX_TOTAL) {
+          val = MAX_TOTAL - currentTotal; // Reducimos al máximo permitido
         }
 
+        // Aplicar valores
+        element.value = val;
+        partner.value = val;
 
-        // ==========================================
-        // 6. SELECTOR INTELIGENTE Y GRAPHQL
-        // ==========================================
-        
-        function abrirSelector(input, tipo, slotIndex) {
-            const nombrePoke = document.querySelector(`#detail-card-${slotIndex} .d-nombre`).value;
-            if (!nombrePoke) return;
+        // Actualizar texto de restantes
+        const finalTotal = currentTotal + val;
+        const remaining = MAX_TOTAL - finalTotal;
+        const totalLabel = document.getElementById(`ev-total-${cardIndex}`);
+        totalLabel.innerText = `Restantes: ${remaining}`;
 
-            // 1. Filtrar movimientos usados
-            let movimientosUsados = [];
-            if (tipo === 'Movimiento') {
-                const inputsMoves = [
-                    document.querySelector(`#detail-card-${slotIndex} .d-move-1`),
-                    document.querySelector(`#detail-card-${slotIndex} .d-move-2`),
-                    document.querySelector(`#detail-card-${slotIndex} .d-move-3`),
-                    document.querySelector(`#detail-card-${slotIndex} .d-move-4`)
-                ];
-                movimientosUsados = inputsMoves
-                    .filter(inp => inp !== input && inp.value.trim() !== "")
-                    .map(inp => inp.value.toUpperCase());
-            }
+        if (remaining < 0) totalLabel.classList.add("error");
+        else totalLabel.classList.remove("error");
+      }
 
-            // 2. Posicionamiento Inteligente
-            const panel = document.getElementById('showdown-panel');
-            const rect = input.getBoundingClientRect();
-            const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            const viewportWidth = window.innerWidth;
-            const panelWidth = 320;
+      // ==========================================
+      // 5. SHINY TOGGLE
+      // ==========================================
+      function toggleShiny(index, nombre) {
+        const img = document.getElementById(`detail-img-${index}`);
+        const btn = document.getElementById(`shiny-btn-${index}`);
+        const inputVal = document.getElementById(`shiny-val-${index}`);
+        const newState = !(inputVal.value === "true");
+        inputVal.value = newState;
+        if (newState) {
+          btn.classList.add("active");
+          img.src = getPokemonImage(nombre, true);
+        } else {
+          btn.classList.remove("active");
+          img.src = getPokemonImage(nombre, false);
+        }
+      }
 
-            let leftPos = rect.right + 10;
-            if (leftPos + panelWidth > viewportWidth) {
-                leftPos = rect.left - panelWidth - 10;
-            }
-            let topPos = rect.top + scrollTop - 50; 
-            
-            panel.style.top = topPos + 'px';
-            panel.style.left = leftPos + 'px';
-            panel.classList.remove('hidden');
-            
-            document.getElementById('panel-title').innerText = `Elegir ${tipo}`;
-            const lista = document.getElementById('panel-list');
-            lista.innerHTML = '<li style="color:#888; text-align:center;">Cargando en español...</li>';
-            document.getElementById('panel-description').innerHTML = '<p style="color:#aaa; text-align:center;">Pasa el ratón para ver detalles.</p>';
+      // ==========================================
+      // 6. SELECTOR INTELIGENTE Y GRAPHQL
+      // ==========================================
 
-            // 3. Cargar Datos
-            if (tipo === 'Objeto') {
-                mostrarOpcionesTraducidas(objetosComunes, input, 'item');
-            } else {
-                const query = `
+      function abrirSelector(input, tipo, slotIndex) {
+        const nombrePoke = document.querySelector(
+          `#detail-card-${slotIndex} .d-nombre`
+        ).value;
+        if (!nombrePoke) return;
+
+        // 1. Filtrar movimientos usados
+        let movimientosUsados = [];
+        if (tipo === "Movimiento") {
+          const inputsMoves = [
+            document.querySelector(`#detail-card-${slotIndex} .d-move-1`),
+            document.querySelector(`#detail-card-${slotIndex} .d-move-2`),
+            document.querySelector(`#detail-card-${slotIndex} .d-move-3`),
+            document.querySelector(`#detail-card-${slotIndex} .d-move-4`),
+          ];
+          movimientosUsados = inputsMoves
+            .filter((inp) => inp !== input && inp.value.trim() !== "")
+            .map((inp) => inp.value.toUpperCase());
+        }
+
+        // 2. Posicionamiento Inteligente
+        const panel = document.getElementById("showdown-panel");
+        const rect = input.getBoundingClientRect();
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const viewportWidth = window.innerWidth;
+        const panelWidth = 320;
+
+        let leftPos = rect.right + 10;
+        if (leftPos + panelWidth > viewportWidth) {
+          leftPos = rect.left - panelWidth - 10;
+        }
+        let topPos = rect.top + scrollTop - 50;
+
+        panel.style.top = topPos + "px";
+        panel.style.left = leftPos + "px";
+        panel.classList.remove("hidden");
+
+        document.getElementById("panel-title").innerText = `Elegir ${tipo}`;
+        const lista = document.getElementById("panel-list");
+        lista.innerHTML =
+          '<li style="color:#888; text-align:center;">Cargando en español...</li>';
+        document.getElementById("panel-description").innerHTML =
+          '<p style="color:#aaa; text-align:center;">Pasa el ratón para ver detalles.</p>';
+
+        // 3. Cargar Datos
+        if (tipo === "Objeto") {
+          mostrarOpcionesTraducidas(objetosComunes, input, "item");
+        } else {
+          const query = `
                 query {
                   pokemon_v2_pokemon(where: {name: {_eq: "${nombrePoke.toLowerCase()}"}}) {
                     pokemon_v2_pokemonmoves(distinct_on: move_id) {
@@ -731,210 +892,293 @@
                 }
                 `;
 
-                fetch('https://beta.pokeapi.co/graphql/v1beta', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query })
-                })
-                .then(res => res.json())
-                .then(result => {
-                    const data = result.data.pokemon_v2_pokemon[0];
-                    let opciones = [];
+          fetch("https://beta.pokeapi.co/graphql/v1beta", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: query }),
+          })
+            .then((res) => res.json())
+            .then((result) => {
+              const data = result.data.pokemon_v2_pokemon[0];
+              let opciones = [];
 
-                    if (tipo === 'Habilidad') {
-                        opciones = data.pokemon_v2_pokemonabilities.map(a => ({
-                            id: a.pokemon_v2_ability.name, 
-                            nombre: a.pokemon_v2_ability.pokemon_v2_abilitynames[0]?.name || a.pokemon_v2_ability.name
-                        }));
-                    } else {
-                        const rawMoves = data.pokemon_v2_pokemonmoves.map(m => ({
-                            id: m.pokemon_v2_move.name,
-                            nombre: m.pokemon_v2_move.pokemon_v2_movenames[0]?.name || m.pokemon_v2_move.name
-                        }));
+              if (tipo === "Habilidad") {
+                opciones = data.pokemon_v2_pokemonabilities.map((a) => ({
+                  id: a.pokemon_v2_ability.name,
+                  nombre:
+                    a.pokemon_v2_ability.pokemon_v2_abilitynames[0]?.name ||
+                    a.pokemon_v2_ability.name,
+                }));
+              } else {
+                const rawMoves = data.pokemon_v2_pokemonmoves.map((m) => ({
+                  id: m.pokemon_v2_move.name,
+                  nombre:
+                    m.pokemon_v2_move.pokemon_v2_movenames[0]?.name ||
+                    m.pokemon_v2_move.name,
+                }));
 
-                        opciones = rawMoves.filter(op => !movimientosUsados.includes(op.nombre.toUpperCase()));
-                    }
+                opciones = rawMoves.filter(
+                  (op) => !movimientosUsados.includes(op.nombre.toUpperCase())
+                );
+              }
 
-                    opciones.sort((a, b) => a.nombre.localeCompare(b.nombre));
-                    mostrarOpcionesTraducidas(opciones, input, (tipo === 'Habilidad' ? 'ability' : 'move'));
-                });
-            }
-        }
-
-        function mostrarOpcionesTraducidas(opciones, inputDestino, categoriaApi) {
-            const lista = document.getElementById('panel-list');
-            lista.innerHTML = '';
-            
-            opciones.forEach(op => {
-                const li = document.createElement('li');
-                li.textContent = op.nombre;
-                
-                li.onclick = () => { 
-                    inputDestino.value = op.nombre; 
-                    inputDestino.setAttribute('data-api-slug', op.id);
-                    cerrarPanel(); 
-                };
-                li.onmouseenter = () => { cargarDetalles(categoriaApi, op.id); };
-                
-                lista.appendChild(li);
+              opciones.sort((a, b) => a.nombre.localeCompare(b.nombre));
+              mostrarOpcionesTraducidas(
+                opciones,
+                input,
+                tipo === "Habilidad" ? "ability" : "move"
+              );
             });
         }
+      }
 
+      function mostrarOpcionesTraducidas(opciones, inputDestino, categoriaApi) {
+        const lista = document.getElementById("panel-list");
+        lista.innerHTML = "";
 
-        // ==========================================
-        // 7. DETALLES (HOVER)
-        // ==========================================
-        
-        function cargarDetalles(categoria, slug) {
-            const descBox = document.getElementById('panel-description');
-            const apiSlug = slug.toLowerCase().trim().replace(/ /g, '-');
-            const cacheKey = `${categoria}:${apiSlug}`;
+        opciones.forEach((op) => {
+          const li = document.createElement("li");
+          li.textContent = op.nombre;
 
-            if (detailsCache[cacheKey]) { pintarDetalles(detailsCache[cacheKey]); return; }
-            descBox.innerHTML = '<p style="color:#FFDE00; text-align:center;">Cargando...</p>';
+          li.onclick = () => {
+            inputDestino.value = op.nombre;
+            inputDestino.setAttribute("data-api-slug", op.id);
+            cerrarPanel();
+          };
+          li.onmouseenter = () => {
+            cargarDetalles(categoriaApi, op.id);
+          };
 
-            const url = `https://pokeapi.co/api/v2/${categoria}/${apiSlug}`;
+          lista.appendChild(li);
+        });
+      }
 
-            fetch(url)
-                .then(res => { if(!res.ok) throw new Error("404"); return res.json(); })
-                .then(data => {
-                    const info = procesarInfoApi(data, categoria);
-                    detailsCache[cacheKey] = info;
-                    pintarDetalles(info);
-                })
-                .catch(err => { 
-                    console.error(err);
-                    descBox.innerHTML = '<p style="color:red; text-align:center;">Detalles no disponibles.</p>'; 
-                });
+      // ==========================================
+      // 7. DETALLES (HOVER)
+      // ==========================================
+
+      function cargarDetalles(categoria, slug) {
+        const descBox = document.getElementById("panel-description");
+        const apiSlug = slug.toLowerCase().trim().replace(/ /g, "-");
+        const cacheKey = `${categoria}:${apiSlug}`;
+
+        if (detailsCache[cacheKey]) {
+          pintarDetalles(detailsCache[cacheKey]);
+          return;
+        }
+        descBox.innerHTML =
+          '<p style="color:#FFDE00; text-align:center;">Cargando...</p>';
+
+        const url = `https://pokeapi.co/api/v2/${categoria}/${apiSlug}`;
+
+        fetch(url)
+          .then((res) => {
+            if (!res.ok) throw new Error("404");
+            return res.json();
+          })
+          .then((data) => {
+            const info = procesarInfoApi(data, categoria);
+            detailsCache[cacheKey] = info;
+            pintarDetalles(info);
+          })
+          .catch((err) => {
+            console.error(err);
+            descBox.innerHTML =
+              '<p style="color:red; text-align:center;">Detalles no disponibles.</p>';
+          });
+      }
+
+      function procesarInfoApi(data, categoria) {
+        const nombreObj = data.names.find((n) => n.language.name === "es");
+        const nombreEsp = nombreObj
+          ? nombreObj.name
+          : data.name.replace(/-/g, " ").toUpperCase();
+
+        let descripcion = "Descripción no disponible en español.";
+
+        if (data.flavor_text_entries) {
+          const entriesEsp = data.flavor_text_entries.filter(
+            (f) => f.language.name === "es"
+          );
+          if (entriesEsp.length > 0) {
+            const entry = entriesEsp[entriesEsp.length - 1];
+            descripcion = entry.text || entry.flavor_text;
+          }
+        } else if (data.effect_entries) {
+          const entry = data.effect_entries.find(
+            (e) => e.language.name === "en"
+          );
+          if (entry) descripcion = "(Inglés) " + entry.short_effect;
         }
 
-        function procesarInfoApi(data, categoria) {
-            const nombreObj = data.names.find(n => n.language.name === 'es');
-            const nombreEsp = nombreObj ? nombreObj.name : data.name.replace(/-/g, ' ').toUpperCase();
+        descripcion = descripcion.replace(/\n|\f|\r/g, " ");
+        let extraHtml = "";
 
-            let descripcion = "Descripción no disponible en español.";
-            
-            if (data.flavor_text_entries) {
-                const entriesEsp = data.flavor_text_entries.filter(f => f.language.name === 'es');
-                if (entriesEsp.length > 0) {
-                    const entry = entriesEsp[entriesEsp.length - 1]; 
-                    descripcion = entry.text || entry.flavor_text;
-                }
-            } else if (data.effect_entries) {
-                 const entry = data.effect_entries.find(e => e.language.name === 'en');
-                 if(entry) descripcion = "(Inglés) " + entry.short_effect;
-            }
+        if (categoria === "move") {
+          const typeName = data.type.name;
+          const damageClassName = data.damage_class.name;
 
-            descripcion = descripcion.replace(/\n|\f|\r/g, ' ');
-            let extraHtml = '';
-            
-            if (categoria === 'move') {
-                const typeName = data.type.name;
-                const damageClassName = data.damage_class.name; 
-                
-                const tipoTraducido = DICCIONARIO.tipos[typeName] || typeName;
-                const claseTraducida = DICCIONARIO.clases[damageClassName] || damageClassName;
-                let classCss = (damageClassName === 'physical') ? 'cat-physical' : (damageClassName === 'special' ? 'cat-special' : 'cat-status');
-                
-                extraHtml = `<div style="margin-bottom:8px; display:flex; gap:5px;">
+          const tipoTraducido = DICCIONARIO.tipos[typeName] || typeName;
+          const claseTraducida =
+            DICCIONARIO.clases[damageClassName] || damageClassName;
+          let classCss =
+            damageClassName === "physical"
+              ? "cat-physical"
+              : damageClassName === "special"
+              ? "cat-special"
+              : "cat-status";
+
+          extraHtml = `<div style="margin-bottom:8px; display:flex; gap:5px;">
                     <span class="move-stat-badge ${classCss}">${claseTraducida.toUpperCase()}</span>
                     <span class="move-stat-badge" style="border-color:var(--type-${typeName});color:var(--type-${typeName})">${tipoTraducido.toUpperCase()}</span>
-                    <span class="move-stat-badge">Pot: ${data.power||'-'}</span>
-                    <span class="move-stat-badge">Prec: ${data.accuracy||'-'}%</span>
+                    <span class="move-stat-badge">Pot: ${
+                      data.power || "-"
+                    }</span>
+                    <span class="move-stat-badge">Prec: ${
+                      data.accuracy || "-"
+                    }%</span>
                 </div>`;
-            } else if (categoria === 'item') {
-                const catItem = data.category ? data.category.name.replace(/-/g, ' ') : 'Objeto';
-                extraHtml = `<div style="margin-bottom:8px;"><span class="move-stat-badge" style="background:#555; color:#eee;">${catItem.toUpperCase()}</span></div>`;
+        } else if (categoria === "item") {
+          const catItem = data.category
+            ? data.category.name.replace(/-/g, " ")
+            : "Objeto";
+          extraHtml = `<div style="margin-bottom:8px;"><span class="move-stat-badge" style="background:#555; color:#eee;">${catItem.toUpperCase()}</span></div>`;
+        }
+
+        return { nombre: nombreEsp, desc: descripcion, extra: extraHtml };
+      }
+
+      function pintarDetalles(info) {
+        document.getElementById(
+          "panel-description"
+        ).innerHTML = `<strong style="color:#FFDE00; font-size:1.1em; display:block; margin-bottom:5px;">${info.nombre}</strong>${info.extra}<p style="margin:0; color:#ddd;">${info.desc}</p>`;
+      }
+
+      function cerrarPanel() {
+        document.getElementById("showdown-panel").classList.add("hidden");
+      }
+      document.addEventListener("click", function (e) {
+        const panel = document.getElementById("showdown-panel");
+        if (
+          !panel.classList.contains("hidden") &&
+          !e.target.closest(".showdown-panel") &&
+          !e.target.hasAttribute("readonly")
+        )
+          cerrarPanel();
+      });
+
+      // ==========================================
+      // 8. GUARDADO FINAL CON VALIDACIONES
+      // ==========================================
+      function guardarEquipoFinal() {
+        const container = document.getElementById("detalles-container");
+        const cards = container.querySelectorAll(".pokemon-detail-card");
+
+        const listaFinalMiembros = [];
+        let hayErrores = false;
+
+        for (let i = 0; i < cards.length; i++) {
+          const card = cards[i];
+          const nombrePoke = card.querySelector(".d-nombre").value;
+          const habilidad = card.querySelector(".d-habilidad").value.trim();
+          const naturaleza = card.querySelector(".d-naturaleza").value;
+
+          const m1 = card.querySelector(".d-move-1").value.trim();
+          const m2 = card.querySelector(".d-move-2").value.trim();
+          const m3 = card.querySelector(".d-move-3").value.trim();
+          const m4 = card.querySelector(".d-move-4").value.trim();
+
+          // LEER EVS
+          const hp = parseInt(document.getElementById(`ev-hp-${i}`).value) || 0;
+          const atk =
+            parseInt(document.getElementById(`ev-attack-${i}`).value) || 0;
+          const def =
+            parseInt(document.getElementById(`ev-defense-${i}`).value) || 0;
+          const spa =
+            parseInt(document.getElementById(`ev-spAttack-${i}`).value) || 0;
+          const spd =
+            parseInt(document.getElementById(`ev-spDefense-${i}`).value) || 0;
+          const spe =
+            parseInt(document.getElementById(`ev-speed-${i}`).value) || 0;
+
+          if (!habilidad) {
+            alert(
+              `El Pokémon #${
+                i + 1
+              } (${nombrePoke}) no tiene Habilidad seleccionada.`
+            );
+            hayErrores = true;
+            break;
+          }
+          if (!naturaleza) {
+            alert(
+              `El Pokémon #${
+                i + 1
+              } (${nombrePoke}) no tiene Naturaleza seleccionada.`
+            );
+            hayErrores = true;
+            break;
+          }
+          if (!m1 && !m2 && !m3 && !m4) {
+            alert(
+              `El Pokémon #${
+                i + 1
+              } (${nombrePoke}) debe tener al menos un movimiento.`
+            );
+            hayErrores = true;
+            break;
+          }
+
+          const miembro = {
+            nombrePokemon: nombrePoke,
+            mote: card.querySelector(".d-mote").value,
+            objeto: card.querySelector(".d-objeto").value,
+            habilidad: habilidad,
+            naturaleza: naturaleza,
+            movimiento1: m1,
+            movimiento2: m2,
+            movimiento3: m3,
+            movimiento4: m4,
+            // AÑADIR ESTOS:
+            hpEv: hp,
+            attackEv: atk,
+            defenseEv: def,
+            spAttackEv: spa,
+            spDefenseEv: spd,
+            speedEv: spe,
+          };
+          listaFinalMiembros.push(miembro);
+        }
+
+        if (hayErrores) return;
+
+        const equipoDTO = {
+          id: equipoTemporal.id,
+          nombre: equipoTemporal.nombre,
+          descripcion: equipoTemporal.descripcion,
+          publico: equipoTemporal.publico,
+          miembros: listaFinalMiembros,
+        };
+
+        fetch("/equipos/guardar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(equipoDTO),
+        })
+          .then((res) => res.text())
+          .then((data) => {
+            if (data === "OK") {
+              window.location.href = "/equipos";
+            } else {
+              alert("Error al guardar: " + data);
             }
+          });
+      }
 
-            return { nombre: nombreEsp, desc: descripcion, extra: extraHtml };
-        }
+      // Ejecutar carga inicial si estamos editando
+      cargarDatosEdicion();
 
-        function pintarDetalles(info) {
-            document.getElementById('panel-description').innerHTML = `<strong style="color:#FFDE00; font-size:1.1em; display:block; margin-bottom:5px;">${info.nombre}</strong>${info.extra}<p style="margin:0; color:#ddd;">${info.desc}</p>`;
-        }
-
-        function cerrarPanel() { document.getElementById('showdown-panel').classList.add('hidden'); }
-        document.addEventListener('click', function(e) {
-            const panel = document.getElementById('showdown-panel');
-            if (!panel.classList.contains('hidden') && !e.target.closest('.showdown-panel') && !e.target.hasAttribute('readonly')) cerrarPanel();
-        });
-
-
-        // ==========================================
-        // 8. GUARDADO FINAL CON VALIDACIONES
-        // ==========================================
-        function guardarEquipoFinal() {
-            const container = document.getElementById('detalles-container');
-            const cards = container.querySelectorAll('.pokemon-detail-card');
-            
-            const listaFinalMiembros = [];
-            let hayErrores = false; 
-
-            for (let i = 0; i < cards.length; i++) {
-                const card = cards[i];
-                const nombrePoke = card.querySelector('.d-nombre').value;
-                const habilidad = card.querySelector('.d-habilidad').value.trim();
-                const naturaleza = card.querySelector('.d-naturaleza').value;
-                
-                const m1 = card.querySelector('.d-move-1').value.trim();
-                const m2 = card.querySelector('.d-move-2').value.trim();
-                const m3 = card.querySelector('.d-move-3').value.trim();
-                const m4 = card.querySelector('.d-move-4').value.trim();
-
-                if (!habilidad) {
-                    alert(`El Pokémon #${i+1} (${nombrePoke}) no tiene Habilidad seleccionada.`);
-                    hayErrores = true; break;
-                }
-                if (!naturaleza) {
-                    alert(`El Pokémon #${i+1} (${nombrePoke}) no tiene Naturaleza seleccionada.`);
-                    hayErrores = true; break;
-                }
-                if (!m1 && !m2 && !m3 && !m4) {
-                    alert(`El Pokémon #${i+1} (${nombrePoke}) debe tener al menos un movimiento.`);
-                    hayErrores = true; break;
-                }
-
-                const miembro = {
-                    nombrePokemon: nombrePoke,
-                    mote: card.querySelector('.d-mote').value,
-                    objeto: card.querySelector('.d-objeto').value,
-                    habilidad: habilidad,
-                    naturaleza: naturaleza,
-                    movimiento1: m1,
-                    movimiento2: m2,
-                    movimiento3: m3,
-                    movimiento4: m4
-                };
-                listaFinalMiembros.push(miembro);
-            }
-
-            if (hayErrores) return; 
-
-            const equipoDTO = {
-                id: equipoTemporal.id,
-                nombre: equipoTemporal.nombre,
-                descripcion: equipoTemporal.descripcion,
-                publico: equipoTemporal.publico,
-                miembros: listaFinalMiembros
-            };
-
-            fetch('/equipos/guardar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(equipoDTO)
-            })
-            .then(res => res.text())
-            .then(data => {
-                if(data === "OK") { window.location.href = "/equipos"; } 
-                else { alert("Error al guardar: " + data); }
-            });
-        }
-
-        // Ejecutar carga inicial si estamos editando
-        cargarDatosEdicion();
-
-        /*]]>*/
+      /*]]>*/
     </script>
   </body>
   <footer class="main-footer">

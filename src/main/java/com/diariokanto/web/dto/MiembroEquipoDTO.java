@@ -16,4 +16,11 @@ public class MiembroEquipoDTO {
     private String movimiento2;
     private String movimiento3;
     private String movimiento4;
+
+    private int hpEv;
+    private int attackEv;
+    private int defenseEv;
+    private int spAttackEv;
+    private int spDefenseEv;
+    private int speedEv;
 }

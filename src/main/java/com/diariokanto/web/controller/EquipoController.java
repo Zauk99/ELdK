@@ -4,6 +4,7 @@ import com.diariokanto.web.dto.EquipoDTO;
 import com.diariokanto.web.dto.PokemonDTO;
 import com.diariokanto.web.dto.UsuarioDTO;
 import com.diariokanto.web.service.EquipoService;
+import com.diariokanto.web.service.PdfService;
 import com.diariokanto.web.service.PokemonService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +15,9 @@ import java.util.stream.Collectors;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +31,8 @@ public class EquipoController {
     private EquipoService equipoService;
     @Autowired
     private PokemonService pokemonService; // Para el autocompletado de nombres
+    @Autowired
+    private PdfService pdfService;
 
     // Instancia de ObjectMapper para convertir objetos a JSON
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -160,5 +166,24 @@ public class EquipoController {
             equipoService.eliminarEquipo(id, usuario.getEmail());
         }
         return "redirect:/equipos/mis-equipos";
+    }
+
+    @GetMapping("/exportar/{id}")
+    public ResponseEntity<byte[]> descargarPdf(@PathVariable Long id) {
+        // 1. Recuperamos el equipo con TODOS sus datos (incluidos EVs)
+        EquipoDTO equipo = equipoService.obtenerPorId(id);
+        
+        if (equipo == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 2. Generamos el PDF
+        byte[] pdfBytes = pdfService.generarPdfShowdown(equipo);
+
+        // 3. Devolvemos el archivo para descarga
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=team_" + id + "_showdown.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
 }
