@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,7 +27,6 @@ public class PdfService {
     public byte[] generarPdfShowdown(EquipoDTO equipo) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             
-            // 1. TRADUCIR TODO EL EQUIPO AL INGLÉS
             Map<String, String> diccionario = crearDiccionarioTraduccion(equipo);
 
             Document document = new Document();
@@ -40,71 +40,83 @@ public class PdfService {
             titulo.setSpacingAfter(20);
             document.add(titulo);
 
-            // Fuente Showdown
-            Font fontShowdown = FontFactory.getFont(FontFactory.COURIER, 11);
-
-            // --- CAMBIO CLAVE: Un solo StringBuilder para todo el equipo ---
-            StringBuilder fullTeamText = new StringBuilder();
+            // Fuente Visible (Negro)
+            Font fontVisible = FontFactory.getFont(FontFactory.COURIER, 11, Color.BLACK);
+            
+            // Fuente Invisible (Blanca) - Usamos la misma fuente y tamaño para que ocupe espacio real
+            Font fontInvisible = FontFactory.getFont(FontFactory.COURIER, 11, Color.WHITE);
 
             for (MiembroEquipoDTO m : equipo.getMiembros()) {
                 
-                // NOMBRE (Nickname (Species) o Species)
+                // 1. Construimos el texto visible del Pokémon
+                StringBuilder sb = new StringBuilder();
+
                 String speciesName = capitalize(m.getNombrePokemon());
                 String line1 = (m.getMote() != null && !m.getMote().isEmpty() && !m.getMote().equalsIgnoreCase(m.getNombrePokemon()))
                         ? m.getMote() + " (" + speciesName + ")"
                         : speciesName;
-                
-                fullTeamText.append(line1);
+                sb.append(line1);
 
-                // OBJETO
                 if (hasText(m.getObjeto())) {
                     String itemIngles = diccionario.getOrDefault(m.getObjeto(), m.getObjeto());
-                    fullTeamText.append(" @ ").append(formatShowdown(itemIngles));
+                    sb.append(" @ ").append(formatShowdown(itemIngles));
                 }
-                fullTeamText.append("\n");
+                sb.append("\n");
 
-                // HABILIDAD
                 if (hasText(m.getHabilidad())) {
                     String habIngles = diccionario.getOrDefault(m.getHabilidad(), m.getHabilidad());
-                    fullTeamText.append("Ability: ").append(formatShowdown(habIngles)).append("\n");
+                    sb.append("Ability: ").append(formatShowdown(habIngles)).append("\n");
                 }
 
-                // EVS
                 if (tieneEvs(m)) {
-                    fullTeamText.append("EVs: ");
+                    sb.append("EVs: ");
                     boolean first = true;
-                    first = appendEv(fullTeamText, m.getHpEv(), "HP", first);
-                    first = appendEv(fullTeamText, m.getAttackEv(), "Atk", first);
-                    first = appendEv(fullTeamText, m.getDefenseEv(), "Def", first);
-                    first = appendEv(fullTeamText, m.getSpAttackEv(), "SpA", first);
-                    first = appendEv(fullTeamText, m.getSpDefenseEv(), "SpD", first);
-                    first = appendEv(fullTeamText, m.getSpeedEv(), "Spe", first);
-                    fullTeamText.append("\n");
+                    first = appendEv(sb, m.getHpEv(), "HP", first);
+                    first = appendEv(sb, m.getAttackEv(), "Atk", first);
+                    first = appendEv(sb, m.getDefenseEv(), "Def", first);
+                    first = appendEv(sb, m.getSpAttackEv(), "SpA", first);
+                    first = appendEv(sb, m.getSpDefenseEv(), "SpD", first);
+                    first = appendEv(sb, m.getSpeedEv(), "Spe", first);
+                    sb.append("\n");
                 }
 
-                // NATURALEZA
                 if (hasText(m.getNaturaleza())) {
                     String natIngles = diccionario.getOrDefault(m.getNaturaleza(), m.getNaturaleza());
-                    // Parche: Si la API no traduce "Neutra" o similar, forzamos "Serious" que es la neutra por defecto en Showdown
                     if (natIngles.equalsIgnoreCase("Neutra") || natIngles.equalsIgnoreCase("Neutral")) {
                         natIngles = "Serious";
                     }
-                    fullTeamText.append(formatShowdown(natIngles)).append(" Nature\n");
+                    sb.append(formatShowdown(natIngles)).append(" Nature\n");
                 }
 
-                // MOVIMIENTOS
-                appendMove(fullTeamText, m.getMovimiento1(), diccionario);
-                appendMove(fullTeamText, m.getMovimiento2(), diccionario);
-                appendMove(fullTeamText, m.getMovimiento3(), diccionario);
-                appendMove(fullTeamText, m.getMovimiento4(), diccionario);
+                appendMove(sb, m.getMovimiento1(), diccionario);
+                appendMove(sb, m.getMovimiento2(), diccionario);
+                appendMove(sb, m.getMovimiento3(), diccionario);
+                appendMove(sb, m.getMovimiento4(), diccionario);
 
-                // IMPORTANTE: Doble salto de línea al final de cada Pokémon
-                fullTeamText.append("\n"); 
+                // --- AQUÍ ESTÁ LA SOLUCIÓN ---
+                
+                // Creamos un párrafo contenedor (sin texto propio, solo contendrá chunks)
+                Paragraph p = new Paragraph();
+                
+                // A. Añadimos el texto del Pokémon
+                p.add(new Chunk(sb.toString(), fontVisible));
+                
+                // B. Añadimos un salto de línea EXPLICITO
+                p.add(Chunk.NEWLINE);
+
+                // C. Añadimos la "Línea Fantasma"
+                // Usamos " \u00A0 " (Espacio - EspacioDuro - Espacio).
+                // Showdown hará trim() y verá una línea vacía (que es lo que quiere).
+                // El PDF verá caracteres reales y los copiará.
+                Chunk chunkFantasma = new Chunk(" \u00A0 ", fontInvisible);
+                p.add(chunkFantasma);
+                
+                // D. Otro salto de línea para separar del siguiente bloque
+                p.add(Chunk.NEWLINE);
+
+                // Añadimos el párrafo soldado al documento
+                document.add(p);
             }
-
-            // Añadimos TODO el texto como un único párrafo.
-            // Esto garantiza que al copiar, los saltos de línea se respeten.
-            document.add(new Paragraph(fullTeamText.toString(), fontShowdown));
 
             document.close();
             return out.toByteArray();
@@ -115,12 +127,9 @@ public class PdfService {
         }
     }
 
-    // --- MÉTODOS DE TRADUCCIÓN ---
-
+    // --- (Resto de métodos privados sin cambios) ---
     private Map<String, String> crearDiccionarioTraduccion(EquipoDTO equipo) {
         Set<String> terminos = new HashSet<>();
-
-        // Recolectar TODO en un solo Set para simplificar
         for (MiembroEquipoDTO m : equipo.getMiembros()) {
             if(hasText(m.getMovimiento1())) terminos.add(m.getMovimiento1());
             if(hasText(m.getMovimiento2())) terminos.add(m.getMovimiento2());
@@ -130,68 +139,41 @@ public class PdfService {
             if(hasText(m.getObjeto())) terminos.add(m.getObjeto());
             if(hasText(m.getNaturaleza())) terminos.add(m.getNaturaleza());
         }
-
-        // TreeMap insensible a mayúsculas para evitar problemas de "Rayo" vs "rayo"
         Map<String, String> diccionario = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        
         if (terminos.isEmpty()) return diccionario;
-
-        // Llamadas a la API por lotes
         traducirLote(terminos, "pokemon_v2_move", "pokemon_v2_movenames", diccionario);
         traducirLote(terminos, "pokemon_v2_ability", "pokemon_v2_abilitynames", diccionario);
         traducirLote(terminos, "pokemon_v2_item", "pokemon_v2_itemnames", diccionario);
         traducirLote(terminos, "pokemon_v2_nature", "pokemon_v2_naturenames", diccionario);
-
         return diccionario;
     }
 
     private void traducirLote(Set<String> terminos, String tablaRaiz, String tablaNombres, Map<String, String> diccionario) {
         try {
-            // Convertimos la lista de términos a formato JSON array: ["Rayo", "Trueno"]
-            String jsonArray = terminos.stream()
-                    .map(s -> "\"" + s + "\"")
-                    .collect(Collectors.joining(", ", "[", "]"));
-
-            // Query optimizada: Busca coincidencias en español y devuelve el nombre inglés (slug)
-            String query = String.format(
-                "query { %s(where: {%s: {name: {_in: %s}, language_id: {_eq: 7}}}) { name %s(where: {language_id: {_eq: 7}}) { name } } }",
-                tablaRaiz, tablaNombres, jsonArray, tablaNombres
-            );
-
+            String jsonArray = terminos.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(", ", "[", "]"));
+            String query = String.format("query { %s(where: {%s: {name: {_in: %s}, language_id: {_eq: 7}}}) { name %s(where: {language_id: {_eq: 7}}) { name } } }", tablaRaiz, tablaNombres, jsonArray, tablaNombres);
             Map<String, String> body = new HashMap<>();
             body.put("query", query);
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-
             HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
             String response = restTemplate.postForObject(GRAPHQL_URL, entity, String.class);
-
             JsonNode root = objectMapper.readTree(response);
             JsonNode dataList = root.path("data").path(tablaRaiz);
-
             for (JsonNode item : dataList) {
                 String englishName = item.get("name").asText();
-                // El nombre español con el que buscaremos en el mapa
                 JsonNode spanishNode = item.path(tablaNombres).get(0);
                 if (spanishNode != null && !spanishNode.isMissingNode()) {
                     String spanishName = spanishNode.get("name").asText();
                     diccionario.put(spanishName, englishName);
                 }
             }
-
-        } catch (Exception e) {
-            // Ignoramos errores parciales para no romper el PDF, simplemente saldrá en español si falla
-            System.err.println("Warning traducción: " + e.getMessage());
-        }
+        } catch (Exception e) { System.err.println("Warning traducción: " + e.getMessage()); }
     }
 
     private String formatShowdown(String slug) {
         if (slug == null) return "";
-        // Convierte "thunder-punch" en "Thunder Punch"
-        return Arrays.stream(slug.split("-"))
-                .map(this::capitalize)
-                .collect(Collectors.joining(" "));
+        return Arrays.stream(slug.split("-")).map(this::capitalize).collect(Collectors.joining(" "));
     }
 
     private void appendMove(StringBuilder sb, String move, Map<String, String> dic) {
@@ -211,13 +193,10 @@ public class PdfService {
     }
 
     private boolean tieneEvs(MiembroEquipoDTO m) {
-        return m.getHpEv() > 0 || m.getAttackEv() > 0 || m.getDefenseEv() > 0 || 
-               m.getSpAttackEv() > 0 || m.getSpDefenseEv() > 0 || m.getSpeedEv() > 0;
+        return m.getHpEv() > 0 || m.getAttackEv() > 0 || m.getDefenseEv() > 0 || m.getSpAttackEv() > 0 || m.getSpDefenseEv() > 0 || m.getSpeedEv() > 0;
     }
 
-    private boolean hasText(String s) {
-        return s != null && !s.trim().isEmpty();
-    }
+    private boolean hasText(String s) { return s != null && !s.trim().isEmpty(); }
     
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
