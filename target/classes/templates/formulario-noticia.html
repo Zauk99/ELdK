@@ -1,92 +1,161 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${esEdicion} ? 'Editar Noticia' : 'Crear Noticia'">Admin</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title th:text="${esEdicion} ? 'Editar Noticia' : 'Crear Noticia'">
+      Admin
+    </title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link rel="icon" th:href="@{/img/Logo.png}" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
     <header class="header">
-        <div class="header-container">
-            <div class="logo-area"><a th:href="@{/}" class="site-title-link"><img th:src="@{/img/Logo.png}" alt="Logo"
-                        width="100px"></a></div>
-            <a th:href="@{/}"><button class="login-button">Volver</button></a>
+      <div class="header-container">
+        <div class="logo-area">
+          <a th:href="@{/}" class="site-title-link"
+            ><img th:src="@{/img/Logo.png}" alt="Logo" width="100px"
+          /></a>
         </div>
+        <a th:href="@{/}"><button class="login-button">Volver</button></a>
+      </div>
     </header>
 
     <main class="content-container">
-        <div class="auth-container" style="max-width: 800px;">
-            <h2 style="color: #FFDE00; text-align: center; margin-bottom: 20px;" 
-                th:text="${esEdicion} ? 'Editar Noticia' : 'Nueva Noticia'"></h2>
-            
-            <form th:action="@{${esEdicion} ? '/admin/actualizar' : '/admin/guardar-noticia'}" 
-                  th:object="${noticia}" method="post" 
-                  class="auth-form" enctype="multipart/form-data">
-                
-                <input type="hidden" th:field="*{id}" />
+      <div class="auth-container" style="max-width: 800px">
+        <h2
+          style="color: #ffde00; text-align: center; margin-bottom: 20px"
+          th:text="${esEdicion} ? 'Editar Noticia' : 'Nueva Noticia'"
+        ></h2>
 
-                <div class="form-group-full">
-                    <label style="color: #ccc;">Título</label>
-                    <input type="text" th:field="*{titulo}" required />
-                </div>
+        <form
+          th:action="@{${esEdicion} ? '/admin/actualizar' : '/admin/guardar-noticia'}"
+          th:object="${noticia}"
+          method="post"
+          class="auth-form"
+          enctype="multipart/form-data"
+        >
+          <input type="hidden" th:field="*{id}" />
 
-                <div class="form-group-full">
-                    <label style="color: #ccc;">Imagen de Portada</label>
-                    <div th:if="${esEdicion}" style="margin-bottom: 10px;">
-                        <img th:src="@{${noticia.imagenUrl}}" style="max-width: 200px; border-radius: 5px;">
-                        <p style="font-size: 0.8em; color: #aaa;">Sube otra para cambiarla</p>
-                    </div>
-                    <input type="file" name="ficheroImagen" accept="image/*" 
-                           style="width: 100%; padding: 10px; background: #333; color: white; border: 1px solid #555;" />
-                </div>
+          <div class="form-group-full">
+            <label style="color: #ccc">Título</label>
+            <input type="text" th:field="*{titulo}" required />
+          </div>
 
-                <div class="form-group-full">
-                    <label style="color: #ccc;">Categoría</label>
-                    <select th:field="*{nombreCategoria}" style="width: 100%; padding: 12px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
-                        <option value="Nintendo">Nintendo</option>
-                        <option value="Móvil">Móvil</option>
-                        <option value="TCG">TCG</option>
-                    </select>
-                </div>
+          <div class="form-group-full">
+            <label style="color: #ccc">Imagen de Portada</label>
+            <div th:if="${esEdicion}" style="margin-bottom: 10px">
+              <img
+                th:src="@{${noticia.imagenUrl}}"
+                style="max-width: 200px; border-radius: 5px"
+              />
+              <p style="font-size: 0.8em; color: #aaa">
+                Sube otra para cambiarla
+              </p>
+            </div>
 
-                <div class="form-group-full">
-                    <label style="color: #ccc;">Contenido (HTML)</label>
-                    <textarea th:field="*{contenidoHtml}" rows="10" 
-                              style="width: 100%; padding: 12px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;"></textarea>
-                </div>
+            <input
+              type="file"
+              name="ficheroImagen"
+              accept="image/*"
+              style="
+                width: 100%;
+                padding: 10px;
+                background: #333;
+                color: white;
+                border: 1px solid #555;
+              "
+            />
 
-                <button type="submit" class="auth-submit-button" 
-                        th:text="${esEdicion} ? 'Guardar Cambios' : 'Publicar Noticia'">Enviar</button>
-            </form>
-        </div>
+            <div
+              th:if="${errorImagen}"
+              th:text="${errorImagen}"
+              style="
+                color: #ff4444;
+                font-weight: bold;
+                margin-top: 5px;
+                font-size: 0.9em;
+              "
+            ></div>
+          </div>
+
+          <div class="form-group-full">
+            <label style="color: #ccc">Categoría</label>
+            <select
+              th:field="*{nombreCategoria}"
+              style="
+                width: 100%;
+                padding: 12px;
+                background: #333;
+                color: white;
+                border: 1px solid #555;
+                border-radius: 5px;
+              "
+            >
+              <option value="Nintendo">Nintendo</option>
+              <option value="Móvil">Móvil</option>
+              <option value="TCG">TCG</option>
+            </select>
+          </div>
+
+          <div class="form-group-full">
+            <label style="color: #ccc">Contenido (HTML)</label>
+            <textarea
+              th:field="*{contenidoHtml}"
+              rows="10"
+              style="
+                width: 100%;
+                padding: 12px;
+                background: #333;
+                color: white;
+                border: 1px solid #555;
+                border-radius: 5px;
+              "
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="auth-submit-button"
+            th:text="${esEdicion} ? 'Guardar Cambios' : 'Publicar Noticia'"
+          >
+            Enviar
+          </button>
+        </form>
+      </div>
     </main>
-</body>
-<footer class="main-footer">
-  <div class="footer-content-wrapper">
-    <div class="footer-info">
-      <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo">
-      <p class="description">
-        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br>
-        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus
-        Pokémon favoritos.
-        <br>¡Atrapa la información!
-      </p>
-    </div>
+  </body>
+  <footer class="main-footer">
+    <div class="footer-content-wrapper">
+      <div class="footer-info">
+        <img
+          th:src="@{/img/Logo.png}"
+          alt="Logo de la Pokédex"
+          class="footer-logo"
+        />
+        <p class="description">
+          Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+          de Kanto!<br />
+          Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+          evolutivas de todos tus Pokémon favoritos.
+          <br />¡Atrapa la información!
+        </p>
+      </div>
 
-    <div class="footer-meta">
-      <p class="creator">
-        Creado por: Pablo Herrera Domínguez
-      </p>
-      <p class="copyright">
-        ©2025 El Diario de Kanto. Todos los derechos reservados.
-      </p>
-      <p class="disclaimer">
-        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de
-        Nintendo, Game Freak y The Pokémon Company.
-      </p>
+      <div class="footer-meta">
+        <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+        <p class="copyright">
+          ©2025 El Diario de Kanto. Todos los derechos reservados.
+        </p>
+        <p class="disclaimer">
+          Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+          sus nombres son marcas registradas de Nintendo, Game Freak y The
+          Pokémon Company.
+        </p>
+      </div>
     </div>
-  </div>
-</footer>
+  </footer>
 </html>

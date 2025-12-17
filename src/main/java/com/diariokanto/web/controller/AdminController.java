@@ -26,6 +26,9 @@ public class AdminController {
     @Autowired
     private NoticiaService noticiaService;
 
+    // Constante para el límite: 2MB en bytes
+    private static final long MAX_FILE_SIZE = 2 * 1024 * 1024;
+
     // Mostrar el formulario
     @GetMapping("/crear-noticia")
     public String mostrarFormulario(Model model) {
@@ -36,8 +39,17 @@ public class AdminController {
     // Procesar el formulario
     @PostMapping("/guardar-noticia")
     public String guardarNoticia(@ModelAttribute NoticiaDTO noticia,
-            @RequestParam("ficheroImagen") MultipartFile fichero) {
-        // Llamamos al nuevo método multipart
+                                 @RequestParam("ficheroImagen") MultipartFile fichero,
+                                 Model model) { // <--- Añadir Model
+        
+        // --- VALIDACIÓN TAMAÑO (CREAR) ---
+        if (!fichero.isEmpty() && fichero.getSize() > MAX_FILE_SIZE) {
+            model.addAttribute("errorImagen", "La imagen supera el tamaño máximo permitido (2MB).");
+            model.addAttribute("noticia", noticia); // Mantenemos lo que escribió el usuario
+            return "formulario-noticia"; // Volvemos a la vista sin guardar
+        }
+        // ---------------------------------
+
         noticiaService.guardarNoticiaMultipart(noticia, fichero);
         return "redirect:/";
     }
