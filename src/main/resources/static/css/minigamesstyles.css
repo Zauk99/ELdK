@@ -1,0 +1,354 @@
+/* =========================================
+   ESTILOS MINIJUEGOS (Fusionados y Adaptados)
+   ========================================= */
+
+/* --- HUB DE MINIJUEGOS (El menú de selección) --- */
+.minigames-hub {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 50px;
+}
+
+.game-select-card {
+    background-color: var(--component-bg);
+    border: 1px solid #444;
+    border-radius: 15px;
+    width: 300px;
+    padding: 30px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--primary-text-color);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-select-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    border-color: var(--accent-color);
+}
+
+.game-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.game-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #FFDE00;
+    margin-bottom: 10px;
+}
+
+/* =========================================
+   VOLTORB FLIP
+   ========================================= */
+.voltorb-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.game-container {
+    background-color: var(--component-bg); /* Adaptado al tema */
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 4px solid #444;
+    text-align: center;
+    position: relative;
+    max-width: 500px;
+    width: 100%;
+}
+
+.game-container h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #f1c40f;
+    text-shadow: 2px 2px 0px #c0392b;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.tool {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px;
+    background: #333; /* Oscurecido */
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    min-width: 65px;
+}
+
+.tool.active {
+    background: #f1c40f;
+    border-color: #f39c12;
+    transform: scale(1.05);
+}
+
+.tool.active .icon, .tool.active .label {
+    color: #2c3e50; /* Texto oscuro sobre amarillo */
+    font-weight: bold;
+}
+
+.icon { font-size: 1.4rem; margin-bottom: 2px; }
+.label { font-size: 0.7rem; text-transform: uppercase; color: #ccc; }
+
+/* Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(6, 60px);
+    grid-template-rows: repeat(6, 60px);
+    gap: 8px;
+    background-color: #222; /* Fondo del tablero */
+    padding: 15px;
+    border-radius: 12px;
+    margin: 0 auto 20px auto;
+    width: fit-content;
+}
+
+.cell {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(145deg, #2ecc71, #27ae60);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 22px;
+    position: relative;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px #1e8449;
+    color: white;
+}
+
+.cell.revealed {
+    background: #ecf0f1;
+    color: #2c3e50;
+    cursor: default;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Imagen de Voltorb */
+.cell.voltorb {
+    background-image: url('/img/voltorb.png'); /* Ruta corregida */
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #e74c3c;
+    color: transparent; 
+}
+
+/* Marca de Memo */
+.cell[data-mark="💣"]::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    background-image: url('/img/voltorb.png'); /* Ruta corregida */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 3px;
+    z-index: 20;
+}
+
+.cell[data-mark]:not([data-mark="💣"])::after {
+    content: attr(data-mark);
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 12px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 1px 3px;
+    border-radius: 3px;
+}
+
+/* Pistas */
+.cell.hint {
+    background: linear-gradient(145deg, #f39c12, #d35400);
+    box-shadow: 0 4px #a04000;
+    cursor: default;
+    flex-direction: column;
+    font-size: 14px;
+    color: #fff;
+}
+
+.cell.hint hr { width: 80%; border: 0.5px solid rgba(255,255,255,0.3); margin: 2px 0; }
+
+/* Overlay */
+.overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    border-radius: 20px;
+    backdrop-filter: blur(2px);
+}
+
+.overlay-content {
+    background-color: #f1c40f;
+    padding: 30px;
+    border-radius: 15px;
+    border: 5px solid #2c3e50;
+    color: #2c3e50;
+    font-weight: bold;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+#status {
+    background: rgba(0,0,0,0.3);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: white;
+}
+.hidden { display: none !important; }
+
+
+/* =========================================
+   GUESS THE POKEMON
+   ========================================= */
+
+.guess-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.game-card {
+    background: var(--component-bg); /* Adaptado */
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    text-align: center;
+    width: 380px;
+    color: var(--primary-text-color);
+    border: 1px solid #444;
+}
+
+.game-card h1 {
+    color: #FFDE00;
+    margin-bottom: 20px;
+}
+
+#image-container {
+    width: 250px;
+    height: 250px;
+    margin: 20px auto;
+    background: radial-gradient(circle, #ffffff 0%, #dcdcdc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Pokeball style */
+    border: 8px solid #333;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Barra central pokeball decorativa */
+#image-container::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 8px;
+    background-color: rgba(0,0,0,0.1);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+#pokemon-img {
+    width: 90%;
+    height: 90%;
+    image-rendering: pixelated; 
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+#pokemon-img.hidden { display: none; }
+
+/* Niveles de pixelado */
+.pixel-level-5 { filter: blur(25px) brightness(0); width: 100%; }
+.pixel-level-4 { filter: blur(15px); width: 100%; }
+.pixel-level-3 { filter: blur(8px); width: 100%; }
+.pixel-level-2 { filter: blur(4px); width: 100%; }
+.pixel-level-1 { filter: blur(0px); width: 100%; }
+
+.game-card input {
+    padding: 12px;
+    width: 80%;
+    margin-bottom: 15px;
+    background-color: #333;
+    border: 1px solid #555;
+    color: white;
+    border-radius: 5px;
+}
+
+.game-card input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.button-group {
+    margin-top: 15px;
+    min-height: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.guess-btn {
+    padding: 10px 25px;
+    background-color: #3b4cca;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+
+.guess-btn:hover { background-color: #2a3a8a; }
+
+.reset-btn {
+    padding: 10px 25px;
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+
+.reset-btn:hover { background-color: #b71c1c; }
