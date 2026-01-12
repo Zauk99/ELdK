@@ -84,26 +84,55 @@
           </a>
         </div>
 
-        <div sec:authorize="isAuthenticated()" class="user-menu-container">
-          <button id="userMenuBtn" class="user-button">
-            <img
-              th:src="${#authentication.principal.fotoPerfilUrl}"
-              alt="Avatar"
-              class="user-avatar"
-              style="object-fit: cover"
-            />
-            <span th:text="${#authentication.principal.username}">Usuario</span>
-            <i class="fas fa-chevron-down"></i>
-          </button>
-          <div id="userDropdown" class="user-dropdown-content">
-            <a th:href="@{/perfil}" class="dropdown-item"
-              ><i class="fas fa-user"></i> Ver Perfil</a
-            >
-            <form th:action="@{/logout}" method="post" style="margin: 0">
-              <button type="submit">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-              </button>
-            </form>
+        <div style="display: flex; align-items: center">
+          <a
+            sec:authorize="hasRole('ADMIN')"
+            th:href="@{/admin/crear-noticia}"
+            class="admin-action-button"
+          >
+            <i class="fas fa-plus"></i> Añadir Noticia
+          </a>
+          <a sec:authorize="!isAuthenticated()" th:href="@{/login}">
+            <button class="login-button">Iniciar Sesión</button>
+          </a>
+          <div sec:authorize="isAuthenticated()" class="user-menu-container">
+            <button id="userMenuBtn" class="user-button">
+              <img
+                th:src="${#authentication.principal.fotoPerfilUrl}"
+                alt="Avatar"
+                class="user-avatar"
+                style="object-fit: cover"
+              />
+              <span th:text="${#authentication.principal.username}"
+                >Usuario</span
+              >
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div id="userDropdown" class="user-dropdown-content">
+              <a
+                th:href="@{/perfil}"
+                class="dropdown-item"
+                style="
+                  display: block;
+                  padding: 12px 16px;
+                  color: white;
+                  text-decoration: none;
+                  border-bottom: 1px solid #444;
+                  text-align: left;
+                "
+              >
+                <i class="fas fa-user" style="width: 20px"></i> Ver Perfil
+              </a>
+              <form th:action="@{/logout}" method="post" style="margin: 0">
+                <button
+                  type="submit"
+                  style="width: 100%; text-align: left; padding: 12px 16px"
+                >
+                  <i class="fas fa-sign-out-alt" style="width: 20px"></i> Cerrar
+                  Sesión
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>

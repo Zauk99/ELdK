@@ -1,69 +1,32 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Minijuegos - El Diario de Kanto</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link rel="stylesheet" th:href="@{/css/minigamesstyles.css}" />
     <link rel="icon" th:href="@{/img/Logo.png}" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
     <header class="header">
       <div class="header-container">
         <div class="logo-area">
           <a th:href="@{/}" class="site-title-link">
             <img th:src="@{/img/Logo.png}" alt="Logo" width="100px" />
           </a>
-        </div>
-
-        <div
-          class="search-container"
-          style="max-width: 400px; margin: 0 auto 20px auto"
-        >
-          <form
-            id="newsSearchForm"
-            th:action="@{/}"
-            method="get"
-            style="
-              display: flex;
-              align-items: center;
-              background-color: rgba(255, 255, 255, 0.2);
-              border-radius: 5px;
-              padding: 5px 10px;
-              width: 100%;
-              border: 1px solid rgba(255, 255, 255, 0.1);
-            "
-          >
-            <input
-              type="text"
-              name="busqueda"
-              placeholder="Buscar Noticias..."
-              style="
-                background: none;
-                border: none;
-                outline: none;
-                color: white;
-                width: 100%;
-                font-size: 1rem;
-              "
-              autocomplete="off"
-            />
-            <button
-              type="submit"
-              style="
-                background: none;
-                border: none;
-                color: rgba(255, 255, 255, 0.8);
-                cursor: pointer;
-                padding: 5px;
-              "
-            >
-              <i class="fas fa-search"></i>
-            </button>
-          </form>
         </div>
 
         <div style="display: flex; align-items: center">
@@ -127,7 +90,7 @@
           <a th:href="@{/pokedex}" class="nav-item">
             <i class="fas fa-globe"></i> Pokédex
           </a>
-          <a th:href="@{/equipos}" class="nav-item ">
+          <a th:href="@{/equipos}" class="nav-item">
             <i class="fas fa-users"></i> Equipos
           </a>
           <a th:href="@{/minijuegos}" class="nav-item active">
@@ -138,52 +101,119 @@
     </header>
 
     <main class="content-container">
-        <div class="main-content-area">
-            <div class="news-header">
-                <h2>Zona de Juegos</h2>
-            </div>
-            
-            <div class="minigames-hub">
-                <a th:href="@{/minijuegos/voltorb-flip}" class="game-select-card">
-                    <span class="game-icon">💣</span>
-                    <span class="game-title">Voltorb Flip</span>
-                    <p>¡Evita los Voltorb y multiplica tu puntuación!</p>
-                </a>
-
-                <a th:href="@{/minijuegos/adivina-pokemon}" class="game-select-card">
-                    <span class="game-icon">❓</span>
-                    <span class="game-title">¿Quién es ese Pokémon?</span>
-                    <p>Adivina el Pokémon por su silueta pixelada.</p>
-                </a>
-            </div>
+      <div class="main-content-area">
+        <div class="news-header">
+          <h2>Zona de Juegos</h2>
         </div>
+
+        <div class="minigames-hub">
+          <a th:href="@{/minijuegos/voltorb-flip}" class="game-select-card">
+            <span class="game-icon">💣</span>
+            <span class="game-title">Voltorb Flip</span>
+            <p>¡Evita los Voltorb!</p>
+          </a>
+
+          <a th:href="@{/minijuegos/adivina-pokemon}" class="game-select-card">
+            <span class="game-icon">❓</span>
+            <span class="game-title">¿Quién es ese Pokémon?</span>
+            <p>Adivina el Pokémon por su silueta pixelada.</p>
+          </a>
+        </div>
+      </div>
     </main>
+    <script src="js/main.js"></script>
+    <script>
+      const searchInput = document.getElementById("newsSearchInput");
+      const resultsBox = document.getElementById("newsSearchResults");
 
+      function toggleFilter() {
+        document.getElementById("filterMenu").classList.toggle("hidden");
+      }
+
+      // Cerrar si clicamos fuera
+      window.addEventListener("click", function (e) {
+        const btn = document.querySelector('button[onclick="toggleFilter()"]');
+        const menu = document.getElementById("filterMenu");
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+          menu.classList.add("hidden");
+        }
+      });
+
+      searchInput.addEventListener("input", function () {
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+          resultsBox.style.display = "none";
+          return;
+        }
+
+        // Llamada AJAX a nuestro controlador interno
+        fetch(`/api/busqueda-noticias?query=${encodeURIComponent(query)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            resultsBox.innerHTML = "";
+            if (data.length > 0) {
+              data.forEach((noticia) => {
+                const item = document.createElement("a");
+                item.href = `/noticia/${noticia.id}`;
+                item.className = "search-result-item";
+                // Aseguramos ruta absoluta para la imagen
+                const imgUrl = noticia.imagenUrl.startsWith("http")
+                  ? noticia.imagenUrl
+                  : "/" + noticia.imagenUrl;
+
+                item.innerHTML = `
+                            <img src="${imgUrl}" alt="img">
+                            <div>
+                                <div style="font-weight: bold; font-size: 0.9em;">${noticia.titulo}</div>
+                                <div style="font-size: 0.8em; color: #aaa;">${noticia.tagText}</div>
+                            </div>
+                        `;
+                resultsBox.appendChild(item);
+              });
+              resultsBox.style.display = "block";
+            } else {
+              resultsBox.style.display = "none";
+            }
+          });
+      });
+
+      // Cerrar si clicamos fuera
+      document.addEventListener("click", function (e) {
+        if (!searchInput.contains(e.target) && !resultsBox.contains(e.target)) {
+          resultsBox.style.display = "none";
+        }
+      });
+    </script>
     <footer class="main-footer">
-  <div class="footer-content-wrapper">
-    <div class="footer-info">
-      <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo">
-      <p class="description">
-        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br>
-        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus
-        Pokémon favoritos.
-        <br>¡Atrapa la información!
-      </p>
-    </div>
+      <div class="footer-content-wrapper">
+        <div class="footer-info">
+          <img
+            th:src="@{/img/Logo.png}"
+            alt="Logo de la Pokédex"
+            class="footer-logo"
+          />
+          <p class="description">
+            Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+            de Kanto!<br />
+            Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+            evolutivas de todos tus Pokémon favoritos.
+            <br />¡Atrapa la información!
+          </p>
+        </div>
 
-    <div class="footer-meta">
-      <p class="creator">
-        Creado por: Pablo Herrera Domínguez
-      </p>
-      <p class="copyright">
-        ©2025 El Diario de Kanto. Todos los derechos reservados.
-      </p>
-      <p class="disclaimer">
-        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de
-        Nintendo, Game Freak y The Pokémon Company.
-      </p>
-    </div>
-  </div>
-</footer>
-</body>
+        <div class="footer-meta">
+          <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+          <p class="copyright">
+            ©2025 El Diario de Kanto. Todos los derechos reservados.
+          </p>
+          <p class="disclaimer">
+            Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+            sus nombres son marcas registradas de Nintendo, Game Freak y The
+            Pokémon Company.
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
 </html>

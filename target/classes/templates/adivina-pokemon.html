@@ -6,6 +6,9 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link rel="stylesheet" th:href="@{/css/minigamesstyles.css}" />
     <link rel="icon" th:href="@{/img/Logo.png}" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
 </head>
 <body>
     <header class="header">
@@ -14,53 +17,6 @@
           <a th:href="@{/}" class="site-title-link">
             <img th:src="@{/img/Logo.png}" alt="Logo" width="100px" />
           </a>
-        </div>
-
-        <div
-          class="search-container"
-          style="max-width: 400px; margin: 0 auto 20px auto"
-        >
-          <form
-            id="newsSearchForm"
-            th:action="@{/}"
-            method="get"
-            style="
-              display: flex;
-              align-items: center;
-              background-color: rgba(255, 255, 255, 0.2);
-              border-radius: 5px;
-              padding: 5px 10px;
-              width: 100%;
-              border: 1px solid rgba(255, 255, 255, 0.1);
-            "
-          >
-            <input
-              type="text"
-              name="busqueda"
-              placeholder="Buscar Noticias..."
-              style="
-                background: none;
-                border: none;
-                outline: none;
-                color: white;
-                width: 100%;
-                font-size: 1rem;
-              "
-              autocomplete="off"
-            />
-            <button
-              type="submit"
-              style="
-                background: none;
-                border: none;
-                color: rgba(255, 255, 255, 0.8);
-                cursor: pointer;
-                padding: 5px;
-              "
-            >
-              <i class="fas fa-search"></i>
-            </button>
-          </form>
         </div>
 
         <div style="display: flex; align-items: center">
@@ -135,6 +91,17 @@
     </header>
 
     <main class="content-container">
+
+        <div class="back-btn-container">
+          <a
+            th:href="@{/minijuegos}"
+            class="poke-button"
+            style="display: inline-flex; width: auto; padding: 8px 15px"
+          >
+            <i class="fas fa-arrow-left"></i> Volver a Minijuegos
+          </a>
+        </div>
+
         <div class="guess-wrapper">
              <div class="game-card">
                 <h1>¿Quién es este Pokémon?</h1>
@@ -186,5 +153,68 @@
 </footer>
 
     <script th:src="@{/js/guess.js}"></script>
+    <script>
+      const searchInput = document.getElementById("newsSearchInput");
+      const resultsBox = document.getElementById("newsSearchResults");
+
+      function toggleFilter() {
+        document.getElementById("filterMenu").classList.toggle("hidden");
+      }
+
+      // Cerrar si clicamos fuera
+      window.addEventListener("click", function (e) {
+        const btn = document.querySelector('button[onclick="toggleFilter()"]');
+        const menu = document.getElementById("filterMenu");
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+          menu.classList.add("hidden");
+        }
+      });
+
+      searchInput.addEventListener("input", function () {
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+          resultsBox.style.display = "none";
+          return;
+        }
+
+        // Llamada AJAX a nuestro controlador interno
+        fetch(`/api/busqueda-noticias?query=${encodeURIComponent(query)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            resultsBox.innerHTML = "";
+            if (data.length > 0) {
+              data.forEach((noticia) => {
+                const item = document.createElement("a");
+                item.href = `/noticia/${noticia.id}`;
+                item.className = "search-result-item";
+                // Aseguramos ruta absoluta para la imagen
+                const imgUrl = noticia.imagenUrl.startsWith("http")
+                  ? noticia.imagenUrl
+                  : "/" + noticia.imagenUrl;
+
+                item.innerHTML = `
+                            <img src="${imgUrl}" alt="img">
+                            <div>
+                                <div style="font-weight: bold; font-size: 0.9em;">${noticia.titulo}</div>
+                                <div style="font-size: 0.8em; color: #aaa;">${noticia.tagText}</div>
+                            </div>
+                        `;
+                resultsBox.appendChild(item);
+              });
+              resultsBox.style.display = "block";
+            } else {
+              resultsBox.style.display = "none";
+            }
+          });
+      });
+
+      // Cerrar si clicamos fuera
+      document.addEventListener("click", function (e) {
+        if (!searchInput.contains(e.target) && !resultsBox.contains(e.target)) {
+          resultsBox.style.display = "none";
+        }
+      });
+    </script>
 </body>
 </html>

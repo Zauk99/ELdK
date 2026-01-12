@@ -194,7 +194,7 @@ function createHint(index, type) {
     const hint = document.createElement('div');
     hint.classList.add('cell', 'hint');
     hint.innerHTML = `<span>${sum}</span><hr><span style="display:flex;align-items:center;gap:3px;">
-        <img src="voltorb.png" style="width:14px;">${voltorbs}
+        <img src="/img/voltorb.png" style="width:14px;">${voltorbs}
     </span>`;
     return hint;
 }

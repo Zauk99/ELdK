@@ -1,8 +1,8 @@
 /* =========================================
-   ESTILOS MINIJUEGOS (Fusionados y Adaptados)
+   ESTILOS MINIJUEGOS (Actualizado)
    ========================================= */
 
-/* --- HUB DE MINIJUEGOS (El menú de selección) --- */
+/* --- HUB DE MINIJUEGOS --- */
 .minigames-hub {
     display: flex;
     gap: 30px;
@@ -45,7 +45,7 @@
 }
 
 /* =========================================
-   VOLTORB FLIP
+   VOLTORB FLIP (DISEÑO MEJORADO)
    ========================================= */
 .voltorb-wrapper {
     display: flex;
@@ -54,14 +54,14 @@
 }
 
 .game-container {
-    background-color: var(--component-bg); /* Adaptado al tema */
+    background-color: var(--component-bg);
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     border: 4px solid #444;
     text-align: center;
     position: relative;
-    max-width: 500px;
+    max-width: 650px; /* Aumentado para acomodar el tablero más grande */
     width: 100%;
 }
 
@@ -78,10 +78,10 @@
 .toolbar {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 15px;
     margin-bottom: 20px;
     background: rgba(0, 0, 0, 0.2);
-    padding: 10px;
+    padding: 15px;
     border-radius: 15px;
 }
 
@@ -89,13 +89,13 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 8px 12px;
-    background: #333; /* Oscurecido */
+    padding: 10px 15px;
+    background: #333;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s;
     border: 2px solid transparent;
-    min-width: 65px;
+    min-width: 70px;
 }
 
 .tool.active {
@@ -105,69 +105,82 @@
 }
 
 .tool.active .icon, .tool.active .label {
-    color: #2c3e50; /* Texto oscuro sobre amarillo */
+    color: #2c3e50;
     font-weight: bold;
 }
 
-.icon { font-size: 1.4rem; margin-bottom: 2px; }
-.label { font-size: 0.7rem; text-transform: uppercase; color: #ccc; }
+.icon { font-size: 1.6rem; margin-bottom: 2px; }
+.label { font-size: 0.8rem; text-transform: uppercase; color: #ccc; }
 
-/* Grid */
+/* Grid - TABLERO MÁS GRANDE */
 .grid {
     display: grid;
-    grid-template-columns: repeat(6, 60px);
-    grid-template-rows: repeat(6, 60px);
-    gap: 8px;
-    background-color: #222; /* Fondo del tablero */
-    padding: 15px;
-    border-radius: 12px;
+    /* Aumentado de 60px a 75px */
+    grid-template-columns: repeat(6, 75px);
+    grid-template-rows: repeat(6, 75px);
+    gap: 10px; /* Un poco más de espacio entre casillas */
+    background-color: #1a1a1a; /* Fondo un poco más oscuro */
+    padding: 20px;
+    border-radius: 15px;
     margin: 0 auto 20px auto;
     width: fit-content;
 }
 
+/* Casillas */
 .cell {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(145deg, #2ecc71, #27ae60);
-    border-radius: 6px;
+    width: 75px;  /* Aumentado */
+    height: 75px; /* Aumentado */
+    /* VERDE MÁS OSCURO */
+    background: linear-gradient(145deg, #196f3d, #145a32); 
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     font-weight: bold;
-    font-size: 22px;
+    font-size: 28px; /* Texto más grande */
     position: relative;
     transition: all 0.2s ease;
-    box-shadow: 0 4px #1e8449;
+    box-shadow: 0 5px #0b5345; /* Sombra más oscura */
     color: white;
 }
 
+.cell:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.cell:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px #0b5345;
+}
+
+/* Casilla Revelada */
 .cell.revealed {
     background: #ecf0f1;
     color: #2c3e50;
     cursor: default;
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+    transform: none;
 }
 
 /* Imagen de Voltorb */
 .cell.voltorb {
-    background-image: url('/img/voltorb.png'); /* Ruta corregida */
+    background-image: url('/img/voltorb.png');
     background-size: 80%;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #e74c3c;
+    background-color: #c0392b; /* Rojo oscuro para la explosión */
     color: transparent; 
 }
 
-/* Marca de Memo */
+/* Marcas */
 .cell[data-mark="💣"]::after {
     content: "";
     position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 18px;
-    height: 18px;
-    background-image: url('/img/voltorb.png'); /* Ruta corregida */
+    top: 4px; right: 4px;
+    width: 20px; height: 20px;
+    background-image: url('/img/voltorb.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-color: rgba(0, 0, 0, 0.6);
@@ -178,47 +191,50 @@
 .cell[data-mark]:not([data-mark="💣"])::after {
     content: attr(data-mark);
     position: absolute;
-    top: 2px;
-    right: 2px;
-    font-size: 12px;
+    top: 4px; right: 4px;
+    font-size: 14px;
     background: rgba(0,0,0,0.6);
     color: white;
-    padding: 1px 3px;
+    padding: 2px 5px;
     border-radius: 3px;
 }
 
-/* Pistas */
+/* Pistas (Hints) - AHORA EN ROJO */
 .cell.hint {
-    background: linear-gradient(145deg, #f39c12, #d35400);
-    box-shadow: 0 4px #a04000;
+    /* Gradiente Rojo */
+    background: linear-gradient(145deg, #c0392b, #922b21);
+    box-shadow: 0 5px #641e16; /* Sombra roja oscura */
     cursor: default;
     flex-direction: column;
-    font-size: 14px;
+    font-size: 16px;
     color: #fff;
 }
 
-.cell.hint hr { width: 80%; border: 0.5px solid rgba(255,255,255,0.3); margin: 2px 0; }
+.cell.hint:hover { transform: none; filter: none; }
+
+.cell.hint hr { width: 80%; border: 0.5px solid rgba(255,255,255,0.4); margin: 4px 0; }
 
 /* Overlay */
 .overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
     border-radius: 20px;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(4px);
 }
 
 .overlay-content {
     background-color: #f1c40f;
-    padding: 30px;
+    padding: 40px;
     border-radius: 15px;
     border: 5px solid #2c3e50;
     color: #2c3e50;
     font-weight: bold;
+    font-size: 1.2rem;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
@@ -228,12 +244,13 @@
     border-radius: 8px;
     margin-bottom: 20px;
     color: white;
+    font-size: 1.1rem;
 }
 .hidden { display: none !important; }
 
 
 /* =========================================
-   GUESS THE POKEMON
+   GUESS THE POKEMON (Estilos preservados)
    ========================================= */
 
 .guess-wrapper {
@@ -243,7 +260,7 @@
 }
 
 .game-card {
-    background: var(--component-bg); /* Adaptado */
+    background: var(--component-bg);
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -258,21 +275,22 @@
     margin-bottom: 20px;
 }
 
+/* Fondo GRIS OSCURO para ver mejor Pokémon blancos */
 #image-container {
     width: 250px;
     height: 250px;
     margin: 20px auto;
-    background: radial-gradient(circle, #ffffff 0%, #dcdcdc 100%);
+    background: radial-gradient(circle, #777777 0%, #333333 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%; /* Pokeball style */
-    border: 8px solid #333;
+    border-radius: 50%;
+    border: 8px solid #222;
     overflow: hidden;
     position: relative;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
 }
 
-/* Barra central pokeball decorativa */
 #image-container::after {
     content: '';
     position: absolute;
@@ -295,7 +313,6 @@
 
 #pokemon-img.hidden { display: none; }
 
-/* Niveles de pixelado */
 .pixel-level-5 { filter: blur(25px) brightness(0); width: 100%; }
 .pixel-level-4 { filter: blur(15px); width: 100%; }
 .pixel-level-3 { filter: blur(8px); width: 100%; }
@@ -352,3 +369,19 @@
 }
 
 .reset-btn:hover { background-color: #b71c1c; }
+
+
+/* =========================================
+   AJUSTES GLOBALES
+   ========================================= */
+
+/* Contenedor del botón volver alineado al centro */
+.back-btn-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+}

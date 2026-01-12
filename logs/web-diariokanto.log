@@ -200,3 +200,29 @@ org.thymeleaf.exceptions.TemplateInputException: Error resolving template [minij
 2026-01-09 08:48:27 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
 2026-01-09 08:48:27 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
 2026-01-09 08:48:27 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-09 09:07:10 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 22392 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-09 09:07:10 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-09 09:07:12 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-09 09:07:12 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-09 09:07:12 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-09 09:07:12 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 2263 ms
+2026-01-09 09:07:13 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-09 09:07:14 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-09 09:07:14 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2026-01-09 09:07:14 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 4.734 seconds (process running for 5.274)
+2026-01-09 09:07:16 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-09 09:07:16 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-09 09:07:16 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-09 12:25:12 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 17244 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-09 12:25:12 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-09 12:25:14 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-09 12:25:14 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-09 12:25:14 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-09 12:25:14 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1499 ms
+2026-01-09 12:25:15 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-09 12:25:15 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-09 12:25:16 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2026-01-09 12:25:16 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 3.86 seconds (process running for 4.31)
+2026-01-09 12:25:17 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-09 12:25:17 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-09 12:25:17 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 6 ms

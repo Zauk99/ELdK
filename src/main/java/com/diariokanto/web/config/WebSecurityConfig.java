@@ -33,7 +33,11 @@ public class WebSecurityConfig {
                                 "/css/**",
                                 "/img/**",
                                 "/admin/**",
-                                "/equipos",
+                                // --- NUEVOS PERMISOS ---
+                                "/minijuegos",
+                                "/minijuegos/**", // Permite acceso a todo lo que empiece por /minijuegos
+                                "/equipos",       // Lista general de equipos
+                                "/equipos/**",    // Detalles de equipos (ej: /equipos/5)
                                 "/js/**")
                         .permitAll()
                         .anyRequest().authenticated())

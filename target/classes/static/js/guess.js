@@ -56,10 +56,17 @@ function updatePixelation() {
 
 function checkGuess() {
     const userInput = document.getElementById('guess-input').value.toLowerCase().trim();
-    if (!userInput) return; // No contar intentos si el input está vacío
+    if (!userInput) return; 
 
-    const pokemonName = currentPokemon.name.toLowerCase();
+    // CAMBIO: Usamos species.name para obtener el nombre base (ej: "keldeo" en vez de "keldeo-ordinary")
+    // También reemplazamos guiones por espacios por si acaso, aunque species.name suele venir limpio.
+    const pokemonName = currentPokemon.species.name.toLowerCase(); 
 
+    // OPCIONAL: Si quieres permitir AMBOS (ej: "keldeo" y "keldeo-ordinary"), puedes hacer esto:
+    // const technicalName = currentPokemon.name.toLowerCase();
+    // if (userInput === pokemonName || userInput === technicalName) { ... }
+    
+    // Pero como pediste "quitar" las formas, con esto basta:
     if (userInput === pokemonName) {
         endGame(true);
     } else {
@@ -70,7 +77,7 @@ function checkGuess() {
             endGame(false);
         } else {
             document.getElementById('message').innerText = "¡No! Intenta otra vez.";
-            document.getElementById('guess-input').value = ""; // Limpiar para el siguiente intento
+            document.getElementById('guess-input').value = ""; 
             updatePixelation();
         }
     }
@@ -84,13 +91,15 @@ function endGame(win) {
     img.className = "pixel-level-1"; // Revelar totalmente
     input.disabled = true; // Bloquear escritura
     
-    // Ocultar botón adivinar y mostrar reiniciar
     document.getElementById('guess-btn').style.display = "none";
     document.getElementById('reset-btn').style.display = "inline-block";
 
+    // CAMBIO: Usamos species.name también aquí para mostrar el nombre limpio
+    const displayName = currentPokemon.species.name.toUpperCase();
+
     if(win) {
-        msg.innerHTML = `<span style="color: green;">¡Correcto! Es <strong>${currentPokemon.name.toUpperCase()}</strong></span>`;
+        msg.innerHTML = `<span style="color: green;">¡Correcto! Es <strong>${displayName}</strong></span>`;
     } else {
-        msg.innerHTML = `<span style="color: red;">Se acabaron los intentos. Era <strong>${currentPokemon.name.toUpperCase()}</strong></span>`;
+        msg.innerHTML = `<span style="color: red;">Se acabaron los intentos. Era <strong>${displayName}</strong></span>`;
     }
 }
