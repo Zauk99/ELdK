@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Adivina el Pokémon - El Diario de Kanto</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link rel="stylesheet" th:href="@{/css/minigamesstyles.css}" />
     <link rel="icon" th:href="@{/img/Logo.png}" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
     <header class="header">
       <div class="header-container">
         <div class="logo-area">
@@ -91,66 +96,96 @@
     </header>
 
     <main class="content-container">
+      <div class="back-btn-container">
+        <a
+          th:href="@{/minijuegos}"
+          class="poke-button"
+          style="display: inline-flex; width: auto; padding: 8px 15px"
+        >
+          <i class="fas fa-arrow-left"></i> Volver a Minijuegos
+        </a>
+      </div>
 
-        <div class="back-btn-container">
-          <a
-            th:href="@{/minijuegos}"
-            class="poke-button"
-            style="display: inline-flex; width: auto; padding: 8px 15px"
-          >
-            <i class="fas fa-arrow-left"></i> Volver a Minijuegos
-          </a>
+      <div id="instructions-overlay" class="overlay">
+        <div class="overlay-content">
+          <h2>¿Cómo jugar?</h2>
+          <p>
+            Aparecerá una imagen pixelada de un Pokémon aleatorio. <br />
+            Tienes <strong>5 intentos</strong> para escribir su nombre
+            correctamente. <br />
+            Con cada fallo, la imagen se volverá un poco más nítida.
+          </p>
+          <button class="guess-btn" onclick="startGame()">¡Entendido!</button>
         </div>
+      </div>
 
-        <div class="guess-wrapper">
-             <div class="game-card">
-                <h1>¿Quién es este Pokémon?</h1>
-                
-                <div id="image-container">
-                    <img id="pokemon-img" src="" alt="Pokemon" class="hidden">
-                </div>
+      <div class="guess-wrapper">
+        <div class="game-card">
+          <h1>¿Quién es este Pokémon?</h1>
 
-                <div class="controls">
-                    <p id="attempts-text">Intentos: <span id="tries">0</span> / 5</p>
-                    <input type="text" id="guess-input" placeholder="Escribe el nombre..." onkeydown="if(event.key === 'Enter') checkGuess()">
-                    
-                    <div class="button-group">
-                        <button id="guess-btn" class="guess-btn" onclick="checkGuess()">¡Adivinar!</button>
-                        <button id="reset-btn" class="reset-btn" onclick="initGame()" style="display:none;">Jugar de nuevo</button>
-                    </div>
-                </div>
-                
-                <p id="message"></p>
+          <div id="image-container">
+            <img id="pokemon-img" src="" alt="Pokemon" class="hidden" />
+          </div>
+
+          <div class="controls">
+            <p id="attempts-text">Intentos: <span id="tries">0</span> / 5</p>
+            <input
+              type="text"
+              id="guess-input"
+              placeholder="Escribe el nombre..."
+              onkeydown="if(event.key === 'Enter')"
+            />
+
+            <div class="button-group">
+              <button id="guess-btn" class="guess-btn" onclick="checkGuess()">
+                ¡Adivinar!
+              </button>
+              <button
+                id="reset-btn"
+                class="reset-btn"
+                onclick="initGame()"
+                style="display: none"
+              >
+                Jugar de nuevo
+              </button>
             </div>
+          </div>
+
+          <p id="message"></p>
         </div>
+      </div>
     </main>
 
     <footer class="main-footer">
-  <div class="footer-content-wrapper">
-    <div class="footer-info">
-      <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo">
-      <p class="description">
-        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br>
-        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus
-        Pokémon favoritos.
-        <br>¡Atrapa la información!
-      </p>
-    </div>
+      <div class="footer-content-wrapper">
+        <div class="footer-info">
+          <img
+            th:src="@{/img/Logo.png}"
+            alt="Logo de la Pokédex"
+            class="footer-logo"
+          />
+          <p class="description">
+            Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+            de Kanto!<br />
+            Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+            evolutivas de todos tus Pokémon favoritos.
+            <br />¡Atrapa la información!
+          </p>
+        </div>
 
-    <div class="footer-meta">
-      <p class="creator">
-        Creado por: Pablo Herrera Domínguez
-      </p>
-      <p class="copyright">
-        ©2025 El Diario de Kanto. Todos los derechos reservados.
-      </p>
-      <p class="disclaimer">
-        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de
-        Nintendo, Game Freak y The Pokémon Company.
-      </p>
-    </div>
-  </div>
-</footer>
+        <div class="footer-meta">
+          <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+          <p class="copyright">
+            ©2025 El Diario de Kanto. Todos los derechos reservados.
+          </p>
+          <p class="disclaimer">
+            Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+            sus nombres son marcas registradas de Nintendo, Game Freak y The
+            Pokémon Company.
+          </p>
+        </div>
+      </div>
+    </footer>
 
     <script th:src="@{/js/guess.js}"></script>
     <script>
@@ -216,5 +251,5 @@
         }
       });
     </script>
-</body>
+  </body>
 </html>

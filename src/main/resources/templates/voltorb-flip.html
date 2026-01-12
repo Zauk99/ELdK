@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Voltorb Flip - El Diario de Kanto</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link rel="stylesheet" th:href="@{/css/minigamesstyles.css}" />
     <link rel="icon" th:href="@{/img/Logo.png}" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+  <body>
     <header class="header">
       <div class="header-container">
         <div class="logo-area">
@@ -90,78 +96,96 @@
     </header>
 
     <main class="content-container">
+      <div class="back-btn-container">
+        <a
+          th:href="@{/minijuegos}"
+          class="poke-button"
+          style="display: inline-flex; width: auto; padding: 8px 15px"
+        >
+          <i class="fas fa-arrow-left"></i> Volver a Minijuegos
+        </a>
+      </div>
 
-        <div class="back-btn-container">
-          <a
-            th:href="@{/minijuegos}"
-            class="poke-button"
-            style="display: inline-flex; width: auto; padding: 8px 15px"
-          >
-            <i class="fas fa-arrow-left"></i> Volver a Minijuegos
-          </a>
+      <div class="voltorb-wrapper">
+        <div class="game-container">
+          <div id="status">Cargando partida...</div>
+
+          <div id="board" class="grid"></div>
+
+          <div class="toolbar">
+            <div class="tool active" id="tool-flip" onclick="setMode('flip')">
+              <span class="icon">🔍</span><span class="label">Girar</span>
+            </div>
+            <div class="tool" id="tool-0" onclick="setMode('mark-0')">
+              <span class="icon">💣</span><span class="label">Marcar</span>
+            </div>
+            <div class="tool" id="tool-1" onclick="setMode('mark-1')">
+              <span class="icon">1</span><span class="label">Marcar</span>
+            </div>
+            <div class="tool" id="tool-2" onclick="setMode('mark-2')">
+              <span class="icon">2</span><span class="label">Marcar</span>
+            </div>
+            <div class="tool" id="tool-3" onclick="setMode('mark-3')">
+              <span class="icon">3</span><span class="label">Marcar</span>
+            </div>
+          </div>
+
+          <div id="level-overlay" class="overlay hidden">
+            <div class="overlay-content">
+              <p>¡NIVEL COMPLETADO!</p>
+              <p>Bombas desactivadas.</p>
+              <p>Pasando al siguiente nivel...</p>
+            </div>
+          </div>
+
+          <div id="start-overlay" class="overlay">
+            <div class="overlay-content">
+              <h2>Voltorb Flip</h2>
+              <p>
+                El objetivo es destapar todas las casillas 
+                <strong>que contengan un 2 o un 3</strong>.<br />
+                Si tocas un <strong>Voltorb</strong>, el tablero explotará y
+                podrías bajar de nivel.<br />
+                Usa las pistas de los laterales para saber cuántos puntos y
+                bombas hay en cada fila y columna.
+              </p>
+              <button class="guess-btn" onclick="startGame()">¡A jugar!</button>
+            </div>
+          </div>
         </div>
-
-        <div class="voltorb-wrapper">
-            <div class="game-container">
-                <div id="status">Cargando partida...</div>
-                
-                <div id="board" class="grid"></div>
-                
-                <div class="toolbar">
-                    <div class="tool active" id="tool-flip" onclick="setMode('flip')">
-                        <span class="icon">🔍</span><span class="label">Girar</span>
-                    </div>
-                    <div class="tool" id="tool-0" onclick="setMode('mark-0')">
-                        <span class="icon">💣</span><span class="label">Marcar</span>
-                    </div>
-                    <div class="tool" id="tool-1" onclick="setMode('mark-1')">
-                        <span class="icon">1</span><span class="label">Marcar</span>
-                    </div>
-                    <div class="tool" id="tool-2" onclick="setMode('mark-2')">
-                        <span class="icon">2</span><span class="label">Marcar</span>
-                    </div>
-                    <div class="tool" id="tool-3" onclick="setMode('mark-3')">
-                        <span class="icon">3</span><span class="label">Marcar</span>
-                    </div>
-                </div>
-
-                <div id="level-overlay" class="overlay hidden">
-                    <div class="overlay-content">
-                        <p>¡NIVEL COMPLETADO!</p>
-                        <p>Bombas desactivadas.</p>
-                        <p>Pasando al siguiente nivel...</p>
-                    </div>
-                </div>
-            </div>
-            </div>
+      </div>
     </main>
 
     <footer class="main-footer">
-  <div class="footer-content-wrapper">
-    <div class="footer-info">
-      <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo">
-      <p class="description">
-        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br>
-        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus
-        Pokémon favoritos.
-        <br>¡Atrapa la información!
-      </p>
-    </div>
+      <div class="footer-content-wrapper">
+        <div class="footer-info">
+          <img
+            th:src="@{/img/Logo.png}"
+            alt="Logo de la Pokédex"
+            class="footer-logo"
+          />
+          <p class="description">
+            Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+            de Kanto!<br />
+            Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+            evolutivas de todos tus Pokémon favoritos.
+            <br />¡Atrapa la información!
+          </p>
+        </div>
 
-    <div class="footer-meta">
-      <p class="creator">
-        Creado por: Pablo Herrera Domínguez
-      </p>
-      <p class="copyright">
-        ©2025 El Diario de Kanto. Todos los derechos reservados.
-      </p>
-      <p class="disclaimer">
-        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de
-        Nintendo, Game Freak y The Pokémon Company.
-      </p>
-    </div>
-  </div>
-</footer>
+        <div class="footer-meta">
+          <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+          <p class="copyright">
+            ©2025 El Diario de Kanto. Todos los derechos reservados.
+          </p>
+          <p class="disclaimer">
+            Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+            sus nombres son marcas registradas de Nintendo, Game Freak y The
+            Pokémon Company.
+          </p>
+        </div>
+      </div>
+    </footer>
 
     <script th:src="@{/js/voltorb.js}"></script>
     <script>
@@ -227,5 +251,5 @@
         }
       });
     </script>
-</body>
+  </body>
 </html>

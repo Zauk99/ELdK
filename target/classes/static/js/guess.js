@@ -1,54 +1,56 @@
 let currentPokemon = null;
 let attempts = 0;
 const MAX_ATTEMPTS = 5;
-// Actualmente hay 1025 Pokémon, pero los últimos a veces no tienen artwork oficial. 
-// 1010 es un número seguro para la mayoría de los artworks.
 const TOTAL_POKEMON = 1010; 
 
-window.onload = initGame;
+// Al cargar la ventana, simplemente preparamos el foco inicial
+window.onload = () => {
+    console.log("Diario de Kanto: Minijuego listo.");
+};
+
+// Quitar overlay de instrucciones e iniciar
+function startGame() {
+    const overlay = document.getElementById('instructions-overlay');
+    if (overlay) overlay.classList.add('hidden');
+    initGame();
+}
 
 async function initGame() {
-    // 1. Limpiar UI antes de mostrar nada nuevo
     attempts = 0;
     document.getElementById('tries').innerText = attempts;
     document.getElementById('message').innerText = "Cargando Pokémon...";
-    document.getElementById('guess-input').value = "";
-    document.getElementById('guess-input').disabled = false;
     
-    // Gestión de botones
+    const input = document.getElementById('guess-input');
+    input.value = "";
+    input.disabled = false;
+    
     document.getElementById('guess-btn').style.display = "inline-block";
     document.getElementById('reset-btn').style.display = "none";
     
     const imgElement = document.getElementById('pokemon-img');
-    imgElement.classList.add('hidden'); // Lo ocultamos totalmente mientras carga
+    imgElement.classList.add('hidden');
 
-    // 2. Elegir ID aleatorio de todas las generaciones
     const randomId = Math.floor(Math.random() * TOTAL_POKEMON) + 1;
     
     try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
         currentPokemon = await response.json();
-        
-        // 3. Preparar imagen
         imgElement.src = currentPokemon.sprites.other['official-artwork'].front_default;
         
-        // Esperamos a que la imagen cargue internamente antes de mostrarla pixelada
         imgElement.onload = () => {
             updatePixelation();
             imgElement.classList.remove('hidden');
             document.getElementById('message').innerText = "";
-            document.getElementById('guess-input').focus(); // Poner el cursor listo para escribir
+            input.focus(); // El teclado queda listo para escribir
         };
         
     } catch (error) {
-        document.getElementById('message').innerText = "Error de conexión. Reintenta.";
-        console.error(error);
+        document.getElementById('message').innerText = "Error de conexión.";
     }
 }
 
 function updatePixelation() {
     const img = document.getElementById('pokemon-img');
-    // Calculamos nivel: 5 (max pixelado) a 1 (limpio)
     let level = MAX_ATTEMPTS - attempts;
     if (level < 1) level = 1;
     img.className = `pixel-level-${level}`;
@@ -58,21 +60,13 @@ function checkGuess() {
     const userInput = document.getElementById('guess-input').value.toLowerCase().trim();
     if (!userInput) return; 
 
-    // CAMBIO: Usamos species.name para obtener el nombre base (ej: "keldeo" en vez de "keldeo-ordinary")
-    // También reemplazamos guiones por espacios por si acaso, aunque species.name suele venir limpio.
     const pokemonName = currentPokemon.species.name.toLowerCase(); 
 
-    // OPCIONAL: Si quieres permitir AMBOS (ej: "keldeo" y "keldeo-ordinary"), puedes hacer esto:
-    // const technicalName = currentPokemon.name.toLowerCase();
-    // if (userInput === pokemonName || userInput === technicalName) { ... }
-    
-    // Pero como pediste "quitar" las formas, con esto basta:
     if (userInput === pokemonName) {
         endGame(true);
     } else {
         attempts++;
         document.getElementById('tries').innerText = attempts;
-        
         if (attempts >= MAX_ATTEMPTS) {
             endGame(false);
         } else {
@@ -88,13 +82,12 @@ function endGame(win) {
     const msg = document.getElementById('message');
     const input = document.getElementById('guess-input');
     
-    img.className = "pixel-level-1"; // Revelar totalmente
-    input.disabled = true; // Bloquear escritura
+    img.className = "pixel-level-1"; // Revelar Pokémon
+    input.disabled = true; // Bloquear teclado para adivinar
     
     document.getElementById('guess-btn').style.display = "none";
     document.getElementById('reset-btn').style.display = "inline-block";
 
-    // CAMBIO: Usamos species.name también aquí para mostrar el nombre limpio
     const displayName = currentPokemon.species.name.toUpperCase();
 
     if(win) {
@@ -103,3 +96,32 @@ function endGame(win) {
         msg.innerHTML = `<span style="color: red;">Se acabaron los intentos. Era <strong>${displayName}</strong></span>`;
     }
 }
+
+/**
+ * GESTOR ÚNICO DE TECLADO
+ * Centraliza el uso de la tecla "Enter"
+ */
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        const instructions = document.getElementById('instructions-overlay');
+        const resetBtn = document.getElementById('reset-btn');
+        const input = document.getElementById('guess-input');
+
+        // 1. Si las instrucciones están abiertas, ENTER las cierra
+        if (instructions && !instructions.classList.contains('hidden')) {
+            startGame();
+            return;
+        }
+
+        // 2. Si el juego ha terminado (botón reset visible), ENTER reinicia
+        if (resetBtn && resetBtn.style.display !== 'none') {
+            initGame();
+            return;
+        }
+
+        // 3. Si el juego está activo y el usuario está escribiendo, ENTER comprueba nombre
+        if (input && !input.disabled && document.activeElement === input) {
+            checkGuess();
+        }
+    }
+});

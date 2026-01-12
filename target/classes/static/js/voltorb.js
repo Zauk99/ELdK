@@ -1,25 +1,12 @@
-/**
- * VOLTORB FLIP - SCRIPT FINAL
- * Características: 
- * - Toolbar y Modos.
- * - Imágenes personalizadas.
- * - Tiempos: 2s Mensaje / 5s Reinicio.
- * - Lógica: Baja nivel al perder (min 1), Mantiene nivel al ganar si es el Máximo (5).
- */
-
-// --- CONFIGURACIÓN Y ESTADO ---
 const BOARD_SIZE = 5;
-const MAX_LEVEL = 5; // Definimos el tope de niveles
+const MAX_LEVEL = 5;
 
 let board = [];
 let revealedCount = 0;
 let totalWinningTiles = 0;
 let currentLevel = 1;
 let currentMode = 'flip';
-// Variable preparada para tu futuro sistema de puntuación (aún no se muestra)
-let currentScore = 0; 
 
-// Configuración de dificultad
 const LEVEL_CONFIGS = {
     1: { voltorbs: 6, twos: 3, threes: 1 },
     2: { voltorbs: 7, twos: 4, threes: 2 },
@@ -28,21 +15,30 @@ const LEVEL_CONFIGS = {
     5: { voltorbs: 8, twos: 5, threes: 5 }
 };
 
+window.onload = () => {
+    document.getElementById('status').innerText = "Lee las instrucciones para comenzar";
+};
+
+function startGame() {
+    const overlay = document.getElementById('start-overlay');
+    if (overlay) overlay.classList.add('hidden');
+    initGame();
+}
+
 function initGame() {
     board = [];
     revealedCount = 0;
     totalWinningTiles = 0;
     
     const boardElement = document.getElementById('board');
-    const overlay = document.getElementById('level-overlay');
+    const winOverlay = document.getElementById('level-overlay');
 
     boardElement.innerHTML = ''; 
-    if (overlay) overlay.classList.add('hidden');
+    if (winOverlay) winOverlay.classList.add('hidden');
     document.getElementById('status').innerText = `Nivel ${currentLevel}`;
     
     setMode('flip');
 
-    // Usamos la configuración del nivel actual
     const config = LEVEL_CONFIGS[currentLevel];
     const totalCells = BOARD_SIZE * BOARD_SIZE;
     
@@ -52,13 +48,11 @@ function initGame() {
     for (let i = 0; i < config.threes; i++) values.push(3);
     while (values.length < totalCells) values.push(1);
 
-    // Mezclar casillas
     for (let i = values.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [values[i], values[j]] = [values[j], values[i]];
     }
 
-    // Rellenar matriz
     for (let r = 0; r < BOARD_SIZE; r++) {
         board[r] = [];
         for (let c = 0; c < BOARD_SIZE; c++) {
@@ -79,7 +73,6 @@ function renderBoard() {
             cell.dataset.row = r;
             cell.dataset.col = c;
             cell.onclick = () => handleCellInteraction(r, c, cell);
-            cell.oncontextmenu = (e) => e.preventDefault();
             boardElement.appendChild(cell);
         }
         boardElement.appendChild(createHint(r, 'row'));
@@ -97,6 +90,8 @@ function handleCellInteraction(r, c, element) {
     } else {
         const markIcons = { 'mark-0': '💣', 'mark-1': '1', 'mark-2': '2', 'mark-3': '3' };
         const icon = markIcons[currentMode];
+        
+        // CORRECCIÓN CLAVE: Eliminar el atributo si ya es el mismo, o añadirlo
         if (element.dataset.mark === icon) {
             delete element.dataset.mark;
         } else {
@@ -107,50 +102,26 @@ function handleCellInteraction(r, c, element) {
 
 function revealCell(r, c, element) {
     const val = board[r][c];
-    delete element.dataset.mark;
+    delete element.dataset.mark; // Quitar marca al revelar
     element.classList.add('revealed');
 
     if (val === 0) {
-        // --- DERROTA ---
         element.classList.add('voltorb');
         document.getElementById('status').innerText = "¡BOOM! Has perdido.";
-        
         disableBoard();
         revealAllTiles(); 
-
-        // Si es mayor que 1, bajamos. Si es 1, se queda en 1.
-        if (currentLevel > 1) {
-            currentLevel--;
-        }
-
+        if (currentLevel > 1) currentLevel--;
         setTimeout(initGame, 3000); 
-
     } else {
-        // --- ACIERTO ---
         element.innerText = val;
         if (val > 1) revealedCount++;
-        
         if (revealedCount === totalWinningTiles) {
-            // --- VICTORIA ---
             const overlay = document.getElementById('level-overlay');
             if (overlay) overlay.classList.remove('hidden');
-            
             disableBoard();
             revealAllTiles();
-            
-            // --- NUEVA LÓGICA DE PROGRESIÓN ---
-            if (currentLevel < MAX_LEVEL) {
-                currentLevel++; // Subimos si no es el máximo
-            }
-            // Si currentLevel ya es 5, no hacemos nada (se repite el 5)
-
-            // Mensaje durante 2 segundos
-            setTimeout(() => {
-                if (overlay) overlay.classList.add('hidden');
-                document.getElementById('status').innerText = "¡Nivel completado! Preparando el siguiente...";
-            }, 2000);
-
-            // Reinicio total a los 5 segundos
+            if (currentLevel < MAX_LEVEL) currentLevel++;
+            setTimeout(() => { if (overlay) overlay.classList.add('hidden'); }, 2000);
             setTimeout(initGame, 5000);
         }
     }
@@ -165,12 +136,8 @@ function revealAllTiles() {
         if (!cell.classList.contains('revealed')) {
             cell.classList.add('revealed');
             cell.style.opacity = "0.7"; 
-            if (val === 0) {
-                cell.classList.add('voltorb');
-                cell.innerText = "";
-            } else {
-                cell.innerText = val;
-            }
+            if (val === 0) cell.classList.add('voltorb');
+            else cell.innerText = val;
             delete cell.dataset.mark;
         }
     });
@@ -203,5 +170,3 @@ function disableBoard() {
     const cells = document.querySelectorAll('.cell');
     cells.forEach(c => c.onclick = null);
 }
-
-window.onload = initGame;
