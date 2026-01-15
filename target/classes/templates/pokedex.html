@@ -209,7 +209,7 @@
                       class="filter-section-header"
                       onclick="toggleSection('typesSection')"
                     >
-                      <span>Tipo</span>
+                      <span>Tipo (Máx. 2)</span>
                       <i
                         class="fas fa-chevron-down"
                         id="arrow-typesSection"
@@ -218,104 +218,95 @@
                     <div id="typesSection" class="filter-options hidden">
                       <div class="checkbox-grid">
                         <label class="filter-option">
-                          <input
-                            type="radio"
-                            name="tipo"
-                            value=""
-                            th:checked="${tipoActual == null}"
-                          />
-                          <span>Todos</span>
+                          <input type="checkbox" name="tipo" value="normal"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('normal')}" />
+                          Normal
                         </label>
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="normal"
-                            th:checked="${tipoActual == 'normal'}"
-                          />
-                          Normal</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="fire"
-                            th:checked="${tipoActual == 'fire'}"
-                          />
-                          Fuego</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="water"
-                            th:checked="${tipoActual == 'water'}"
-                          />
-                          Agua</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="grass"
-                            th:checked="${tipoActual == 'grass'}"
-                          />
-                          Planta</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="electric"
-                            th:checked="${tipoActual == 'electric'}"
-                          />
-                          Eléctrico</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="psychic"
-                            th:checked="${tipoActual == 'psychic'}"
-                          />
-                          Psíquico</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="ice"
-                            th:checked="${tipoActual == 'ice'}"
-                          />
-                          Hielo</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="dragon"
-                            th:checked="${tipoActual == 'dragon'}"
-                          />
-                          Dragón</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="dark"
-                            th:checked="${tipoActual == 'dark'}"
-                          />
-                          Siniestro</label
-                        >
-                        <label class="filter-option"
-                          ><input
-                            type="radio"
-                            name="tipo"
-                            value="fairy"
-                            th:checked="${tipoActual == 'fairy'}"
-                          />
-                          Hada</label
-                        >
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="fighting"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('fighting')}" />
+                          Lucha
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="flying"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('flying')}" />
+                          Volador
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="poison"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('poison')}" />
+                          Veneno
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="ground"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('ground')}" />
+                          Tierra
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="rock"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('rock')}" />
+                          Roca
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="bug"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('bug')}" />
+                          Bicho
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="ghost"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('ghost')}" />
+                          Fantasma
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="steel"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('steel')}" />
+                          Acero
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="fire"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('fire')}" />
+                          Fuego
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="water"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('water')}" />
+                          Agua
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="grass"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('grass')}" />
+                          Planta
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="electric"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('electric')}" />
+                          Eléctrico
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="psychic"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('psychic')}" />
+                          Psíquico
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="ice"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('ice')}" />
+                          Hielo
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="dragon"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('dragon')}" />
+                          Dragón
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="dark"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('dark')}" />
+                          Siniestro
+                        </label>
+                        <label class="filter-option">
+                          <input type="checkbox" name="tipo" value="fairy"
+                            th:checked="${tiposActuales != null && tiposActuales.contains('fairy')}" />
+                          Hada
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -440,7 +431,7 @@
           <div class="pokemon-grid">
             <a
               th:each="pokemon : ${pokemons}"
-              th:href="@{/pokemon/{id}(id=${pokemon.id})}"
+              th:href="@{/pokemon/{id}(id=${pokemon.id}, tipo=${tiposActuales}, gen=${genActual}, query=${queryActual})}"
               class="pokemon-card"
             >
               <span
@@ -490,65 +481,113 @@
     </main>
     <script src="js/main.js"></script>
     <script>
-      let timeout = null;
-      const form = document.getElementById("pokeSearchForm");
-      const input = form.querySelector("input");
+    // Variable global para rastrear el orden de selección de los tipos (FIFO)
+    let seleccionadosOrden = [];
 
-      input.addEventListener("input", function () {
-        clearTimeout(timeout);
-        // Espera 500ms después de que dejes de escribir para buscar
-        timeout = setTimeout(() => {
-          form.submit();
-        }, 500);
-      });
+    /**
+     * Inicialización principal al cargar la página.
+     * Configura el buscador, inicializa el estado de los filtros y prepara los eventos.
+     */
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("pokeSearchForm");
+        const input = form.querySelector("input");
+        let timeout = null;
 
-      // Foco automático para no perderlo al recargar
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has("query")) {
-        input.focus();
-        // Pon el cursor al final
-        const val = input.value;
-        input.value = "";
-        input.value = val;
-      }
+        // 1. Lógica de búsqueda automática con "debounce" (espera 500ms tras dejar de escribir)
+        input.addEventListener("input", function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                form.submit();
+            }, 500);
+        });
 
-      // Abrir/Cerrar Panel Principal
-      function toggleFilterPanel() {
+        // 2. Recuperar el foco y posicionar el cursor al final si hay una búsqueda activa
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("query")) {
+            input.focus();
+            const val = input.value;
+            input.value = "";
+            input.value = val;
+        }
+
+        // 3. Inicializar el registro de tipos con los que ya vienen marcados desde el servidor.
+        // Esto es crucial para que la persistencia al ir/volver no rompa el límite de 2.
+        document.querySelectorAll('#typesSection input[type="checkbox"]:checked').forEach(cb => {
+            seleccionadosOrden.push(cb.value);
+        });
+
+        // 4. Asignar el detector de cambios a todos los checkboxes de tipos
+        document.querySelectorAll('#typesSection input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', gestionarSeleccionCircular);
+        });
+    });
+
+    /**
+     * Gestiona la selección circular de tipos (Máximo 2).
+     * Si se selecciona un tercero, desmarca automáticamente el primero que se eligió.
+     */
+    function gestionarSeleccionCircular() {
+        if (this.checked) {
+            // Añadimos el nuevo tipo al final de nuestra "cola" de memoria
+            seleccionadosOrden.push(this.value);
+
+            // Si ahora hay 3 seleccionados, extraemos el primero (el más antiguo)
+            if (seleccionadosOrden.length > 2) {
+                const tipoAntiguo = seleccionadosOrden.shift();
+                
+                // Buscamos el checkbox físico del tipo antiguo y lo desmarcamos
+                const checkboxAntiguo = document.querySelector(`#typesSection input[value="${tipoAntiguo}"]`);
+                if (checkboxAntiguo) {
+                    checkboxAntiguo.checked = false;
+                }
+            }
+        } else {
+            // Si el usuario desmarca un tipo manualmente, lo eliminamos del registro de orden
+            seleccionadosOrden = seleccionadosOrden.filter(tipo => tipo !== this.value);
+        }
+    }
+
+    /**
+     * Alterna la visibilidad del panel principal de filtros avanzados.
+     */
+    function toggleFilterPanel() {
         const panel = document.getElementById("filterPanel");
         panel.classList.toggle("hidden");
-      }
+    }
 
-      // Acordeón para las secciones (Tipos, Generación)
-      function toggleSection(sectionId) {
+    /**
+     * Maneja el comportamiento de acordeón para las secciones internas (Tipos y Generaciones).
+     * @param {string} sectionId - El ID del div que se desea expandir o colapsar.
+     */
+    function toggleSection(sectionId) {
         const section = document.getElementById(sectionId);
         const arrow = document.getElementById("arrow-" + sectionId);
 
         if (section.classList.contains("hidden")) {
-          section.classList.remove("hidden");
-          arrow.classList.remove("fa-chevron-down");
-          arrow.classList.add("fa-chevron-up");
+            section.classList.remove("hidden");
+            arrow.classList.remove("fa-chevron-down");
+            arrow.classList.add("fa-chevron-up");
         } else {
-          section.classList.add("hidden");
-          arrow.classList.remove("fa-chevron-up");
-          arrow.classList.add("fa-chevron-down");
+            section.classList.add("hidden");
+            arrow.classList.remove("fa-chevron-up");
+            arrow.classList.add("fa-chevron-down");
         }
-      }
+    }
 
-      // Cerrar si clicamos fuera
-      document.addEventListener("click", function (e) {
+    /**
+     * Escuchador global para cerrar el panel de filtros si el usuario hace clic fuera de él.
+     */
+    document.addEventListener("click", function (e) {
         const panel = document.getElementById("filterPanel");
         const btn = document.getElementById("filterBtn");
 
-        // Si el panel está abierto y el clic NO fue en el panel NI en el botón
-        if (
-          !panel.classList.contains("hidden") &&
-          !panel.contains(e.target) &&
-          !btn.contains(e.target)
-        ) {
-          panel.classList.add("hidden");
+        // Solo cerramos si el panel está visible y el clic NO fue dentro del panel ni en el botón de apertura
+        if (panel && !panel.classList.contains("hidden") &&
+            !panel.contains(e.target) && !btn.contains(e.target)) {
+            panel.classList.add("hidden");
         }
-      });
-    </script>
+    });
+</script>
   </body>
   <footer class="main-footer">
     <div class="footer-content-wrapper">

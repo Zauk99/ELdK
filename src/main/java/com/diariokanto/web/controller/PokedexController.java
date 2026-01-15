@@ -36,60 +36,64 @@ public class PokedexController {
         return "pokedex";
     } */
 
-    @GetMapping("/pokemon/{id}")
-    public String verDetallePokemon(@PathVariable Long id, Model model) {
-        var pokemon = pokemonService.obtenerDetalle(id);
-        if (pokemon == null) {
-            return "redirect:/pokedex";
-        }
-        model.addAttribute("pokemon", pokemon);
-        return "pokemon-detail";
+    // En PokedexController.java
+@GetMapping("/pokemon/{id}")
+public String verDetallePokemon(@PathVariable Long id, 
+                                @RequestParam(required = false) List<String> tipo,
+                                @RequestParam(required = false) Integer gen,
+                                @RequestParam(required = false) String query,
+                                Model model) {
+    var pokemon = pokemonService.obtenerDetalle(id);
+    if (pokemon == null) {
+        return "redirect:/pokedex";
     }
+    model.addAttribute("pokemon", pokemon);
+    
+    // Pasamos los filtros de vuelta para el botón "Volver"
+    model.addAttribute("tipoFiltro", tipo);
+    model.addAttribute("genFiltro", gen);
+    model.addAttribute("queryFiltro", query);
+    
+    return "pokemon-detail";
+}
 
     @GetMapping("/pokedex")
-    public String pokedex(@RequestParam(defaultValue = "0") int page, 
-                          @RequestParam(required = false) String query,
-                          @RequestParam(required = false) String tipo, // <--- Nuevo
-                          @RequestParam(required = false) Integer gen,  // <--- Nuevo
-                          Model model) {
-        
-        List<PokemonDTO> listaFiltrada;
-        boolean hayFiltrosActivos = (query != null && !query.isEmpty()) || 
-                                    (tipo != null && !tipo.isEmpty()) || 
-                                    (gen != null && gen > 0);
+public String pokedex(@RequestParam(defaultValue = "0") int page, 
+                      @RequestParam(required = false) String query,
+                      @RequestParam(required = false) List<String> tipo, // CAMBIO: Ahora es List
+                      @RequestParam(required = false) Integer gen,
+                      Model model) {
+    
+    List<PokemonDTO> listaFiltrada;
+    boolean hayFiltrosActivos = (query != null && !query.isEmpty()) || 
+                                (tipo != null && !tipo.isEmpty()) || 
+                                (gen != null && gen > 0);
 
-        if (hayFiltrosActivos) {
-            // MODO BÚSQUEDA / FILTRO
-            if (query != null && !query.isEmpty()) {
-                listaFiltrada = pokemonService.buscarPokemon(query);
-            } else {
-                // Usamos el nuevo filtro combinado
-                listaFiltrada = pokemonService.filtrarCombinado(tipo, gen);
-            }
-            
-            model.addAttribute("isSearch", true); // Ocultamos paginación estándar
-            model.addAttribute("pokemons", listaFiltrada); // Mostramos todos los resultados juntos
-            
+    if (hayFiltrosActivos) {
+        if (query != null && !query.isEmpty()) {
+            listaFiltrada = pokemonService.buscarPokemon(query);
         } else {
-            // MODO NORMAL (Paginado)
-            listaFiltrada = pokemonService.obtenerListaPaginada(page, 20);
-            model.addAttribute("isSearch", false);
-            model.addAttribute("pokemons", listaFiltrada);
+            // Llamamos al nuevo método que maneja la lista de tipos
+            listaFiltrada = pokemonService.filtrarPorVariosTipos(tipo, gen);
         }
-
-        // Variables para la vista
-        model.addAttribute("currentPage", page);
-        model.addAttribute("hasPrevious", page > 0);
-        
-        // Calculamos hasNext solo para el modo normal (aproximado)
-        model.addAttribute("hasNext", !hayFiltrosActivos && listaFiltrada.size() == 20); 
-        
-        model.addAttribute("queryActual", query);
-        model.addAttribute("tipoActual", tipo); // Para mantener el select seleccionado
-        model.addAttribute("genActual", gen);   // Para mantener el select seleccionado
-        
-        return "pokedex";
+        model.addAttribute("isSearch", true);
+        model.addAttribute("pokemons", listaFiltrada);
+    } else {
+        listaFiltrada = pokemonService.obtenerListaPaginada(page, 20);
+        model.addAttribute("isSearch", false);
+        model.addAttribute("pokemons", listaFiltrada);
     }
+
+    model.addAttribute("currentPage", page);
+    model.addAttribute("hasPrevious", page > 0);
+    model.addAttribute("hasNext", !hayFiltrosActivos && listaFiltrada.size() == 20); 
+    
+    model.addAttribute("queryActual", query);
+    model.addAttribute("tiposActuales", tipo); // Fundamental para la persistencia en el HTML
+    model.addAttribute("genActual", gen);
+    
+    return "pokedex";
+}
 
     // En PokedexController.java
     @GetMapping("/api/internal/pokemon-options/{id}")

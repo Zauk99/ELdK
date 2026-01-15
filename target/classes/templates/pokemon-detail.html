@@ -85,7 +85,7 @@
   <main class="content-container">
     <div class="main-content-area">
 
-      <a th:href="@{/pokedex}" class="poke-button back-button" style="margin-bottom: 20px; display: inline-flex;">
+      <a th:href="@{/pokedex(tipo=${tipoFiltro}, gen=${genFiltro}, query=${queryFiltro})}" class="poke-button back-button" style="margin-bottom: 20px; display: inline-flex;">
         <i class="fas fa-arrow-left"></i> Volver
       </a>
 

@@ -370,7 +370,7 @@ public class PokemonService {
         return resultado;
     }
 
-    // Método auxiliar para consultar la API de tipos (caché simple recomendada aquí si fuera prod)
+    /* // Método auxiliar para consultar la API de tipos (caché simple recomendada aquí si fuera prod)
     private Set<String> obtenerNombresPorTipo(String tipo) {
         try {
             String url = "https://pokeapi.co/api/v2/type/" + tipo;
@@ -384,7 +384,7 @@ public class PokemonService {
             e.printStackTrace();
             return new HashSet<>();
         }
-    }
+    } */
 
     // Rangos de IDs oficiales por generación
     private boolean perteneceAGeneracion(Long id, int gen) {
@@ -401,4 +401,48 @@ public class PokemonService {
             default -> false;
         };
     }
+
+    public List<PokemonDTO> filtrarPorVariosTipos(List<String> tipos, Integer gen) {
+    // 1. Empezamos con la lista base (solo originales < 10000)
+    List<PokemonDTO> resultado = masterList.stream()
+            .filter(p -> p.getId() < 10000)
+            .collect(Collectors.toList());
+
+    // 2. Filtro por Tipos (Intersección)
+    if (tipos != null && !tipos.isEmpty()) {
+        for (String t : tipos) {
+            // Obtenemos los nombres de Pokémon para CADA tipo por separado
+            Set<String> nombresDeEsteTipo = obtenerNombresPorTipo(t);
+            // Mantenemos solo los que coinciden con los tipos ya filtrados (lógica AND)
+            resultado = resultado.stream()
+                    .filter(p -> nombresDeEsteTipo.contains(p.getNombre()))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    // 3. Filtro por Generación
+    if (gen != null && gen > 0) {
+        resultado = resultado.stream()
+                .filter(p -> perteneceAGeneracion(p.getId(), gen))
+                .collect(Collectors.toList());
+    }
+
+    return resultado;
+}
+
+// Este método ahora recibe un solo tipo, evitando el error 400
+private Set<String> obtenerNombresPorTipo(String tipo) {
+    try {
+        String url = "https://pokeapi.co/api/v2/type/" + tipo.toLowerCase().trim();
+        Map data = restTemplate.getForObject(url, Map.class);
+        List<Map> pokemonList = (List<Map>) data.get("pokemon");
+        
+        return pokemonList.stream()
+                .map(entry -> (String) ((Map) entry.get("pokemon")).get("name"))
+                .collect(Collectors.toSet());
+    } catch (Exception e) {
+        System.err.println("Error consultando tipo " + tipo + ": " + e.getMessage());
+        return new HashSet<>();
+    }
+}
 }

@@ -1,26 +1,155 @@
-2026-01-12 10:43:32 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 16416 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
-2026-01-12 10:43:32 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
-2026-01-12 10:43:34 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
-2026-01-12 10:43:34 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2026-01-12 10:43:34 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
-2026-01-12 10:43:34 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1999 ms
-2026-01-12 10:43:36 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
-2026-01-12 10:43:36 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
-2026-01-12 10:43:37 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
-2026-01-12 10:43:37 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 4.988 seconds (process running for 5.409)
-2026-01-12 10:43:41 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-01-12 10:43:41 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2026-01-12 10:43:41 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 0 ms
-2026-01-12 11:01:04 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 17912 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
-2026-01-12 11:01:04 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
-2026-01-12 11:01:06 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
-2026-01-12 11:01:06 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2026-01-12 11:01:06 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
-2026-01-12 11:01:06 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1695 ms
-2026-01-12 11:01:08 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
-2026-01-12 11:01:08 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
-2026-01-12 11:01:09 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
-2026-01-12 11:01:09 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 4.958 seconds (process running for 5.399)
-2026-01-12 11:01:16 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-01-12 11:01:16 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2026-01-12 11:01:16 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-15 08:26:49 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 2080 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 08:26:49 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 08:26:51 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-15 08:26:51 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-15 08:26:51 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-15 08:26:51 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 2176 ms
+2026-01-15 08:26:52 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 08:26:52 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 08:26:52 [main] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-01-15 08:26:52 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-01-15 08:26:53 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8081 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8081 or configure this application to listen on another port.
+
+2026-01-15 08:27:52 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 15416 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 08:27:52 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 08:27:53 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-15 08:27:53 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-15 08:27:53 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-15 08:27:53 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1275 ms
+2026-01-15 08:27:54 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 08:27:55 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 08:27:55 [main] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-01-15 08:27:55 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-01-15 08:27:55 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8081 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8081 or configure this application to listen on another port.
+
+2026-01-15 08:30:58 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 7912 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 08:30:58 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 08:31:00 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-15 08:31:00 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-15 08:31:00 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-15 08:31:00 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 2192 ms
+2026-01-15 08:31:02 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 08:31:02 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 08:31:02 [main] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-01-15 08:31:02 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-01-15 08:31:02 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8081 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8081 or configure this application to listen on another port.
+
+2026-01-15 08:32:03 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 11116 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 08:32:03 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 08:32:04 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-15 08:32:04 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-15 08:32:04 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-15 08:32:04 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1436 ms
+2026-01-15 08:32:05 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 08:32:05 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 08:32:05 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2026-01-15 08:32:05 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 3.302 seconds (process running for 3.719)
+2026-01-15 08:32:10 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-15 08:32:10 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-15 08:32:10 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-15 08:35:45 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 8592 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 08:35:45 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 08:35:47 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8083 (http)
+2026-01-15 08:35:47 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-15 08:35:47 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-15 08:35:47 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1239 ms
+2026-01-15 08:35:48 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 08:35:48 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 08:35:48 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8083 (http) with context path '/'
+2026-01-15 08:35:48 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 3.294 seconds (process running for 3.717)
+2026-01-15 08:35:54 [http-nio-8083-exec-2] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-15 08:35:54 [http-nio-8083-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-15 08:35:54 [http-nio-8083-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-01-15 08:38:09 [SpringApplicationShutdownHook] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-15 08:38:09 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-15 08:38:43 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 17572 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 08:38:43 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 08:38:45 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-15 08:38:45 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-15 08:38:45 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-15 08:38:45 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1985 ms
+2026-01-15 08:38:46 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 08:38:46 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 08:38:47 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2026-01-15 08:38:47 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 3.903 seconds (process running for 4.461)
+2026-01-15 08:38:52 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-15 08:38:52 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-15 08:38:52 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-01-15 09:07:41 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 12608 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 09:07:41 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 09:07:43 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-15 09:07:43 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1799 ms
+2026-01-15 09:07:44 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 09:07:44 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 09:07:44 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2026-01-15 09:07:44 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 3.861 seconds (process running for 4.423)
+2026-01-15 09:07:44 [SpringApplicationShutdownHook] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-15 09:07:44 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-15 09:07:51 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 5612 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 09:07:51 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 09:07:52 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-15 09:07:52 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-15 09:07:52 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-15 09:07:53 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1495 ms
+2026-01-15 09:07:53 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 09:07:53 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 09:07:54 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2026-01-15 09:07:54 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 3.365 seconds (process running for 3.793)
+2026-01-15 09:07:58 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-15 09:07:58 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-15 09:07:58 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-15 09:17:02 [main] INFO  com.diariokanto.web.WebApplication - Starting WebApplication using Java 25 with PID 7712 (C:\Users\Pablo Herrera\ELdK\target\classes started by Pablo Herrera in C:\Users\Pablo Herrera\ELdK)
+2026-01-15 09:17:02 [main] INFO  com.diariokanto.web.WebApplication - No active profile set, falling back to 1 default profile: "default"
+2026-01-15 09:17:04 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-01-15 09:17:04 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-15 09:17:04 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-15 09:17:04 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1400 ms
+2026-01-15 09:17:05 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name apiAuthenticationProvider
+2026-01-15 09:17:05 [main] INFO  o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-01-15 09:17:05 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path '/'
+2026-01-15 09:17:05 [main] INFO  com.diariokanto.web.WebApplication - Started WebApplication in 3.277 seconds (process running for 3.698)
+2026-01-15 09:17:08 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-15 09:17:08 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-15 09:17:08 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
