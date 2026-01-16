@@ -2,7 +2,9 @@ com\diariokanto\web\service\UsuarioService$4.class
 com\diariokanto\web\dto\UsuarioDTO.class
 com\diariokanto\web\controller\AuthController.class
 com\diariokanto\web\service\PokemonService.class
+com\diariokanto\web\controller\MinijuegoController.class
 com\diariokanto\web\dto\MiembroEquipoDTO.class
+com\diariokanto\web\service\PdfService.class
 com\diariokanto\web\service\UsuarioService$3.class
 com\diariokanto\web\service\ComentarioService.class
 com\diariokanto\web\WebApplication.class
@@ -26,6 +28,8 @@ com\diariokanto\web\service\NoticiaService.class
 com\diariokanto\web\config\WebSecurityConfig.class
 com\diariokanto\web\controller\AdminController.class
 com\diariokanto\web\dto\PokemonDetalleDTO.class
+com\diariokanto\web\controller\CustomErrorController.class
+com\diariokanto\web\controller\GlobalExceptionHandler.class
 com\diariokanto\web\service\UsuarioService$1.class
 com\diariokanto\web\service\NoticiaService$2.class
 com\diariokanto\web\dto\CategoriaDTO.class

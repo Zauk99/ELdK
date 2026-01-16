@@ -18,36 +18,40 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(crsf -> crsf.disable())
-                // Registramos nuestro proveedor personalizado
                 .authenticationProvider(apiAuthenticationProvider)
                 .authorizeHttpRequests((requests) -> requests
-                        // AÑADIMOS "/pokemon/**" para que el detalle sea público
+                        // 1. RECURSOS PÚBLICOS (Añadimos "/error" para solucionar el fallo menor)
                         .requestMatchers(
                                 "/",
                                 "/index",
                                 "/login",
+                                "/registro",
                                 "/noticia/**",
                                 "/pokedex/**",
-                                "/registro",
-                                "/pokemon/**", // <--- ¡ESTA ES LA CLAVE!
+                                "/pokemon/**",
+                                "/minijuegos/**",
+                                "/equipos",       
+                                "/equipos/**",
                                 "/css/**",
                                 "/img/**",
-                                "/admin/**",
-                                // --- NUEVOS PERMISOS ---
-                                "/minijuegos",
-                                "/minijuegos/**", // Permite acceso a todo lo que empiece por /minijuegos
-                                "/equipos",       // Lista general de equipos
-                                "/equipos/**",    // Detalles de equipos (ej: /equipos/5)
-                                "/js/**")
+                                "/js/**",
+                                "/error") // <--- ¡IMPORTANTE! Permitir ver la página de error
                         .permitAll()
+
+                        // 2. SOLUCIÓN CRÍTICA: La zona ADMIN requiere Rol ADMIN
+                        // (Antes estaba en permitAll, por eso entraba todo el mundo)
+                        .requestMatchers("/admin/**").hasRole("ADMIN") 
+
+                        // 3. El resto requiere estar logueado (USER o ADMIN)
                         .anyRequest().authenticated())
+                
                 .formLogin((form) -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true) // <--- AÑADE ESTA LÍNEA
+                        .defaultSuccessUrl("/", true)
                         .permitAll())
                 .logout((logout) -> logout
-                        .logoutUrl("/logout") // La URL que recibe la petición POST del botón
-                        .logoutSuccessUrl("/") // <--- Al terminar, vete al Inicio
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
                         .permitAll()
                 );
 

@@ -52,20 +52,27 @@ public class UsuarioService {
             if (foto != null && !foto.isEmpty()) {
                 // Caso A: Usuario subió foto real
                 ByteArrayResource fileAsResource = new ByteArrayResource(foto.getBytes()) {
-                    @Override public String getFilename() { return foto.getOriginalFilename(); }
+                    @Override
+                    public String getFilename() {
+                        return foto.getOriginalFilename();
+                    }
                 };
                 body.add("foto", fileAsResource);
             } else {
                 // Caso B: No hay foto -> Enviamos un archivo vacío para FORZAR Multipart
                 ByteArrayResource emptyResource = new ByteArrayResource(new byte[0]) {
-                    @Override public String getFilename() { return ""; } // Nombre vacío indica que no hay fichero
+                    @Override
+                    public String getFilename() {
+                        return "";
+                    } // Nombre vacío indica que no hay fichero
                 };
                 body.add("foto", emptyResource);
             }
             // -------------------------
 
             HttpHeaders headers = new HttpHeaders();
-            // Recuerda: NO poner setContentType manualmente aquí, Spring lo pondrá solo al ver el recurso
+            // Recuerda: NO poner setContentType manualmente aquí, Spring lo pondrá solo al
+            // ver el recurso
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             restTemplate.postForObject(url, requestEntity, Void.class);
@@ -87,21 +94,31 @@ public class UsuarioService {
 
             if (foto != null && !foto.isEmpty()) {
                 ByteArrayResource fileAsResource = new ByteArrayResource(foto.getBytes()) {
-                    @Override public String getFilename() { return foto.getOriginalFilename(); }
+                    @Override
+                    public String getFilename() {
+                        return foto.getOriginalFilename();
+                    }
                 };
                 body.add("foto", fileAsResource);
             } else {
-                 ByteArrayResource empty = new ByteArrayResource(new byte[0]) { @Override public String getFilename() { return ""; }};
-                 body.add("foto", empty);
+                ByteArrayResource empty = new ByteArrayResource(new byte[0]) {
+                    @Override
+                    public String getFilename() {
+                        return "";
+                    }
+                };
+                body.add("foto", empty);
             }
 
             HttpHeaders headers = new HttpHeaders();
             // Recuerda: NO setContentType
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-            
-            return restTemplate.exchange(url, org.springframework.http.HttpMethod.PUT, requestEntity, UsuarioDTO.class).getBody();
+
+            return restTemplate.exchange(url, org.springframework.http.HttpMethod.PUT, requestEntity, UsuarioDTO.class)
+                    .getBody();
         } catch (Exception e) {
-            // Importante: Lanzamos el mensaje exacto que devuelve la API (ej: "Usuario ya existe")
+            // Importante: Lanzamos el mensaje exacto que devuelve la API (ej: "Usuario ya
+            // existe")
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -130,7 +147,17 @@ public class UsuarioService {
             restTemplate.put(url, nuevoRol);
         } catch (Exception e) {
             // Capturamos el mensaje de error de la API (ej: "No se puede degradar...")
-            throw new RuntimeException(e.getMessage()); 
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public void eliminar(Long id) {
+        try {
+            String url = apiUrl + "/usuarios/" + id;
+            restTemplate.delete(url);
+        } catch (Exception e) {
+            // Capturamos el error de la API (ej: "Eres el último admin")
+            throw new RuntimeException("Error al eliminar: " + e.getMessage());
         }
     }
 }

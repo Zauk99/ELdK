@@ -73,6 +73,37 @@
       .back-btn-container {
         margin-bottom: 20px;
       }
+      /* Estilos para los Tipos */
+      .type-badge-static {
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        color: white;
+        text-transform: uppercase;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        margin-right: 5px;
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+      /* Colores oficiales */
+      .type-normal { background-color: #A8A77A; }
+      .type-fire { background-color: #EE8130; }
+      .type-water { background-color: #6390F0; }
+      .type-electric { background-color: #F7D02C; }
+      .type-grass { background-color: #7AC74C; }
+      .type-ice { background-color: #96D9D6; }
+      .type-fighting { background-color: #C22E28; }
+      .type-poison { background-color: #A33EA1; }
+      .type-ground { background-color: #E2BF65; }
+      .type-flying { background-color: #A98FF3; }
+      .type-psychic { background-color: #F95587; }
+      .type-bug { background-color: #A6B91A; }
+      .type-rock { background-color: #B6A136; }
+      .type-ghost { background-color: #735797; }
+      .type-dragon { background-color: #6F35FC; }
+      .type-steel { background-color: #B7B7CE; }
+      .type-fairy { background-color: #D685AD; }
+      .type-dark { background-color: #705746; }
     </style>
   </head>
   <body>
@@ -201,11 +232,21 @@
               </div>
               <div>
                 <h3
-                  style="margin: 0; color: white"
+                  style="margin: 0; color: white; line-height: 1.2;"
                   th:text="${#strings.capitalize(m.nombrePokemon)}"
                 >
                   Pikachu
                 </h3>
+                
+                <div style="margin: 5px 0;">
+                    <span th:each="tipoEntry : ${detallesPokemon.get(#strings.toLowerCase(m.nombrePokemon))?.tipos}"
+                          th:text="${tipoEntry.value}"
+                          th:classappend="'type-' + ${tipoEntry.key}"
+                          class="type-badge-static">
+                        FUEGO
+                    </span>
+                </div>
+
                 <span
                   style="color: #aaa; font-style: italic; font-size: 0.9em"
                   th:text="${m.mote != null && !m.mote.isEmpty() ? '(' + m.mote + ')' : ''}"

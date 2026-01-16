@@ -22,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.diariokanto.web.dto.PokemonDetalleDTO;
+import com.diariokanto.web.dto.MiembroEquipoDTO;
 
 @Controller
 @RequestMapping("/equipos")
@@ -116,10 +118,34 @@ public class EquipoController {
             return "redirect:/equipos";
         }
         
-        model.addAttribute("equipo", equipo);
-        model.addAttribute("pokemonIds", generarMapaPokemon()); // ¡Importante para las fotos!
+        // 1. Generamos el mapa de IDs para buscar las fotos y datos
+        Map<String, Long> mapaIds = generarMapaPokemon();
         
-        return "equipo-detalle"; // Nombre de la nueva plantilla HTML
+        // 2. Preparamos un mapa para guardar los detalles COMPLETOS (incluidos tipos) de cada miembro
+        // Clave: Nombre del pokemon (en minúsculas), Valor: Su DTO con tipos
+        Map<String, PokemonDetalleDTO> detallesPokemon = new HashMap<>();
+
+        if (equipo.getMiembros() != null) {
+            for (MiembroEquipoDTO miembro : equipo.getMiembros()) {
+                String nombreKey = miembro.getNombrePokemon().toLowerCase();
+                
+                // Si aún no hemos buscado este pokémon, lo buscamos (evita llamadas repetidas si tienes 2 Pikachus)
+                if (!detallesPokemon.containsKey(nombreKey)) {
+                    Long pokeId = mapaIds.get(nombreKey);
+                    if (pokeId != null) {
+                        // Usamos el servicio existente que ya trae tipos, stats, etc.
+                        PokemonDetalleDTO detalle = pokemonService.obtenerDetalle(pokeId);
+                        detallesPokemon.put(nombreKey, detalle);
+                    }
+                }
+            }
+        }
+        
+        model.addAttribute("equipo", equipo);
+        model.addAttribute("pokemonIds", mapaIds); 
+        model.addAttribute("detallesPokemon", detallesPokemon); // <--- NUEVO ATTRIBUTO
+        
+        return "equipo-detalle"; 
     }
 
     @GetMapping("/editar/{id}")
