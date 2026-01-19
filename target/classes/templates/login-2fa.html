@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificación de Seguridad | El Diario de Kanto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        .login-2fa-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            background: rgba(0,0,0,0.5); /* Fondo oscuro semitransparente si tienes imagen de fondo */
+        }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            border-top: 5px solid #3B4CCA;
+        }
+        .code-input {
+            font-size: 2rem;
+            letter-spacing: 10px;
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            margin: 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .code-input:focus {
+            border-color: #3B4CCA;
+            outline: none;
+        }
+    </style>
+</head>
+
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-area">
+                <a th:href="@{/}" class="site-title-link">
+                    <img th:src="@{/img/Logo.png}" alt="Logo" width="100px">
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="login-2fa-container">
+        <div class="login-card">
+            <div style="color: #3B4CCA; font-size: 3rem; margin-bottom: 20px;">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            
+            <h2 style="color: #333; margin-bottom: 10px;">Verificación en 2 Pasos</h2>
+            <p style="color: #666; font-size: 0.9em;">Tu cuenta está protegida. Introduce el código de tu aplicación de autenticación.</p>
+
+            <form th:action="@{/verificar-2fa}" method="post">
+                <input type="text" name="codigo" class="code-input" 
+                       placeholder="000000" maxlength="6" pattern="\d{6}" required autofocus autocomplete="off">
+                
+                <button type="submit" class="poke-button" style="width: 100%;">
+                    Verificar <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+            
+            <div th:if="${param.error}" style="margin-top: 15px; color: #dc3545; background: #ffe6e6; padding: 10px; border-radius: 5px;">
+                <i class="fas fa-exclamation-circle"></i> Código incorrecto
+            </div>
+            
+            <div style="margin-top: 20px; font-size: 0.85em;">
+                <a th:href="@{/logout}" style="color: #999; text-decoration: none;">Cancelar y volver al inicio</a>
+            </div>
+        </div>
+    </main>
+
+   <footer class="main-footer">
+    <div class="footer-content-wrapper">
+      <div class="footer-info">
+        <img
+          th:src="@{/img/Logo.png}"
+          alt="Logo de la Pokédex"
+          class="footer-logo"
+        />
+        <p class="description">
+          Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+          de Kanto!<br />
+          Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+          evolutivas de todos tus Pokémon favoritos.
+          <br />¡Atrapa la información!
+        </p>
+      </div>
+
+      <div class="footer-meta">
+        <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+        <p class="copyright">
+          ©2025 El Diario de Kanto. Todos los derechos reservados.
+        </p>
+        <p class="disclaimer">
+          Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+          sus nombres son marcas registradas de Nintendo, Game Freak y The
+          Pokémon Company.
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

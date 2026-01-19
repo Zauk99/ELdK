@@ -6,13 +6,17 @@ import com.diariokanto.web.service.UsuarioService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -23,6 +27,11 @@ public class PerfilController {
     private UsuarioService usuarioService;
     @Autowired
     private PokemonService pokemonService;
+
+    @Value("${api.url}") // Lee 'http://localhost:8080/api' del properties
+    private String apiUrl;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     // 1. VISTA DE LECTURA (Sidebar + Datos)
     @GetMapping
@@ -133,5 +142,60 @@ public class PerfilController {
             return "redirect:/perfil?errorEliminar=" + e.getMessage(); // Ojo: mejorar el parseo del mensaje si sale
                                                                        // sucio
         }
+    }
+
+    // ... imports
+    // Inyecta RestTemplate y la URL API
+
+    @GetMapping("/2fa/setup")
+    public String setup2FA(Model model, Authentication auth) {
+        UsuarioDTO user = (UsuarioDTO) auth.getPrincipal();
+
+        // Llamada a API para obtener secreto y URL otpauth
+        String url = apiUrl + "/2fa/setup/" + user.getUsername();
+        Map<String, String> response = restTemplate.getForObject(url, Map.class);
+
+        model.addAttribute("secret", response.get("secret"));
+        model.addAttribute("otpAuthUrl", response.get("qrUrl"));
+        // Usaremos una API pública para pintar el QR basada en el otpAuthUrl
+
+        return "perfil-2fa-setup"; // Vista nueva
+    }
+
+    @PostMapping("/2fa/activar")
+    public String activar2FA(@RequestParam String secret, @RequestParam int codigo, Authentication auth) {
+        UsuarioDTO user = (UsuarioDTO) auth.getPrincipal();
+        String url = apiUrl + "/2fa/activar?userId=" + user.getId() + "&secret=" + secret + "&code=" + codigo;
+
+        try {
+            restTemplate.postForEntity(url, null, String.class);
+
+            // Actualizamos la sesión para que sepa que ya es 2FA
+            user.setTwoFactorEnabled(true);
+            // (Aquí deberías refrescar la autenticación en el SecurityContext, similar a
+            // cuando cambiamos la foto)
+
+            return "redirect:/perfil?exito2fa=true";
+        } catch (Exception e) {
+            return "redirect:/perfil/2fa/setup?error=Código incorrecto";
+        }
+    }
+
+    @PostMapping("/2fa/desactivar")
+    public String desactivar2FA(Authentication auth) {
+        UsuarioDTO user = (UsuarioDTO) auth.getPrincipal();
+        restTemplate.postForEntity(apiUrl + "/2fa/desactivar/" + user.getId(), null, Void.class);
+        user.setTwoFactorEnabled(false);
+        return "redirect:/perfil?desactivado2fa=true";
+    }
+
+    @GetMapping("/2fa/generar-qr")
+    @ResponseBody // Importante: Devuelve datos JSON, no HTML
+    public Map<String, String> generarQrAjax(Authentication auth) {
+        UsuarioDTO user = (UsuarioDTO) auth.getPrincipal();
+        String url = apiUrl + "/2fa/setup/" + user.getUsername();
+        
+        // Llamamos a la API y devolvemos el mapa directamente al JavaScript
+        return restTemplate.getForObject(url, Map.class);
     }
 }

@@ -1,6 +1,6 @@
 package com.diariokanto.web.security;
 
-import com.diariokanto.web.dto.UsuarioDTO; // Asegúrate de tener este DTO en el frontend
+import com.diariokanto.web.dto.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -46,28 +47,33 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
             // Hacemos la llamada POST a tu Backend
             ResponseEntity<UsuarioDTO> response = restTemplate.postForEntity(url, loginRequest, UsuarioDTO.class);
 
-            // ... dentro del if (response.getStatusCode().is2xxSuccessful() ...
-
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                UsuarioDTO usuario = response.getBody();
+                UsuarioDTO usuario = response.getBody(); // <--- ESTA ES LA VARIABLE 'usuario'
 
-                // Creamos el Rol
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + usuario.getRol());
-                List<SimpleGrantedAuthority> authorities = Collections.singletonList(authority);
+                // --- LÓGICA DE 2FA ---
+                if (usuario.isTwoFactorEnabled()) {
+                    // Si tiene 2FA activado, NO le damos su rol real todavía.
+                    // Le damos un rol temporal "PRE_AUTH" para que solo pueda ir a la pantalla de código.
+                    List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_PRE_AUTH"));
+                    
+                    System.out.println(">>> LOGIN 2FA REQUERIDO: Usuario " + usuario.getEmail());
+                    
+                    return new UsernamePasswordAuthenticationToken(usuario, password, authorities);
 
-                // --- CHIVATO PARA VER SI LLEGAMOS AQUÍ ---
-                System.out.println(">>> LOGIN ÉXITO: Usuario " + usuario.getEmail() + " autenticado correctamente.");
-                // -----------------------------------------
-
-                return new UsernamePasswordAuthenticationToken(usuario, password, authorities);
+                } else {
+                    // Si NO tiene 2FA, login normal con su rol (ADMIN o USER)
+                    List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()));
+                    
+                    System.out.println(">>> LOGIN ÉXITO: Usuario " + usuario.getEmail());
+                    
+                    return new UsernamePasswordAuthenticationToken(usuario, password, authorities);
+                }
+                // ---------------------
             }
-            // ...
 
         } catch (HttpClientErrorException.Unauthorized e) {
-            // La API devolvió 401 -> Contraseña mal
             throw new BadCredentialsException("Credenciales incorrectas");
         } catch (Exception e) {
-            // Error de conexión u otro problema
             throw new BadCredentialsException("Error de conexión con el servidor");
         }
 

@@ -18,5 +18,6 @@ public class UsuarioDTO implements Serializable {
     private String rol;
     private String movil;
     private Boolean superAdmin;
+    private boolean twoFactorEnabled;
     // Nota: No incluimos password aquí porque el backend no la devuelve
 }

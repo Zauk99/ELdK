@@ -13,6 +13,49 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+    <style>
+      /* Reutilizamos estilos del modal de minijuegos si existen, si no, añadimos esto */
+      .minigame-modal {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background-color: #fefefe;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        position: relative;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      }
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #aaa;
+        cursor: pointer;
+      }
+      .close-modal:hover {
+        color: black;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -199,6 +242,220 @@
             </a>
           </div>
 
+          <div th:if="${!usuario.twoFactorEnabled}" style="margin-top: 20px">
+            <button
+              onclick="abrirModal2FA()"
+              class="poke-button"
+              style="background-color: #4caf50"
+            >
+              <i class="fas fa-lock"></i> Activar Autenticación en 2 Pasos
+            </button>
+          </div>
+
+          <div id="modal2FA" class="minigame-modal" style="display: none">
+            <div
+              class="modal-content"
+              style="max-width: 500px; text-align: center"
+            >
+              <span class="close-modal" onclick="cerrarModal2FA()"
+                >&times;</span
+              >
+              <h2 style="color: #3b4cca; margin-bottom: 20px">
+                Configurar Autenticación en 2 Pasos
+              </h2>
+
+              <div id="loading2FA">
+                <p>Generando código de seguridad...</p>
+                <div
+                  class="spinner"
+                  style="
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #3498db;
+                    border-radius: 50%;
+                    width: 30px;
+                    height: 30px;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto;
+                  "
+                ></div>
+              </div>
+
+              <div id="content2FA" style="display: none">
+                <p style="color: #666">
+                  1. Escanea este código QR con
+                  <strong>Google Authenticator</strong> o
+                  <strong>Authy</strong>:
+                </p>
+
+                <img
+                  id="qrImage"
+                  src=""
+                  alt="QR Code"
+                  style="
+                    border: 5px solid white;
+                    border-radius: 10px;
+                    margin: 15px 0;
+                  "
+                />
+
+                <p style="font-size: 0.9em; color: #888">
+                  O escribe esta clave manualmente: <br /><strong
+                    id="secretText"
+                    style="
+                      color: #333;
+                      font-family: monospace;
+                      font-size: 1.2em;
+                    "
+                  ></strong>
+                </p>
+
+                <hr style="margin: 20px 0; border-top: 1px solid #eee" />
+
+                <p style="color: #666">
+                  2. Introduce el código de 6 dígitos que aparece en tu móvil:
+                </p>
+
+                <form
+                  th:action="@{/perfil/2fa/activar}"
+                  method="post"
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    align-items: center;
+                  "
+                >
+                  <input type="hidden" name="secret" id="secretInput" />
+                  <input
+                    type="text"
+                    name="codigo"
+                    required
+                    placeholder="123456"
+                    maxlength="6"
+                    pattern="\d{6}"
+                    style="
+                      padding: 10px;
+                      font-size: 1.2em;
+                      text-align: center;
+                      width: 150px;
+                      border-radius: 5px;
+                      border: 1px solid #ccc;
+                    "
+                  />
+
+                  <button type="submit" class="poke-button" style="width: 100%">
+                    Verificar y Activar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="
+              margin-top: 40px;
+              background-color: rgba(0, 0, 0, 0.2);
+              padding: 25px;
+              border-radius: 10px;
+              border: 1px solid #444;
+            "
+          >
+            <div style="margin-bottom: 20px">
+              <h3
+                style="
+                  color: #ffde00;
+                  margin-top: 0;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                "
+              >
+                <i class="fas fa-shield-alt"></i> Verificación en 2 Pasos (2FA)
+              </h3>
+              <p style="color: #ddd; font-size: 0.95em; line-height: 1.5">
+                Añade una capa extra de seguridad a tu cuenta. Si lo activas, al
+                iniciar sesión te pediremos un código temporal generado por tu
+                móvil (usando Google Authenticator o Authy), además de tu
+                contraseña.
+              </p>
+            </div>
+
+            <div
+              th:if="${!usuario.twoFactorEnabled}"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(220, 53, 69, 0.1);
+                padding: 15px;
+                border-radius: 8px;
+                border-left: 5px solid #dc3545;
+              "
+            >
+              <div>
+                <span
+                  style="color: #dc3545; font-weight: bold; font-size: 1.1em"
+                >
+                  <i class="fas fa-times-circle"></i> ESTADO: DESACTIVADO
+                </span>
+                <div style="color: #aaa; font-size: 0.85em; margin-top: 5px">
+                  Tu cuenta solo está protegida por contraseña.
+                </div>
+              </div>
+
+              <button
+                onclick="abrirModal2FA()"
+                class="poke-button"
+                style="background-color: #4caf50; border: none; cursor: pointer"
+              >
+                <i class="fas fa-qrcode"></i> Configurar y Activar
+              </button>
+            </div>
+
+            <div
+              th:if="${usuario.twoFactorEnabled}"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(76, 175, 80, 0.1);
+                padding: 15px;
+                border-radius: 8px;
+                border-left: 5px solid #4caf50;
+              "
+            >
+              <div>
+                <span
+                  style="color: #4caf50; font-weight: bold; font-size: 1.1em"
+                >
+                  <i class="fas fa-check-circle"></i> ESTADO: ACTIVADO
+                </span>
+                <div style="color: #aaa; font-size: 0.85em; margin-top: 5px">
+                  ¡Genial! Tu cuenta está blindada contra accesos no
+                  autorizados.
+                </div>
+              </div>
+
+              <form
+                th:action="@{/perfil/2fa/desactivar}"
+                method="post"
+                style="margin: 0"
+              >
+                <button
+                  type="submit"
+                  class="poke-button"
+                  style="
+                    background-color: #dc3545;
+                    border: none;
+                    cursor: pointer;
+                  "
+                >
+                  <i class="fas fa-trash-alt"></i> Desactivar 2FA
+                </button>
+              </form>
+            </div>
+          </div>
+
           <div
             th:if="${param.seccion != null and param.seccion[0] == 'peligro'}"
             style="
@@ -214,7 +471,8 @@
             </h3>
             <p style="color: #ddd">
               Esta acción es <strong>irreversible</strong>. Se borrarán todos
-              tus equipos, perfil y datos asociados, los comentarios también será borrados.
+              tus equipos, perfil y datos asociados, los comentarios también
+              será borrados.
             </p>
 
             <form
@@ -288,6 +546,54 @@
     </main>
 
     <script th:src="@{/js/main.js}"></script>
+    <script>
+      function abrirModal2FA() {
+        const modal = document.getElementById("modal2FA");
+        const loading = document.getElementById("loading2FA");
+        const content = document.getElementById("content2FA");
+
+        modal.style.display = "flex"; // Mostrar modal
+
+        // Llamada AJAX al servidor para obtener el QR sin recargar la página
+        fetch('/perfil/2fa/generar-qr')
+            .then(response => response.json())
+            .then(data => {
+                // DEBUG: Verás que ahora sí imprime la URL correcta
+                console.log("Datos recibidos:", data);
+
+                // --- CORRECCIÓN AQUÍ ---
+                // Antes ponía: data.otpAuthUrl (que no existe)
+                // Debe poner:  data.qrUrl    (que es como lo manda tu API)
+                let codigoOtp = data.qrUrl; 
+                
+                // Generamos el QR
+                let finalQrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(codigoOtp);
+                
+                document.getElementById('qrImage').src = finalQrUrl;
+                document.getElementById('secretText').innerText = data.secret;
+                document.getElementById('secretInput').value = data.secret;
+                
+                loading.style.display = 'none';
+                content.style.display = 'block';
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // ...
+            });
+      }
+
+      function cerrarModal2FA() {
+        document.getElementById("modal2FA").style.display = "none";
+      }
+
+      // Cerrar si se hace click fuera
+      window.onclick = function (event) {
+        const modal = document.getElementById("modal2FA");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
   </body>
   <footer class="main-footer">
     <div class="footer-content-wrapper">
