@@ -59,7 +59,21 @@
             <h2 style="color: #333; margin-bottom: 10px;">Verificación en 2 Pasos</h2>
             <p style="color: #666; font-size: 0.9em;">Tu cuenta está protegida. Introduce el código de tu aplicación de autenticación.</p>
 
-            <form th:action="@{/verificar-2fa}" method="post">
+            <div th:if="${bloqueado}" style="background-color: #ffe6e6; border: 2px solid #dc3545; color: #dc3545; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0;"><i class="fas fa-hand-paper"></i> ¡ALTO!</h3>
+                <p th:text="${mensajeDetalle}">Has superado los intentos...</p>
+                <p style="font-size: 0.9em; margin-bottom: 0;">Recarga la página cuando pase el tiempo.</p>
+                
+                <a href="/login-2fa" class="poke-button" style="background-color: #666; display: inline-block; margin-top: 15px; text-decoration: none; font-size: 0.9em;">
+                    <i class="fas fa-sync-alt"></i> Recargar página
+                </a>
+            </div>
+
+            <div th:if="${error != null && bloqueado == null}" style="margin-bottom: 15px; color: #dc3545; background: #ffe6e6; padding: 10px; border-radius: 5px;">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}">Error</span>
+            </div>
+
+            <form th:action="@{/verificar-2fa}" method="post" th:if="${bloqueado == null}">
                 <input type="text" name="codigo" class="code-input" 
                        placeholder="000000" maxlength="6" pattern="\d{6}" required autofocus autocomplete="off">
                 
@@ -67,13 +81,12 @@
                     Verificar <i class="fas fa-arrow-right"></i>
                 </button>
             </form>
-            
-            <div th:if="${param.error}" style="margin-top: 15px; color: #dc3545; background: #ffe6e6; padding: 10px; border-radius: 5px;">
-                <i class="fas fa-exclamation-circle"></i> Código incorrecto
-            </div>
-            
-            <div style="margin-top: 20px; font-size: 0.85em;">
-                <a th:href="@{/logout}" style="color: #999; text-decoration: none;">Cancelar y volver al inicio</a>
+
+            <div th:if="${bloqueado}" style="opacity: 0.5; pointer-events: none; filter: grayscale(1);">
+                <input type="text" class="code-input" placeholder="BLOQUEADO" disabled>
+                <button type="button" class="poke-button" style="width: 100%; background-color: #ccc;" disabled>
+                    Bloqueado
+                </button>
             </div>
         </div>
     </main>
