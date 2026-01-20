@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/perfil")
@@ -117,7 +118,8 @@ public class PerfilController {
     @PostMapping("/eliminar")
     public String eliminarCuenta(@RequestParam("confirmacion") String confirmacion,
             Authentication auth,
-            HttpServletRequest request) {
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
 
         UsuarioDTO usuario = (UsuarioDTO) auth.getPrincipal();
 
@@ -138,9 +140,13 @@ public class PerfilController {
             return "redirect:/?eliminado=true";
 
         } catch (Exception e) {
-            // Si falla (ej: es el último admin), volvemos al perfil con el error
-            return "redirect:/perfil?errorEliminar=" + e.getMessage(); // Ojo: mejorar el parseo del mensaje si sale
-                                                                       // sucio
+            e.printStackTrace();
+
+            // Pasamos el mensaje de error a la página de perfil
+            redirectAttributes.addFlashAttribute("error",
+                    "⚠️ PROTECCIÓN: No puedes borrarte si eres el último Administrador.");
+
+            return "redirect:/perfil";
         }
     }
 
@@ -194,7 +200,7 @@ public class PerfilController {
     public Map<String, String> generarQrAjax(Authentication auth) {
         UsuarioDTO user = (UsuarioDTO) auth.getPrincipal();
         String url = apiUrl + "/2fa/setup/" + user.getUsername();
-        
+
         // Llamamos a la API y devolvemos el mapa directamente al JavaScript
         return restTemplate.getForObject(url, Map.class);
     }

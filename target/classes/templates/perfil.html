@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
@@ -92,6 +92,20 @@
             >
               <i class="fas fa-home" style="width: 20px"></i> Volver al Inicio
             </a>
+            <div
+              th:if="${error}"
+              style="
+                background-color: #ffe6e6;
+                color: #d32f2f;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                border-left: 5px solid #d32f2f;
+              "
+            >
+              <i class="fas fa-exclamation-circle"></i>
+              <span th:text="${error}">Error</span>
+            </div>
             <form th:action="@{/logout}" method="post" style="margin: 0">
               <button type="submit">
                 <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -555,31 +569,33 @@
         modal.style.display = "flex"; // Mostrar modal
 
         // Llamada AJAX al servidor para obtener el QR sin recargar la página
-        fetch('/perfil/2fa/generar-qr')
-            .then(response => response.json())
-            .then(data => {
-                // DEBUG: Verás que ahora sí imprime la URL correcta
-                console.log("Datos recibidos:", data);
+        fetch("/perfil/2fa/generar-qr")
+          .then((response) => response.json())
+          .then((data) => {
+            // DEBUG: Verás que ahora sí imprime la URL correcta
+            console.log("Datos recibidos:", data);
 
-                // --- CORRECCIÓN AQUÍ ---
-                // Antes ponía: data.otpAuthUrl (que no existe)
-                // Debe poner:  data.qrUrl    (que es como lo manda tu API)
-                let codigoOtp = data.qrUrl; 
-                
-                // Generamos el QR
-                let finalQrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(codigoOtp);
-                
-                document.getElementById('qrImage').src = finalQrUrl;
-                document.getElementById('secretText').innerText = data.secret;
-                document.getElementById('secretInput').value = data.secret;
-                
-                loading.style.display = 'none';
-                content.style.display = 'block';
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                // ...
-            });
+            // --- CORRECCIÓN AQUÍ ---
+            // Antes ponía: data.otpAuthUrl (que no existe)
+            // Debe poner:  data.qrUrl    (que es como lo manda tu API)
+            let codigoOtp = data.qrUrl;
+
+            // Generamos el QR
+            let finalQrUrl =
+              "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+              encodeURIComponent(codigoOtp);
+
+            document.getElementById("qrImage").src = finalQrUrl;
+            document.getElementById("secretText").innerText = data.secret;
+            document.getElementById("secretInput").value = data.secret;
+
+            loading.style.display = "none";
+            content.style.display = "block";
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // ...
+          });
       }
 
       function cerrarModal2FA() {
