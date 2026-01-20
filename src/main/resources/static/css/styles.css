@@ -2031,3 +2031,245 @@ a {
             animation: dots 1.5s steps(5, end) infinite;
         }
         @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } 80%, 100% { content: ''; } }
+
+        /* ... (Tus estilos del modal anteriores) ... */
+
+/* Estilos para el input de confirmación */
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border: 2px solid #555;
+    background: #333;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+}
+
+.modal-input:focus {
+    border-color: #FFDE00; /* Amarillo Pokémon */
+    outline: none;
+}
+
+/* Estado deshabilitado del botón */
+.btn-confirmar-borrar:disabled {
+    background-color: #555;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* === ESTILOS DEL MODAL DE BORRADO (VERSIÓN MEJORADA) === */
+
+/* Fondo oscuro desenfocado */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* Más oscuro para mayor contraste */
+    z-index: 2000;
+    display: flex; justify-content: center; align-items: center;
+    backdrop-filter: blur(8px); /* Efecto de desenfoque más potente */
+    opacity: 0; visibility: hidden;
+    transition: all 0.3s ease-in-out;
+}
+.modal-overlay.show { opacity: 1; visibility: visible; }
+
+/* La caja del modal */
+.modal-box {
+    background: #222; /* Un gris casi negro, muy elegante */
+    padding: 40px; /* Mucho espacio interior */
+    border-radius: 20px; /* Bordes muy redondeados */
+    text-align: center;
+    max-width: 480px; width: 90%;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.7); /* Sombra profunda */
+    border: 1px solid #333; /* Borde sutil */
+    color: #eee;
+    /* Animación de entrada tipo "pop" con rebote */
+    transform: scale(0.9); opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.modal-overlay.show .modal-box { transform: scale(1); opacity: 1; }
+
+/* Icono superior */
+.modal-box i.fa-exclamation-triangle {
+    font-size: 4.5rem; color: #d32f2f; margin-bottom: 25px;
+    filter: drop-shadow(0 0 15px rgba(211, 47, 47, 0.6)); /* Brillo rojo */
+}
+
+/* Título y textos */
+.modal-box h3 {
+    color: #FFDE00; font-size: 2rem; margin-bottom: 15px;
+    text-transform: uppercase; letter-spacing: 2px; font-weight: 800;
+}
+.modal-box p {
+    color: #bbb; margin-bottom: 35px; line-height: 1.6; font-size: 1.1rem;
+}
+.modal-box p strong { color: #FFDE00; padding: 2px 5px; border-radius: 4px; background: rgba(255, 222, 0, 0.1); }
+
+/* INPUT DE CONFIRMACIÓN (La joya de la corona) */
+.modal-input {
+    width: 100%; padding: 15px; margin-bottom: 35px;
+    border: 2px solid #444; /* Borde sutil inicial */
+    background: #333; color: #fff;
+    border-radius: 12px; text-align: center;
+    font-size: 1.4em; letter-spacing: 3px; font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); /* Sombra interior para profundidad */
+}
+.modal-input::placeholder { color: #666; font-weight: normal; letter-spacing: 1px; font-size: 0.9em;}
+
+/* Efecto al hacer clic en el input (Foco) */
+.modal-input:focus {
+    border-color: #FFDE00; background: #2a2a2a; outline: none;
+    box-shadow: 0 0 20px rgba(255, 222, 0, 0.3); /* Resplandor amarillo */
+}
+/* Clase para cuando la palabra es correcta (se añade con JS) */
+.modal-input.valido {
+    border-color: #4CAF50 !important;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.4) !important; /* Resplandor verde */
+}
+
+/* BOTONES */
+.modal-buttons { display: flex; justify-content: center; gap: 20px; }
+.modal-buttons button {
+    padding: 12px 28px; border-radius: 10px; font-weight: 700;
+    font-size: 1rem; letter-spacing: 0.5px; text-transform: uppercase;
+    transition: all 0.2s; cursor: pointer;
+}
+
+/* Botón Cancelar */
+.btn-cancelar {
+    border: 2px solid #555; background: transparent; color: #ccc;
+}
+.btn-cancelar:hover { background: #444; color: white; border-color: #777; }
+
+/* Botón Eliminar */
+.btn-confirmar-borrar {
+    border: none; background: #d32f2f; color: white;
+    box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+}
+.btn-confirmar-borrar:hover:not(:disabled) {
+    background: #ff1f1f; box-shadow: 0 8px 25px rgba(255, 31, 31, 0.6);
+    transform: translateY(-3px); /* Se levanta un poco */
+}
+/* Botón Eliminar Deshabilitado */
+.btn-confirmar-borrar:disabled {
+    background-color: #444; color: #888; cursor: not-allowed;
+    box-shadow: none; opacity: 0.8;
+}
+
+/* === ESTILOS GESTIÓN DE USUARIOS (MODERNO) === */
+
+/* Contenedor de búsqueda */
+.search-container form {
+    background: #333;
+    padding: 10px;
+    border-radius: 10px;
+    display: inline-flex;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border: 1px solid #444;
+}
+
+.search-container input {
+    background: #222;
+    border: 1px solid #555;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-container input:focus {
+    border-color: #FFDE00;
+}
+
+/* TABLA MODERNA */
+.admin-table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    border: 1px solid #444;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #2a2a2a;
+    color: #eee;
+    font-size: 0.95rem;
+}
+
+.admin-table thead {
+    background: #1a1a1a;
+    border-bottom: 2px solid #FFDE00; /* Línea amarilla pokémon */
+}
+
+.admin-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #FFDE00;
+}
+
+.admin-table th a {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.admin-table td {
+    padding: 15px;
+    border-bottom: 1px solid #444;
+    vertical-align: middle;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #333; /* Efecto hover */
+    transition: background 0.2s;
+}
+
+/* Foto de perfil pequeña en la tabla */
+.table-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #555;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+/* ETIQUETAS DE ROL (Badges) */
+.role-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.role-user {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+}
+
+.role-admin {
+    background-color: rgba(255, 222, 0, 0.2);
+    color: #FFDE00;
+    border: 1px solid #FFDE00;
+    box-shadow: 0 0 10px rgba(255, 222, 0, 0.2);
+}
+
+/* Botones de acción pequeños */
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    margin-right: 5px;
+}

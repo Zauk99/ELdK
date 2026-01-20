@@ -1,6 +1,7 @@
 package com.diariokanto.web.controller;
 
 import com.diariokanto.web.dto.NoticiaDTO;
+import com.diariokanto.web.dto.UsuarioDTO;
 import com.diariokanto.web.service.NoticiaService;
 import com.diariokanto.web.service.UsuarioService;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
 
 @Controller
 @RequestMapping("/admin")
@@ -39,9 +41,9 @@ public class AdminController {
     // Procesar el formulario
     @PostMapping("/guardar-noticia")
     public String guardarNoticia(@ModelAttribute NoticiaDTO noticia,
-                                 @RequestParam("ficheroImagen") MultipartFile fichero,
-                                 Model model) { // <--- Añadir Model
-        
+            @RequestParam("ficheroImagen") MultipartFile fichero,
+            Model model) { // <--- Añadir Model
+
         // --- VALIDACIÓN TAMAÑO (CREAR) ---
         if (!fichero.isEmpty() && fichero.getSize() > MAX_FILE_SIZE) {
             model.addAttribute("errorImagen", "La imagen supera el tamaño máximo permitido (2MB).");
@@ -81,13 +83,6 @@ public class AdminController {
         return "redirect:/";
     }
 
-    // 1. Ver la lista de usuarios
-    @GetMapping("/usuarios")
-    public String panelUsuarios(Model model) {
-        model.addAttribute("listaUsuarios", usuarioService.listarTodos());
-        return "admin-usuarios";
-    }
-
     // 2. Procesar el cambio de rol
     @PostMapping("/usuarios/cambiar-rol")
     public String cambiarRol(@RequestParam Long id, @RequestParam String nuevoRol) {
@@ -99,4 +94,30 @@ public class AdminController {
             return "redirect:/admin/usuarios?error=No se pudo cambiar el rol";
         }
     }
-}
+
+    // En src/main/java/com/diariokanto/web/controller/AdminController.java
+        @GetMapping("/usuarios")
+        public String listarUsuarios(
+                @RequestParam(defaultValue = "0") int page,
+                @RequestParam(defaultValue = "10") int size,
+                @RequestParam(required = false) String buscar,
+                @RequestParam(defaultValue = "id") String sort,
+                @RequestParam(defaultValue = "asc") String dir,
+                Model model) {
+
+            // Llamamos al servicio (que llamará a la API)
+            // Debes adaptar tu UsuarioService.java para que acepte estos parámetros
+            Page<UsuarioDTO> paginaUsuarios = usuarioService.obtenerUsuariosPaginados(buscar, page, size, sort, dir);
+
+            model.addAttribute("usuarios", paginaUsuarios.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", paginaUsuarios.getTotalPages());
+            model.addAttribute("totalItems", paginaUsuarios.getTotalElements());
+            model.addAttribute("buscar", buscar);
+            model.addAttribute("sort", sort);
+            model.addAttribute("dir", dir);
+            model.addAttribute("reverseDir", dir.equals("asc") ? "desc" : "asc");
+
+            return "admin-usuarios";
+        }
+    }

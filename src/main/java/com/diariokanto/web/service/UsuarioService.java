@@ -1,5 +1,6 @@
 package com.diariokanto.web.service;
 
+import com.diariokanto.web.dto.RestPageImpl;
 import com.diariokanto.web.dto.UsuarioDTO;
 import com.diariokanto.web.dto.UsuarioRegistroDTO;
 
@@ -9,14 +10,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import com.diariokanto.web.dto.PaginaRespuesta; // La clase nueva
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 @Service
 public class UsuarioService {
@@ -158,6 +166,47 @@ public class UsuarioService {
         } catch (Exception e) {
             // Capturamos el error de la API (ej: "Eres el último admin")
             throw new RuntimeException("Error al eliminar: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Obtiene usuarios paginados desde la API, con búsqueda y ordenación opcionales.
+     */
+    public Page<UsuarioDTO> obtenerUsuariosPaginados(String buscar, int page, int size, String sort, String dir) {
+        try {
+            StringBuilder urlBuilder = new StringBuilder(apiUrl + "/usuarios");
+            urlBuilder.append("?page=").append(page)
+                      .append("&size=").append(size)
+                      .append("&sort=").append(sort).append(",").append(dir);
+
+            if (buscar != null && !buscar.isEmpty()) {
+                urlBuilder.append("&buscar=").append(buscar);
+            }
+
+            // CAMBIO: Usamos PaginaRespuesta en lugar de RestPageImpl
+            ResponseEntity<PaginaRespuesta<UsuarioDTO>> response = restTemplate.exchange(
+                urlBuilder.toString(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<PaginaRespuesta<UsuarioDTO>>() {}
+            );
+
+            PaginaRespuesta<UsuarioDTO> body = response.getBody();
+            
+            if (body == null || body.getContent() == null) {
+                return Page.empty();
+            }
+
+            // Convertimos el puente a una Page oficial de Spring
+            return new PageImpl<>(
+                body.getContent(), 
+                PageRequest.of(body.getNumber(), body.getSize()), 
+                body.getTotalElements()
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Mira la consola si sigue fallando
+            return Page.empty(); 
         }
     }
 }

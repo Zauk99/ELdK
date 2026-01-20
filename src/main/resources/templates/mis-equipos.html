@@ -1,230 +1,159 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <title>Mis Equipos | El Diario de Kanto</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
     <header class="header">
-      <div class="header-container">
-        <div class="logo-area">
-          <a th:href="@{/}" class="site-title-link"
-            ><img th:src="@{/img/Logo.png}" alt="Logo" width="100px"
-          /></a>
+        <div class="header-container">
+            <div class="logo-area">
+                <a th:href="@{/}" class="site-title-link">
+                    <img th:src="@{/img/Logo.png}" alt="Logo" width="100px" />
+                </a>
+            </div>
+            <div class="user-menu-container">
+                <button id="userMenuBtn" class="user-button">
+                    <img th:src="${#authentication.principal.fotoPerfilUrl}" alt="Avatar" class="user-avatar" style="object-fit: cover" />
+                    <span th:text="${#authentication.principal.username}">Usuario</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div id="userDropdown" class="user-dropdown-content">
+                    <a th:href="@{/}" class="dropdown-item" style="display: block; padding: 12px 16px; color: white; text-decoration: none; border-bottom: 1px solid #444; text-align: left;">
+                        <i class="fas fa-home" style="width: 20px"></i> Volver al Inicio
+                    </a>
+                    <form th:action="@{/logout}" method="post" style="margin: 0">
+                        <button type="submit">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="user-menu-container">
-          <button id="userMenuBtn" class="user-button">
-            <img
-              th:src="${#authentication.principal.fotoPerfilUrl}"
-              alt="Avatar"
-              class="user-avatar"
-              style="object-fit: cover"
-            />
-            <span th:text="${#authentication.principal.username}">Usuario</span>
-            <i class="fas fa-chevron-down"></i>
-          </button>
-          <div id="userDropdown" class="user-dropdown-content">
-            <a
-              th:href="@{/}"
-              class="dropdown-item"
-              style="
-                display: block;
-                padding: 12px 16px;
-                color: white;
-                text-decoration: none;
-                border-bottom: 1px solid #444;
-                text-align: left;
-              "
-            >
-              <i class="fas fa-home" style="width: 20px"></i> Volver al Inicio
-            </a>
-            <form th:action="@{/logout}" method="post" style="margin: 0">
-              <button type="submit">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
     </header>
 
     <main class="content-container">
-      <div class="profile-wrapper">
-        <aside class="profile-sidebar">
-          <ul class="sidebar-menu">
-            <li>
-              <a th:href="@{/perfil}">
-                <i class="fas fa-id-card" style="margin-right: 10px"></i> Datos
-                Personales
-              </a>
-            </li>
-            <li>
-              <a href="#" style="color: #666; cursor: not-allowed">
-                <i class="fas fa-heart" style="margin-right: 10px"></i> Mis
-                Favoritos (Pronto)
-              </a>
-            </li>
-            <li>
-              <a th:href="@{/equipos/mis-equipos}" class="active">
-                <i class="fas fa-users" style="margin-right: 10px"></i> Mis
-                Equipos
-              </a>
-            </li>
-            <li sec:authorize="hasRole('ADMIN')">
-              <a th:href="@{/admin/usuarios}">
-                <i
-                  class="fas fa-users-cog"
-                  style="margin-right: 10px; color: #ffde00"
-                ></i>
-                Gestión Usuarios
-              </a>
-            </li>
-          </ul>
-        </aside>
+        <div class="profile-wrapper">
+            <aside class="profile-sidebar">
+                <ul class="sidebar-menu">
+                    <li>
+                        <a th:href="@{/perfil}"><i class="fas fa-id-card" style="margin-right: 10px"></i> Datos Personales</a>
+                    </li>
+                    <li>
+                        <a href="#" style="color: #666; cursor: not-allowed"><i class="fas fa-heart" style="margin-right: 10px"></i> Mis Favoritos (Pronto)</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/equipos/mis-equipos}" class="active"><i class="fas fa-users" style="margin-right: 10px"></i> Mis Equipos</a>
+                    </li>
+                    <li sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/admin/usuarios}"><i class="fas fa-users-cog" style="margin-right: 10px; color: #ffde00"></i> Gestión Usuarios</a>
+                    </li>
+                </ul>
+            </aside>
 
-        <section class="profile-content">
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 20px;
-            "
-          >
-            <h2 style="color: #ffde00; margin: 0">Mis Equipos</h2>
-            <a th:href="@{/equipos/crear}" class="poke-button"
-              ><i class="fas fa-plus"></i> Nuevo</a
-            >
-          </div>
-
-          <div
-            class="teams-grid"
-            style="display: grid; grid-template-columns: 1fr; gap: 20px"
-          >
-            <div
-              th:each="equipo : ${equipos}"
-              class="team-card"
-              style="
-                background: #333;
-                padding: 15px;
-                border-radius: 8px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-              "
-            >
-              <div>
-                <h3 style="color: white; margin: 0 0 5px 0">
-                  <span th:text="${equipo.nombre}">Nombre</span>
-                  <span th:if="${equipo.publico}" title="Público">🌍</span>
-                  <span th:if="${!equipo.publico}" title="Privado">🔒</span>
-                </h3>
-                <p
-                  style="color: #aaa; margin: 0; font-size: 0.9em"
-                  th:text="${equipo.descripcion}"
-                >
-                  Desc...
-                </p>
-              </div>
-
-              <div style="display: flex; gap: 5px">
-                <div
-                  th:each="m : ${equipo.miembros}"
-                  style="
-                    width: 40px;
-                    height: 40px;
-                    background: #222;
-                    border-radius: 50%;
-                    overflow: hidden;
-                    border: 1px solid #444;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                  "
-                >
-                  <img
-                    th:src="@{'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + ${pokemonIds.get(#strings.toLowerCase(m.nombrePokemon))} + '.png'}"
-                    th:alt="${m.nombrePokemon}"
-                    style="width: 100%; height: 100%; object-fit: contain"
-                    onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';"
-                  />
+            <section class="profile-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #ffde00; margin: 0">Mis Equipos</h2>
+                    <a th:href="@{/equipos/crear}" class="poke-button"><i class="fas fa-plus"></i> Nuevo</a>
                 </div>
-              </div>
 
-              <div style="display: flex; gap: 10px">
-                <a
-                  th:href="@{/equipos/editar/{id}(id=${equipo.id})}"
-                  class="poke-button"
-                  style="background: #444; font-size: 0.8em"
-                  >Editar</a
-                >
-                <form
-                  th:action="@{/equipos/eliminar/{id}(id=${equipo.id})}"
-                  method="post"
-                  onsubmit="return confirm('⚠️ ¿Estás seguro de que quieres borrar este equipo?\n\nEsta acción no se puede deshacer.');"
-                  style="margin: 0"
-                >
-                  <button
-                    type="submit"
-                    class="poke-button"
-                    style="
-                      background: #d32f2f;
-                      font-size: 0.8em;
-                      border: none;
-                      cursor: pointer;
-                    "
-                  >
-                    Borrar
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
+                <div class="teams-grid" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    
+                    <div th:each="equipo : ${equipos}" class="team-card" style="background: #333; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        
+                        <div>
+                            <h3 style="color: white; margin: 0 0 5px 0">
+                                <span th:text="${equipo.nombre}">Nombre</span>
+                                <span th:if="${equipo.publico}" title="Público">🌍</span>
+                                <span th:if="${!equipo.publico}" title="Privado">🔒</span>
+                            </h3>
+                            <p style="color: #aaa; margin: 0; font-size: 0.9em" th:text="${equipo.descripcion}">Desc...</p>
+                        </div>
 
-          <p
-            th:if="${equipos.empty}"
-            style="color: #aaa; text-align: center; margin-top: 30px"
-          >
-            No tienes equipos creados. ¡Crea el primero!
-          </p>
-        </section>
-      </div>
+                        <div style="display: flex; gap: 5px">
+                            <div th:each="m : ${equipo.miembros}" style="width: 40px; height: 40px; background: #222; border-radius: 50%; overflow: hidden; border: 1px solid #444; display: flex; align-items: center; justify-content: center;">
+                                <img th:src="@{'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + ${pokemonIds.get(#strings.toLowerCase(m.nombrePokemon))} + '.png'}" 
+                                     th:alt="${m.nombrePokemon}" 
+                                     style="width: 100%; height: 100%; object-fit: contain" 
+                                     onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';" />
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px">
+                            <a th:href="@{/equipos/editar/{id}(id=${equipo.id})}" class="poke-button" style="background: #444; font-size: 0.8em">Editar</a>
+                            
+                            <button type="button" 
+                                    class="poke-button" 
+                                    style="background: #d32f2f; font-size: 0.8em; border: none; cursor: pointer;"
+                                    th:data-url="@{/equipos/eliminar/{id}(id=${equipo.id})}"
+                                    onclick="abrirModalBorrar(this.getAttribute('data-url'))">
+                                Borrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <p th:if="${equipos.empty}" style="color: #aaa; text-align: center; margin-top: 30px">
+                    No tienes equipos creados. ¡Crea el primero!
+                </p>
+            </section>
+        </div>
     </main>
-    <script th:src="@{/js/main.js}"></script>
-  </body>
-  <footer class="main-footer">
-    <div class="footer-content-wrapper">
-      <div class="footer-info">
-        <img
-          th:src="@{/img/Logo.png}"
-          alt="Logo de la Pokédex"
-          class="footer-logo"
-        />
-        <p class="description">
-          Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
-          de Kanto!<br />
-          Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
-          evolutivas de todos tus Pokémon favoritos.
-          <br />¡Atrapa la información!
-        </p>
-      </div>
 
-      <div class="footer-meta">
-        <p class="creator">Creado por: Pablo Herrera Domínguez</p>
-        <p class="copyright">
-          ©2025 El Diario de Kanto. Todos los derechos reservados.
-        </p>
-        <p class="disclaimer">
-          Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
-          sus nombres son marcas registradas de Nintendo, Game Freak y The
-          Pokémon Company.
-        </p>
-      </div>
+    <div id="modalBorrar" class="modal-overlay">
+        <div class="modal-box">
+            <div style="font-size: 3rem; color: #d32f2f; margin-bottom: 15px;">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <h3 style="color: #FFDE00; margin-bottom: 10px;">Zona de Peligro</h3>
+            <p style="color: #ccc; margin-bottom: 15px;">
+                Esta acción es irreversible. Para confirmar el borrado, 
+                escribe la palabra <strong>CONFIRMAR</strong> abajo:
+            </p>
+            
+            <form id="formBorrarModal" method="post" action="">
+                <input type="text" 
+                       id="inputConfirmacion" 
+                       class="modal-input" 
+                       placeholder="Escribe CONFIRMAR" 
+                       onkeyup="validarBorrado()" 
+                       autocomplete="off">
+                
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancelar" onclick="cerrarModalBorrar()">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnBorrarReal" class="btn-confirmar-borrar" disabled>
+                        <i class="fas fa-trash-alt"></i> Eliminar Definitivamente
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-  </footer>
+
+    <script th:src="@{/js/main.js}"></script>
+    
+    <footer class="main-footer">
+        <div class="footer-content-wrapper">
+          <div class="footer-info">
+            <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo" />
+            <p class="description">
+              Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario de Kanto!<br />
+              Tu Pokédex interactiva. Explora detalles, movimientos y cadenas evolutivas de todos tus Pokémon favoritos. <br />¡Atrapa la información!
+            </p>
+          </div>
+    
+          <div class="footer-meta">
+            <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+            <p class="copyright">©2025 El Diario de Kanto. Todos los derechos reservados.</p>
+            <p class="disclaimer">
+              Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y sus nombres son marcas registradas de Nintendo, Game Freak y The Pokémon Company.
+            </p>
+          </div>
+        </div>
+    </footer>
+</body>
 </html>
