@@ -115,41 +115,44 @@ public class PerfilController {
 
     // Imports necesarios: jakarta.servlet.http.HttpServletRequest
 
-    @PostMapping("/eliminar")
-    public String eliminarCuenta(@RequestParam("confirmacion") String confirmacion,
-            Authentication auth,
-            HttpServletRequest request,
-            RedirectAttributes redirectAttributes) {
+    // En PerfilController.java
 
-        UsuarioDTO usuario = (UsuarioDTO) auth.getPrincipal();
+@PostMapping("/eliminar")
+public String eliminarCuenta(@RequestParam("confirmacion") String confirmacion,
+        Authentication auth,
+        HttpServletRequest request,
+        RedirectAttributes redirectAttributes) {
 
-        // 1. Validación NO MECÁNICA
-        // El usuario debe escribir exactamente su username para confirmar
-        if (!usuario.getUsername().equals(confirmacion)) {
-            return "redirect:/perfil?errorEliminar=El texto de confirmación no coincide con tu nombre de usuario.";
-        }
+    UsuarioDTO usuario = (UsuarioDTO) auth.getPrincipal();
 
-        try {
-            // 2. Intentar eliminar en la API
-            usuarioService.eliminar(usuario.getId());
-
-            // 3. Cerrar sesión manualmente si sale bien
-            request.getSession().invalidate();
-            SecurityContextHolder.clearContext();
-
-            return "redirect:/?eliminado=true";
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            // Pasamos el mensaje de error a la página de perfil
-            redirectAttributes.addFlashAttribute("error",
-                    "⚠️ PROTECCIÓN: No puedes borrarte si eres el último Administrador.");
-
-            return "redirect:/perfil";
-        }
+    if (!usuario.getUsername().equals(confirmacion)) {
+        redirectAttributes.addFlashAttribute("error", "El nombre de usuario no coincide.");
+        return "redirect:/perfil";
     }
 
+    try {
+        usuarioService.eliminar(usuario.getId());
+
+        // Cerrar sesión y limpiar contexto
+        request.getSession().invalidate();
+        SecurityContextHolder.clearContext();
+
+        return "redirect:/?eliminado=true";
+
+    } catch (Exception e) {
+        e.printStackTrace(); // Para ver el error real en la consola
+        
+        // CORRECCIÓN: No asumir que es error de Admin, mostrar el mensaje real
+        String mensajeError = e.getMessage();
+        if (mensajeError.contains("último administrador") || mensajeError.contains("Super Administrador")) {
+             redirectAttributes.addFlashAttribute("error", "⚠️ PROTECCIÓN: " + mensajeError);
+        } else {
+             redirectAttributes.addFlashAttribute("error", "❌ Error al eliminar cuenta: " + mensajeError);
+        }
+
+        return "redirect:/perfil";
+    }
+}
     // ... imports
     // Inyecta RestTemplate y la URL API
 

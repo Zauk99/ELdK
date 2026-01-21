@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin")
@@ -96,28 +97,42 @@ public class AdminController {
     }
 
     // En src/main/java/com/diariokanto/web/controller/AdminController.java
-        @GetMapping("/usuarios")
-        public String listarUsuarios(
-                @RequestParam(defaultValue = "0") int page,
-                @RequestParam(defaultValue = "10") int size,
-                @RequestParam(required = false) String buscar,
-                @RequestParam(defaultValue = "id") String sort,
-                @RequestParam(defaultValue = "asc") String dir,
-                Model model) {
+    @GetMapping("/usuarios")
+    public String listarUsuarios(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String buscar,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "asc") String dir,
+            Model model) {
 
-            // Llamamos al servicio (que llamará a la API)
-            // Debes adaptar tu UsuarioService.java para que acepte estos parámetros
-            Page<UsuarioDTO> paginaUsuarios = usuarioService.obtenerUsuariosPaginados(buscar, page, size, sort, dir);
+        // Llamamos al servicio (que llamará a la API)
+        // Debes adaptar tu UsuarioService.java para que acepte estos parámetros
+        Page<UsuarioDTO> paginaUsuarios = usuarioService.obtenerUsuariosPaginados(buscar, page, size, sort, dir);
 
-            model.addAttribute("usuarios", paginaUsuarios.getContent());
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", paginaUsuarios.getTotalPages());
-            model.addAttribute("totalItems", paginaUsuarios.getTotalElements());
-            model.addAttribute("buscar", buscar);
-            model.addAttribute("sort", sort);
-            model.addAttribute("dir", dir);
-            model.addAttribute("reverseDir", dir.equals("asc") ? "desc" : "asc");
+        model.addAttribute("usuarios", paginaUsuarios.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", paginaUsuarios.getTotalPages());
+        model.addAttribute("totalItems", paginaUsuarios.getTotalElements());
+        model.addAttribute("buscar", buscar);
+        model.addAttribute("sort", sort);
+        model.addAttribute("dir", dir);
+        model.addAttribute("reverseDir", dir.equals("asc") ? "desc" : "asc");
 
-            return "admin-usuarios";
-        }
+        return "admin-usuarios";
     }
+
+    // En AdminController.java
+
+    @PostMapping("/usuarios/borrar/{id}")
+    public String eliminarUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.eliminar(id);
+            redirectAttributes.addFlashAttribute("exito", "Usuario eliminado correctamente.");
+        } catch (Exception e) {
+            // Capturamos el error (por ejemplo, si es el último admin)
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar: " + e.getMessage());
+        }
+        return "redirect:/admin/usuarios";
+    }
+}

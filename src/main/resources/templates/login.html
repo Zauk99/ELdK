@@ -44,7 +44,12 @@
             border: 1px solid #d32f2f;
           "
         >
-          <i class="fas fa-exclamation-circle"></i> Credenciales incorrectas
+          <i class="fas fa-exclamation-circle"></i>
+          <span
+            th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Usuario o contraseña incorrectos.'}"
+          >
+            Error de inicio de sesión
+          </span>
         </div>
 
         <div

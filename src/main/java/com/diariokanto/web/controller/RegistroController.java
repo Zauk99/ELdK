@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class RegistroController {
@@ -34,33 +35,38 @@ public class RegistroController {
         return "login";
     }
 
-    // 2. Procesar el registro (POST)
+   // 2. Procesar el registro (POST)
     @PostMapping("/registro")
     public String registrarUsuario(@ModelAttribute("usuario") UsuarioRegistroDTO registroDTO,
                                    @RequestParam(value = "ficheroFoto", required = false) MultipartFile ficheroFoto,
-                                   HttpServletRequest request,
+                                   RedirectAttributes redirectAttributes,
                                    Model model) {
         try {
-            // A. Registrar (La API guarda la foto)
+            // A. Registrar (La API guarda la foto y envía el email)
             usuarioService.registrar(registroDTO, ficheroFoto);
 
-            // B. Auto-Login (Magia para iniciar sesión solo)
-            UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(
-                    registroDTO.getEmail(), registroDTO.getPassword());
-            Authentication auth = authenticationProvider.authenticate(authReq);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            HttpSession session = request.getSession(true);
-            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+            // --- AUTO-LOGIN ELIMINADO ---
+            // No podemos iniciar sesión automáticamente porque la cuenta
+            // aún no ha sido activada por correo.
 
-            // C. Redirigir al inicio
-            return "redirect:/";
+            // B. Mensaje de éxito
+            redirectAttributes.addFlashAttribute("mensaje", 
+                "¡Registro completado! Revisa tu correo para activar la cuenta antes de entrar.");
+
+            // C. Redirigir al LOGIN
+            // Te redirige al formulario de inicio de sesión para que esperes el correo.
+            return "redirect:/login";
 
         } catch (Exception e) {
-            // D. Si falla, recargamos el formulario Y LA LISTA DE POKEMON (Muy importante)
-            model.addAttribute("error", "Error: " + e.getMessage());
+            // D. Si falla (ej: email duplicado), recargamos el formulario
+            model.addAttribute("error", "Error en el registro: " + e.getMessage());
             model.addAttribute("usuario", registroDTO);
             model.addAttribute("listaPokemon", pokemonService.getTodosLosNombres());
-            return "login";
+            
+            // IMPORTANTE: Asegúrate de que esto devuelve la vista donde está tu formulario.
+            // Si tu formulario de registro está en login.html, deja "login".
+            // Si está en registro.html, pon "registro".
+            return "login"; 
         }
     }
 }

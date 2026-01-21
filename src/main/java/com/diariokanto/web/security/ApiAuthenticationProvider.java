@@ -1,23 +1,25 @@
 package com.diariokanto.web.security;
 
 import com.diariokanto.web.dto.UsuarioDTO;
+import com.diariokanto.web.dto.UsuarioRegistroDTO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException; // <--- IMPORTANTE
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpClientErrorException; // <--- IMPORTANTE
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class ApiAuthenticationProvider implements AuthenticationProvider {
@@ -27,57 +29,51 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
 
     private final RestTemplate restTemplate;
 
-    public ApiAuthenticationProvider() {
-        this.restTemplate = new RestTemplate();
+    public ApiAuthenticationProvider(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String email = authentication.getName();
+        String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
+        String url = apiUrl + "/usuarios/login";
+        UsuarioRegistroDTO loginRequest = new UsuarioRegistroDTO();
+        loginRequest.setEmail(username);
+        loginRequest.setPassword(password);
+
         try {
-            // Preparamos los datos para enviar a la API
-            Map<String, String> loginRequest = new HashMap<>();
-            loginRequest.put("email", email);
-            loginRequest.put("password", password);
-
-            String url = apiUrl + "/usuarios/login";
-
-            // Hacemos la llamada POST a tu Backend
             ResponseEntity<UsuarioDTO> response = restTemplate.postForEntity(url, loginRequest, UsuarioDTO.class);
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                UsuarioDTO usuario = response.getBody(); // <--- ESTA ES LA VARIABLE 'usuario'
-
-                // --- LÓGICA DE 2FA ---
-                if (usuario.isTwoFactorEnabled()) {
-                    // Si tiene 2FA activado, NO le damos su rol real todavía.
-                    // Le damos un rol temporal "PRE_AUTH" para que solo pueda ir a la pantalla de código.
-                    List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_PRE_AUTH"));
-                    
-                    System.out.println(">>> LOGIN 2FA REQUERIDO: Usuario " + usuario.getEmail());
-                    
-                    return new UsernamePasswordAuthenticationToken(usuario, password, authorities);
-
-                } else {
-                    // Si NO tiene 2FA, login normal con su rol (ADMIN o USER)
-                    List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()));
-                    
-                    System.out.println(">>> LOGIN ÉXITO: Usuario " + usuario.getEmail());
-                    
-                    return new UsernamePasswordAuthenticationToken(usuario, password, authorities);
-                }
-                // ---------------------
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                UsuarioDTO usuario = response.getBody();
+                List<GrantedAuthority> authorities = new ArrayList<>();
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()));
+                return new UsernamePasswordAuthenticationToken(usuario, password, authorities);
+            } else {
+                throw new BadCredentialsException("Error desconocido en la respuesta de la API");
             }
 
-        } catch (HttpClientErrorException.Unauthorized e) {
-            throw new BadCredentialsException("Credenciales incorrectas");
-        } catch (Exception e) {
-            throw new BadCredentialsException("Error de conexión con el servidor");
-        }
+        } catch (HttpClientErrorException e) {
+            // --- AQUÍ ESTÁ LA SOLUCIÓN ---
+            
+            // 1. Si la API devuelve 403 Forbidden -> CUENTA NO ACTIVADA
+            if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                throw new DisabledException("Tu cuenta aún no ha sido activada. Por favor, revisa tu correo.");
+            }
+            
+            // 2. Si la API devuelve 401 Unauthorized -> CONTRASEÑA MAL
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                throw new BadCredentialsException("Usuario o contraseña incorrectos.");
+            }
 
-        throw new BadCredentialsException("Error desconocido de autenticación");
+            // Otros errores
+            throw new BadCredentialsException("Error de autenticación: " + e.getMessage());
+
+        } catch (Exception e) {
+            throw new AuthenticationServiceException("Error de conexión con el servidor de usuarios.");
+        }
     }
 
     @Override
