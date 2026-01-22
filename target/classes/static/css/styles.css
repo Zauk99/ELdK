@@ -1526,8 +1526,6 @@ a {
 .password-toggle-icon {
     position: absolute;
     right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
     cursor: pointer;
     color: #888;
 }
@@ -2272,4 +2270,13 @@ a {
     padding: 5px 10px;
     font-size: 0.8em;
     margin-right: 5px;
+}
+
+/* Ajuste específico para RESTABLECER (restablecer.html) */
+.password-toggle-icon-restablecer {
+    right: 10px;
+    top: 90%;
+    transform: translateY(-80%);
+    cursor: pointer;
+    color: #888;/* Un poco más separado del borde */
 }

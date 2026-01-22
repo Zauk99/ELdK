@@ -90,4 +90,60 @@ public class AuthController {
             return "login-2fa";
         }
     }
+
+    // ... otros imports ...
+    // Asegúrate de importar esto:
+    // import org.springframework.util.LinkedMultiValueMap;
+    // import org.springframework.util.MultiValueMap;
+
+    // 1. Mostrar la pantalla de "Olvidé mi contraseña"
+    @GetMapping("/recuperar")
+    public String vistaRecuperar() {
+        return "contrasenia"; // Tu archivo HTML actual
+    }
+
+    // 2. Recibir el correo y llamar a la API
+    @PostMapping("/recuperar")
+    public String procesarRecuperacion(@RequestParam String email, Model model) {
+        try {
+            // Llamamos a la API: /solicitar-recuperacion
+            String url = apiUrl + "/usuarios/solicitar-recuperacion?email=" + email;
+            restTemplate.postForEntity(url, null, String.class);
+            
+            model.addAttribute("mensaje", "Si el correo existe en nuestra base de datos, recibirás un enlace de recuperación.");
+        } catch (Exception e) {
+            model.addAttribute("error", "Error de conexión. Inténtalo más tarde.");
+        }
+        return "contrasenia";
+    }
+
+    // 3. Cuando el usuario hace clic en el enlace del correo (GET)
+    @GetMapping("/restablecer")
+    public String vistaRestablecer(@RequestParam("token") String token, Model model) {
+        // Guardamos el token en el modelo para ponerlo en un campo oculto (hidden) del formulario
+        model.addAttribute("token", token);
+        return "restablecer"; // Vamos a crear este HTML en el siguiente paso
+    }
+
+    // 4. Cuando el usuario envía la nueva contraseña (POST)
+    @PostMapping("/restablecer")
+    public String procesarRestablecer(@RequestParam("token") String token, 
+                                      @RequestParam("password") String password, 
+                                      Model model) {
+        try {
+            // Llamamos a la API: /restablecer
+            String url = apiUrl + "/usuarios/restablecer?token=" + token;
+            
+            // Enviamos la nueva contraseña en el cuerpo de la petición
+            restTemplate.postForEntity(url, password, String.class);
+            
+            // Si todo va bien, al login
+            return "redirect:/login?reset=true";
+            
+        } catch (Exception e) {
+            model.addAttribute("error", "El enlace ha caducado o no es válido.");
+            model.addAttribute("token", token); // Mantenemos el token por si quiere reintentar
+            return "restablecer";
+        }
+    }
 }

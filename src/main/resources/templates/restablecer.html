@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nueva Contraseña | El Diario de Kanto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="icon" th:href="@{/img/Logo.png}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="header-container">
+        <div class="logo-area">
+          <a th:href="@{/}" class="site-title-link">
+            <img th:src="@{/img/Logo.png}" alt="Logo" width="100px" />
+          </a>
+        </div>
+        <a th:href="@{/login}"
+          ><button class="login-button">Cancelar</button></a
+        >
+      </div>
+    </header>
+
+    <main class="content-container">
+      <div class="auth-container" style="max-width: 500px; margin-top: 60px">
+        <h2 style="color: #ffde00; text-align: center; margin-bottom: 20px">
+          Restablecer Contraseña
+        </h2>
+        <p style="text-align: center; color: #aaa; margin-bottom: 30px">
+          Introduce tu nueva contraseña.
+        </p>
+
+        <div
+          th:if="${error}"
+          style="
+            background-color: #d32f2f;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+          "
+        >
+          <span th:text="${error}">Error</span>
+        </div>
+
+        <form
+          class="auth-form"
+          th:action="@{/restablecer}"
+          method="post"
+          onsubmit="return validarPasswords();"
+        >
+          <input type="hidden" name="token" th:value="${token}" />
+
+          <div class="form-group-full">
+            <label style="color: #ccc; margin-bottom: 5px; display: block"
+              >Nueva Contraseña</label
+            >
+            <div class="password-wrapper" style="position: relative">
+              <input
+                type="password"
+                id="pass1"
+                name="password"
+                placeholder="Mínimo 8 caracteres"
+                minlength="8"
+                required
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  background: #333;
+                  color: white;
+                  border: 1px solid #555;
+                  border-radius: 5px;
+                "
+              />
+
+              <i
+                class="fas fa-eye password-toggle-icon-restablecer"
+                onclick="togglePassword('pass1', this)"
+                style="
+                  position: absolute;
+                  right: 10px;
+                  top: 50%;
+                  transform: translateY(-90%);
+                  cursor: pointer;
+                  color: #aaa;
+                "
+              ></i>
+            </div>
+          </div>
+
+          <div class="form-group-full">
+            <label style="color: #ccc; margin-bottom: 5px; display: block"
+              >Repetir Contraseña</label
+            >
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="pass2"
+                placeholder="Vuelve a escribirla"
+                required
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  background: #333;
+                  color: white;
+                  border: 1px solid #555;
+                  border-radius: 5px;
+                "
+              />
+            </div>
+            <small
+              id="error-msg"
+              style="color: #ff4444; display: none; margin-top: 5px"
+            >
+              <i class="fas fa-times-circle"></i> Las contraseñas no coinciden.
+            </small>
+          </div>
+
+          <button
+            type="submit"
+            class="auth-submit-button"
+            style="margin-top: 10px"
+          >
+            Cambiar Contraseña
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <footer class="main-footer">
+      <div class="footer-content-wrapper">
+        <div class="footer-info">
+          <img
+            th:src="@{/img/Logo.png}"
+            alt="Logo de la Pokédex"
+            class="footer-logo"
+          />
+          <p class="description">
+            Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+            de Kanto!<br />
+            Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+            evolutivas de todos tus Pokémon favoritos.
+            <br />¡Atrapa la información!
+          </p>
+        </div>
+
+        <div class="footer-meta">
+          <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+          <p class="copyright">
+            ©2025 El Diario de Kanto. Todos los derechos reservados.
+          </p>
+          <p class="disclaimer">
+            Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+            sus nombres son marcas registradas de Nintendo, Game Freak y The
+            Pokémon Company.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Función para mostrar/ocultar contraseña
+      function togglePassword(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
+        }
+      }
+
+      // Validación simple antes de enviar el formulario
+      function validarPasswords() {
+        const p1 = document.getElementById("pass1").value;
+        const p2 = document.getElementById("pass2").value;
+        const errorMsg = document.getElementById("error-msg");
+
+        if (p1 !== p2) {
+          errorMsg.style.display = "block";
+          return false; // Detiene el envío
+        }
+        errorMsg.style.display = "none";
+        return true; // Permite el envío
+      }
+    </script>
+  </body>
+</html>

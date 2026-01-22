@@ -83,6 +83,22 @@
           <i class="fas fa-check-circle"></i> ¡Cuenta creada! Bienvenido.
         </div>
 
+        <div
+          th:if="${param.reset}"
+          style="
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #64b5f6;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid #2196f3;
+          "
+        >
+          <i class="fas fa-info-circle"></i> Contraseña actualizada. Inicia
+          sesión.
+        </div>
+
         <div class="auth-tabs">
           <button id="login-tab" class="auth-tab-button active">
             <i class="fas fa-user-check"></i> Iniciar Sesión
@@ -121,7 +137,7 @@
             </div>
 
             <p class="toggle-message">
-              ¿Olvidaste tu contraseña? <a href="#">Recuperar</a>
+              ¿Olvidaste tu contraseña? <a th:href="@{/recuperar}">Recuperar</a>
             </p>
           </form>
         </div>
@@ -329,16 +345,16 @@
               />
 
               <i
-                class="fas fa-eye"
+                class="fas fa-eye password-toggle-icon"
                 id="toggleRegPass"
                 onclick="togglePassword('regPass1', this)"
                 style="
                   position: absolute;
                   right: 10px;
-                  top: 50%;
-                  transform: translateY(-50%);
-                  cursor: pointer;
+                  top: 38%;
+                  transform: translateY(-65%);
                   color: #888;
+                  cursor: pointer;
                   z-index: 10;
                 "
               ></i>

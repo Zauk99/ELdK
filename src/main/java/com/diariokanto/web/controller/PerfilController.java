@@ -207,4 +207,26 @@ public String eliminarCuenta(@RequestParam("confirmacion") String confirmacion,
         // Llamamos a la API y devolvemos el mapa directamente al JavaScript
         return restTemplate.getForObject(url, Map.class);
     }
+
+    // ... imports ...
+    
+    @PostMapping("/solicitar-cambio-pass")
+    public String solicitarCambioPassword(Authentication auth, RedirectAttributes redirectAttributes) {
+        // 1. Obtenemos el usuario actual de la sesión
+        UsuarioDTO usuario = (UsuarioDTO) auth.getPrincipal();
+        
+        try {
+            // 2. Llamamos a la API usando el email del usuario logueado
+            // (Reutilizamos el endpoint de recuperación que ya creamos)
+            String url = apiUrl + "/usuarios/solicitar-recuperacion?email=" + usuario.getEmail();
+            restTemplate.postForEntity(url, null, String.class);
+            
+            redirectAttributes.addFlashAttribute("mensaje", "Hemos enviado un enlace a tu correo (" + usuario.getEmail() + ") para cambiar la contraseña.");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al enviar el correo. Inténtalo más tarde.");
+        }
+        
+        return "redirect:/perfil";
+    }
 }

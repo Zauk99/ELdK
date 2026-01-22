@@ -35,6 +35,8 @@ public class WebSecurityConfig {
                         "/css/**",   // <--- ESTO ES CRUCIAL PARA EL ERROR DE CSS
                         "/img/**",   // <--- ESTO PARA LAS IMÁGENES
                         "/js/**",    // <--- ESTO PARA EL JAVASCRIPT
+                        "/restablecer", 
+                        "/recuperar",
                         "/error")
                 .permitAll()
 
