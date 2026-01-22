@@ -155,6 +155,11 @@
       </nav>
     </header>
 
+    <div sec:authorize="hasRole('ADMIN')" th:if="${mensajeAdmin}" 
+         style="background-color: #2a2a2a; border-bottom: 2px solid #FFDE00; color: #ffde00; text-align: center; padding: 10px; font-weight: bold; animation: fadeIn 0.5s;">
+        <i class="fas fa-info-circle"></i> <span th:text="${mensajeAdmin}"></span>
+    </div>
+
     <main class="content-container">
       <div class="main-content-area">
         <div class="news-header">

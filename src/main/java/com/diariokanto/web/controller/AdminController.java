@@ -43,7 +43,7 @@ public class AdminController {
     @PostMapping("/guardar-noticia")
     public String guardarNoticia(@ModelAttribute NoticiaDTO noticia,
             @RequestParam("ficheroImagen") MultipartFile fichero,
-            Model model) { // <--- Añadir Model
+            RedirectAttributes redirectAttributes, Model model) { // <--- Añadir Model
 
         // --- VALIDACIÓN TAMAÑO (CREAR) ---
         if (!fichero.isEmpty() && fichero.getSize() > MAX_FILE_SIZE) {
@@ -54,6 +54,9 @@ public class AdminController {
         // ---------------------------------
 
         noticiaService.guardarNoticiaMultipart(noticia, fichero);
+
+        // AÑADIMOS EL MENSAJE
+        redirectAttributes.addFlashAttribute("mensajeAdmin", "Noticia creada con éxito.");
         return "redirect:/";
     }
 
@@ -72,15 +75,21 @@ public class AdminController {
     // 2. Procesar la actualización
     @PostMapping("/actualizar")
     public String actualizarNoticia(@ModelAttribute NoticiaDTO noticia,
-            @RequestParam("ficheroImagen") MultipartFile fichero) {
+            @RequestParam("ficheroImagen") MultipartFile fichero,
+            RedirectAttributes redirectAttributes) {
         noticiaService.actualizarNoticiaMultipart(noticia.getId(), noticia, fichero);
-        return "redirect:/noticia/" + noticia.getId();
+        
+        // AÑADIMOS EL MENSAJE
+        redirectAttributes.addFlashAttribute("mensajeAdmin", "Noticia actualizada correctamente.");
+        return "redirect:/";
     }
 
     // 3. Eliminar Noticia
     @PostMapping("/eliminar/{id}")
-    public String eliminarNoticia(@PathVariable Long id) {
+    public String eliminarNoticia(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         noticiaService.eliminarNoticia(id);
+        // AÑADIMOS EL MENSAJE
+        redirectAttributes.addFlashAttribute("mensajeAdmin", "Noticia eliminada con éxito.");
         return "redirect:/";
     }
 

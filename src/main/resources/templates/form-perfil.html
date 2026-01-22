@@ -33,47 +33,6 @@
         </h2>
 
         <div
-          th:if="${param.exito}"
-          style="
-            background-color: #4caf50;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-          "
-        >
-          ¡Datos actualizados correctamente!
-        </div>
-        
-        <div
-          th:if="${mensaje}" 
-          style="
-            background-color: #2196F3;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-          "
-        >
-           <i class="fas fa-envelope"></i> <span th:text="${mensaje}"></span>
-        </div>
-
-        <div
-          th:if="${param.passExito}"
-          style="
-            background-color: #4caf50;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-          "
-        >
-          ¡Contraseña cambiada con éxito!
-        </div>
-        <div
           th:if="${param.error}"
           style="
             background-color: #d32f2f;
@@ -316,9 +275,7 @@
                 padding: 20px;
                 background-color: rgba(0, 0, 0, 0.2);
                 border-radius: 8px;
-                /* Alineación con la columna derecha */
                 margin-left: auto; 
-                /* Si quieres que ocupe todo el ancho, quita el max-width de abajo */
               "
             >
               <h3 style="color: #ffde00; margin-bottom: 10px">Seguridad</h3>

@@ -1,235 +1,329 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Team Builder | El Diario de Kanto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <title>Team Builder | El Diario de Kanto</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+      .hidden {
+        display: none !important;
+      }
 
-  <style>
-    .hidden {
-      display: none !important;
-    }
+      .step-indicator {
+        color: #888;
+        font-size: 0.9em;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
 
-    .step-indicator {
-      color: #888;
-      font-size: 0.9em;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+      .step-indicator span.active {
+        color: #ffde00;
+        font-weight: bold;
+        border-bottom: 2px solid #ffde00;
+        padding-bottom: 2px;
+      }
 
-    .step-indicator span.active {
-      color: #ffde00;
-      font-weight: bold;
-      border-bottom: 2px solid #ffde00;
-      padding-bottom: 2px;
-    }
+      .pokemon-detail-card {
+        background: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
 
-    .pokemon-detail-card {
-      background: #2a2a2a;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
+      .pokemon-detail-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #444;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+      }
 
-    .pokemon-detail-header {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      border-bottom: 1px solid #444;
-      padding-bottom: 15px;
-      margin-bottom: 15px;
-    }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
 
-    .detail-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-    }
+      /* Imagen */
+      .poke-img-container {
+        width: 80px;
+        height: 80px;
+        background: #151515;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #444;
+        overflow: hidden;
+      }
 
-    /* Imagen */
-    .poke-img-container {
-      width: 80px;
-      height: 80px;
-      background: #151515;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #444;
-      overflow: hidden;
-    }
+      .poke-img-container img {
+        width: 90%;
+        height: auto;
+      }
 
-    .poke-img-container img {
-      width: 90%;
-      height: auto;
-    }
+      /* Shiny toggle */
+      .shiny-toggle {
+        cursor: pointer;
+        color: #555;
+        font-size: 1.2em;
+        transition: color 0.3s;
+      }
 
-    /* Shiny toggle */
-    .shiny-toggle {
-      cursor: pointer;
-      color: #555;
-      font-size: 1.2em;
-      transition: color 0.3s;
-    }
+      .shiny-toggle.active {
+        color: #ffd700;
+        text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+      }
 
-    .shiny-toggle.active {
-      color: #ffd700;
-      text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
-    }
+      /* Panel Showdown */
+      .showdown-panel {
+        position: absolute;
+        width: 400px;
+        max-height: 500px;
+        background-color: #1a1a1a;
+        border: 1px solid #ffde00;
+        border-radius: 6px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        font-family: "Roboto", sans-serif;
+      }
 
-    /* Panel Showdown */
-    .showdown-panel {
-      position: absolute;
-      width: 400px;
-      max-height: 500px;
-      background-color: #1a1a1a;
-      border: 1px solid #ffde00;
-      border-radius: 6px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95);
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      font-family: "Roboto", sans-serif;
-    }
+      .panel-header {
+        background: #333;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #ffde00;
+        font-weight: bold;
+      }
 
-    .panel-header {
-      background: #333;
-      padding: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #ffde00;
-      font-weight: bold;
-    }
+      .panel-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        background: #252525;
+        max-height: 250px;
+      }
 
-    .panel-body {
-      flex-grow: 1;
-      overflow-y: auto;
-      background: #252525;
-      max-height: 250px;
-    }
+      .panel-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
 
-    .panel-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
+      .panel-list li {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #333;
+        color: #ddd;
+      }
 
-    .panel-list li {
-      padding: 10px;
-      cursor: pointer;
-      border-bottom: 1px solid #333;
-      color: #ddd;
-    }
+      .panel-list li:hover {
+        background-color: #3f51b5;
+        color: white;
+      }
 
-    .panel-list li:hover {
-      background-color: #3f51b5;
-      color: white;
-    }
+      .panel-description {
+        padding: 15px;
+        background: #111;
+        border-top: 1px solid #ffde00;
+        color: #ccc;
+        font-size: 0.9em;
+        min-height: 100px;
+      }
 
-    .panel-description {
-      padding: 15px;
-      background: #111;
-      border-top: 1px solid #ffde00;
-      color: #ccc;
-      font-size: 0.9em;
-      min-height: 100px;
-    }
+      /* Badges */
+      .move-stat-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: #444;
+        color: white;
+        font-size: 0.85em;
+        margin-right: 8px;
+        border: 1px solid #666;
+      }
 
-    /* Badges */
-    .move-stat-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      background: #444;
-      color: white;
-      font-size: 0.85em;
-      margin-right: 8px;
-      border: 1px solid #666;
-    }
+      .cat-physical {
+        background-color: #d32f2f;
+      }
 
-    .cat-physical {
-      background-color: #d32f2f;
-    }
+      .cat-special {
+        background-color: #1976d2;
+      }
 
-    .cat-special {
-      background-color: #1976d2;
-    }
+      .cat-status {
+        background-color: #757575;
+      }
+    </style>
+  </head>
 
-    .cat-status {
-      background-color: #757575;
-    }
-  </style>
-</head>
-
-<body>
-  <header class="header">
-    <div class="header-container">
-      <div class="logo-area">
-        <a th:href="@{/}" class="site-title-link"><img th:src="@{/img/Logo.png}" alt="Logo" width="100px" /></a>
-      </div>
-      <div style="display: flex; align-items: center">
-        <div sec:authorize="isAuthenticated()" class="user-menu-container">
-          <button id="userMenuBtn" class="user-button">
-            <img th:src="${#authentication.principal.fotoPerfilUrl}" alt="Avatar" class="user-avatar"
-              style="object-fit: cover" />
-            <span th:text="${#authentication.principal.username}">Usuario</span>
-            <i class="fas fa-chevron-down"></i>
-          </button>
-          <div id="userDropdown" class="user-dropdown-content">
-            <a th:href="@{/perfil}" class="dropdown-item"><i class="fas fa-user"></i> Ver Perfil</a>
-            <form th:action="@{/logout}" method="post" style="margin: 0">
-              <button type="submit">
-                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-              </button>
-            </form>
+  <body>
+    <header class="header">
+      <div class="header-container">
+        <div class="logo-area">
+          <a th:href="@{/}" class="site-title-link"
+            ><img th:src="@{/img/Logo.png}" alt="Logo" width="100px"
+          /></a>
+        </div>
+        <div style="display: flex; align-items: center">
+          <div sec:authorize="isAuthenticated()" class="user-menu-container">
+            <button id="userMenuBtn" class="user-button">
+              <img
+                th:src="${#authentication.principal.fotoPerfilUrl}"
+                alt="Avatar"
+                class="user-avatar"
+                style="object-fit: cover"
+              />
+              <span th:text="${#authentication.principal.username}"
+                >Usuario</span
+              >
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div id="userDropdown" class="user-dropdown-content">
+              <a th:href="@{/perfil}" class="dropdown-item"
+                ><i class="fas fa-user"></i> Ver Perfil</a
+              >
+              <form th:action="@{/logout}" method="post" style="margin: 0">
+                <button type="submit">
+                  <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="content-container">
-    <div style="
+    <div
+      id="modalAlert"
+      class="modal-container hidden"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        class="modal-content"
+        style="
+          background: #2a2a2a;
+          padding: 30px;
+          border-radius: 10px;
+          border: 1px solid #ffde00;
+          max-width: 400px;
+          width: 90%;
+          text-align: center;
+          box-shadow: 0 0 20px rgba(255, 222, 0, 0.2);
+        "
+      >
+        <h3
+          style="
+            color: #ffde00;
+            margin-top: 0;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+          "
+        >
+          <i class="fas fa-exclamation-circle"></i> Atención
+        </h3>
+        <p
+          id="modalAlertMessage"
+          style="
+            color: #f0f0f0;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.5;
+          "
+        >
+          Mensaje de error aquí...
+        </p>
+        <button
+          onclick="closeModalAlert()"
+          class="poke-button"
+          style="
+            background-color: #ffde00;
+            color: #222;
+            padding: 10px 30px;
+            font-weight: bold;
+            width: 100%;
+            justify-content: center;
+          "
+        >
+          Entendido
+        </button>
+      </div>
+    </div>
+
+    <main class="content-container">
+      <div
+        style="
           background: #222;
           padding: 30px;
           border-radius: 10px;
           border: 1px solid #444;
           max-width: 1000px;
           margin: 0 auto;
-        ">
-      <div style="
+        "
+      >
+        <div
+          style="
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 20px;
-          ">
-        <h2 style="color: #ffde00; margin: 0">
-          <i class="fas fa-tools"></i> Team Builder
-        </h2>
-        <div class="step-indicator">
-          <span id="labelPaso1" class="active">1. Selección</span>
-          <span style="margin: 0 10px">></span>
-          <span id="labelPaso2">2. Estrategia</span>
+          "
+        >
+          <h2 style="color: #ffde00; margin: 0">
+            <i class="fas fa-tools"></i> Team Builder
+          </h2>
+          <div class="step-indicator">
+            <span id="labelPaso1" class="active">1. Selección</span>
+            <span style="margin: 0 10px">></span>
+            <span id="labelPaso2">2. Estrategia</span>
+          </div>
         </div>
-      </div>
 
-      <div id="paso1">
-        <div style="
+        <div id="paso1">
+          <div
+            style="
               display: grid;
               grid-template-columns: 1fr 2fr;
               gap: 20px;
               margin-bottom: 20px;
-            ">
-          <div>
-            <label style="color: #aaa; font-size: 0.9em">Nombre del Equipo</label>
-            <input type="text" id="nombreEquipo" placeholder="Ej: Kanto Champs" style="
+            "
+          >
+            <div>
+              <label style="color: #aaa; font-size: 0.9em"
+                >Nombre del Equipo</label
+              >
+              <input
+                type="text"
+                id="nombreEquipo"
+                placeholder="Ej: Kanto Champs"
+                style="
                   width: 100%;
                   padding: 10px;
                   background: #333;
@@ -238,223 +332,270 @@
                   border-radius: 5px;
                   font-size: 1.1em;
                   font-weight: bold;
-                " />
-          </div>
-          <div>
-            <label style="color: #aaa; font-size: 0.9em">Descripción</label>
-            <input type="text" id="descEquipo" placeholder="Breve descripción..." style="
+                "
+              />
+            </div>
+            <div>
+              <label style="color: #aaa; font-size: 0.9em">Descripción</label>
+              <input
+                type="text"
+                id="descEquipo"
+                placeholder="Breve descripción..."
+                style="
                   width: 100%;
                   padding: 10px;
                   background: #333;
                   color: white;
                   border: 1px solid #555;
                   border-radius: 5px;
-                " />
+                "
+              />
+            </div>
           </div>
-        </div>
 
-        <div style="
+          <div
+            style="
               margin-bottom: 30px;
               display: flex;
               align-items: center;
               gap: 10px;
-            ">
-          <label style="color: #ffde00; font-weight: bold">Visibilidad:</label>
-          <select id="esPublico" required
-            style="padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 5px;">
-            <option value="" disabled selected>Seleccione visibilidad</option>
+            "
+          >
+            <label style="color: #ffde00; font-weight: bold"
+              >Visibilidad:</label
+            >
+            <select
+              id="esPublico"
+              required
+              style="
+                padding: 10px;
+                background: #333;
+                color: white;
+                border: 1px solid #555;
+                border-radius: 5px;
+              "
+            >
+              <option value="" disabled selected>Seleccione visibilidad</option>
 
-            <option value="true">🌍 Público (Visible en Comunidad)</option>
-            <option value="false">🔒 Privado (Solo para mí)</option>
-          </select>
-        </div>
+              <option value="true">🌍 Público (Visible en Comunidad)</option>
+              <option value="false">🔒 Privado (Solo para mí)</option>
+            </select>
+          </div>
 
-        <div id="selection-grid" style="
+          <div
+            id="selection-grid"
+            style="
               display: grid;
               grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
               gap: 15px;
               margin-bottom: 30px;
-            "></div>
+            "
+          ></div>
 
-        <div style="
+          <div
+            style="
               text-align: right;
               border-top: 1px solid #333;
               padding-top: 20px;
-            ">
-          <a th:href="@{/equipos}" class="poke-button" style="background-color: #d32f2f; float: left">Cancelar</a>
-          <button onclick="irAPaso2()" class="auth-submit-button" style="
+            "
+          >
+            <a
+              th:href="@{/equipos}"
+              class="poke-button"
+              style="background-color: #d32f2f; float: left"
+              >Cancelar</a
+            >
+            <button
+              onclick="irAPaso2()"
+              class="auth-submit-button"
+              style="
                 width: auto;
                 padding: 12px 40px;
                 background-color: #ffde00;
                 color: #222;
-              ">
-            Siguiente <i class="fas fa-arrow-right"></i>
-          </button>
+              "
+            >
+              Siguiente <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div id="paso2" class="hidden">
-        <p style="color: #ccc; margin-bottom: 20px">
-          <i class="fas fa-info-circle"></i> Configura los detalles. Pulsa la
-          estrella <i class="fas fa-star" style="color: gold"></i> para shiny.
-        </p>
-        <div id="detalles-container"></div>
-        <div style="
+        <div id="paso2" class="hidden">
+          <p style="color: #ccc; margin-bottom: 20px">
+            <i class="fas fa-info-circle"></i> Configura los detalles. Pulsa la
+            estrella <i class="fas fa-star" style="color: gold"></i> para shiny.
+          </p>
+          <div id="detalles-container"></div>
+          <div
+            style="
               display: flex;
               justify-content: space-between;
               border-top: 1px solid #333;
               padding-top: 20px;
               margin-top: 20px;
-            ">
-          <button onclick="volverAPaso1()" class="poke-button" style="background-color: #444">
-            <i class="fas fa-arrow-left"></i> Volver
-          </button>
-          <button onclick="guardarEquipoFinal()" class="auth-submit-button" style="
+            "
+          >
+            <button
+              onclick="volverAPaso1()"
+              class="poke-button"
+              style="background-color: #444"
+            >
+              <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            <button
+              onclick="guardarEquipoFinal()"
+              class="auth-submit-button"
+              style="
                 width: auto;
                 padding: 12px 40px;
                 background-color: #4caf50;
                 color: white;
-              ">
-            <i class="fas fa-save"></i> Guardar Equipo
-          </button>
+              "
+            >
+              <i class="fas fa-save"></i> Guardar Equipo
+            </button>
+          </div>
         </div>
       </div>
+    </main>
+
+    <div id="showdown-panel" class="showdown-panel hidden">
+      <div class="panel-header">
+        <span id="panel-title">Opciones</span>
+        <button
+          onclick="cerrarPanel()"
+          style="background: none; border: none; color: #888; cursor: pointer"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="panel-body">
+        <ul id="panel-list" class="panel-list"></ul>
+      </div>
+      <div id="panel-description" class="panel-description"></div>
     </div>
-  </main>
 
-  <div id="showdown-panel" class="showdown-panel hidden">
-    <div class="panel-header">
-      <span id="panel-title">Opciones</span>
-      <button onclick="cerrarPanel()" style="background: none; border: none; color: #888; cursor: pointer">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="panel-body">
-      <ul id="panel-list" class="panel-list"></ul>
-    </div>
-    <div id="panel-description" class="panel-description"></div>
-  </div>
+    <datalist id="allPokemonList">
+      <option th:each="p : ${listaPokemon}" th:value="${p.nombre}"></option>
+    </datalist>
 
-  <datalist id="allPokemonList">
-    <option th:each="p : ${listaPokemon}" th:value="${p.nombre}"></option>
-  </datalist>
+    <script th:src="@{/js/main.js}"></script>
 
-  <script th:src="@{/js/main.js}"></script>
+    <script th:inline="javascript">
+      /*<![CDATA[*/
 
-  <script th:inline="javascript">
-    /*<![CDATA[*/
+      // ==========================================
+      // 1. DATOS Y CONFIGURACIÓN INICIAL
+      // ==========================================
 
-    // ==========================================
-    // 1. DATOS Y CONFIGURACIÓN INICIAL
-    // ==========================================
+      // Recibimos los JSON del controlador de forma segura
+      const rawJson = /*[[${pokemonDbJson}]]*/ "{}";
+      const pokemonDb = JSON.parse(rawJson);
 
-    // Recibimos los JSON del controlador de forma segura
-    const rawJson = /*[[${pokemonDbJson}]]*/ "{}";
-    const pokemonDb = JSON.parse(rawJson);
+      const rawEquipo = /*[[${equipoJson}]]*/ "null";
+      const equipoEditar = JSON.parse(rawEquipo);
 
-    const rawEquipo = /*[[${equipoJson}]]*/ "null";
-    const equipoEditar = JSON.parse(rawEquipo);
+      let equipoTemporal = {
+        id: null,
+        nombre: "",
+        descripcion: "",
+        publico: true,
+        miembros: [],
+      };
+      const detailsCache = {};
 
-    let equipoTemporal = {
-      id: null,
-      nombre: "",
-      descripcion: "",
-      publico: true,
-      miembros: [],
-    };
-    const detailsCache = {};
+      // DICCIONARIO DE TRADUCCIONES (Centralizado)
+      const DICCIONARIO = {
+        clases: {
+          physical: "Físico",
+          special: "Especial",
+          status: "Estado",
+        },
+        tipos: {
+          normal: "Normal",
+          fighting: "Lucha",
+          flying: "Volador",
+          poison: "Veneno",
+          ground: "Tierra",
+          rock: "Roca",
+          bug: "Bicho",
+          ghost: "Fantasma",
+          steel: "Acero",
+          fire: "Fuego",
+          water: "Agua",
+          grass: "Planta",
+          electric: "Eléctrico",
+          psychic: "Psíquico",
+          ice: "Hielo",
+          dragon: "Dragón",
+          dark: "Siniestro",
+          fairy: "Hada",
+          unknown: "???",
+          shadow: "Oscuro",
+        },
+      };
 
-    // DICCIONARIO DE TRADUCCIONES (Centralizado)
-    const DICCIONARIO = {
-      clases: {
-        physical: "Físico",
-        special: "Especial",
-        status: "Estado",
-      },
-      tipos: {
-        normal: "Normal",
-        fighting: "Lucha",
-        flying: "Volador",
-        poison: "Veneno",
-        ground: "Tierra",
-        rock: "Roca",
-        bug: "Bicho",
-        ghost: "Fantasma",
-        steel: "Acero",
-        fire: "Fuego",
-        water: "Agua",
-        grass: "Planta",
-        electric: "Eléctrico",
-        psychic: "Psíquico",
-        ice: "Hielo",
-        dragon: "Dragón",
-        dark: "Siniestro",
-        fairy: "Hada",
-        unknown: "???",
-        shadow: "Oscuro",
-      },
-    };
+      // Diccionario manual para objetos comunes (Más rápido y preciso)
+      const objetosComunes = [
+        { id: "leftovers", nombre: "Restos" },
+        { id: "life-orb", nombre: "Vidasfera" },
+        { id: "choice-scarf", nombre: "Pañuelo Elección" },
+        { id: "choice-band", nombre: "Cinta Elección" },
+        { id: "choice-specs", nombre: "Gafas Elección" },
+        { id: "assault-vest", nombre: "Chaleco Asalto" },
+        { id: "sitrus-berry", nombre: "Baya Zidra" },
+        { id: "lum-berry", nombre: "Baya Ziuela" },
+        { id: "rocky-helmet", nombre: "Casco Dentado" },
+        { id: "black-sludge", nombre: "Lodo Negro" },
+        { id: "eviolite", nombre: "Mineral Evolutivo" },
+        { id: "focus-sash", nombre: "Banda Focus" },
+      ];
 
-    // Diccionario manual para objetos comunes (Más rápido y preciso)
-    const objetosComunes = [
-      { id: "leftovers", nombre: "Restos" },
-      { id: "life-orb", nombre: "Vidasfera" },
-      { id: "choice-scarf", nombre: "Pañuelo Elección" },
-      { id: "choice-band", nombre: "Cinta Elección" },
-      { id: "choice-specs", nombre: "Gafas Elección" },
-      { id: "assault-vest", nombre: "Chaleco Asalto" },
-      { id: "sitrus-berry", nombre: "Baya Zidra" },
-      { id: "lum-berry", nombre: "Baya Ziuela" },
-      { id: "rocky-helmet", nombre: "Casco Dentado" },
-      { id: "black-sludge", nombre: "Lodo Negro" },
-      { id: "eviolite", nombre: "Mineral Evolutivo" },
-      { id: "focus-sash", nombre: "Banda Focus" },
-    ];
+      const naturalezas = [
+        "Firme",
+        "Alegre",
+        "Modesta",
+        "Miedosa",
+        "Osada",
+        "Serena",
+        "Cauta",
+        "Agitada",
+        "Rara",
+        "Activa",
+      ];
+      const optsNaturaleza = naturalezas
+        .map((n) => `<option value="${n}">${n}</option>`)
+        .join("");
 
-    const naturalezas = [
-      "Firme",
-      "Alegre",
-      "Modesta",
-      "Miedosa",
-      "Osada",
-      "Serena",
-      "Cauta",
-      "Agitada",
-      "Rara",
-      "Activa",
-    ];
-    const optsNaturaleza = naturalezas
-      .map((n) => `<option value="${n}">${n}</option>`)
-      .join("");
+      // ==========================================
+      // 2. UTILIDADES DE IMAGEN
+      // ==========================================
+      function getPokemonImage(name, isShiny) {
+        if (!name)
+          return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
 
-    // ==========================================
-    // 2. UTILIDADES DE IMAGEN
-    // ==========================================
-    function getPokemonImage(name, isShiny) {
-      if (!name)
-        return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+        const cleanName = name.toLowerCase().trim();
+        const id = pokemonDb[cleanName];
 
-      const cleanName = name.toLowerCase().trim();
-      const id = pokemonDb[cleanName];
+        if (!id) {
+          return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+        }
 
-      if (!id) {
-        return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+        const baseUrl =
+          "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork";
+        return isShiny ? `${baseUrl}/shiny/${id}.png` : `${baseUrl}/${id}.png`;
       }
 
-      const baseUrl =
-        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork";
-      return isShiny ? `${baseUrl}/shiny/${id}.png` : `${baseUrl}/${id}.png`;
-    }
-
-    // ==========================================
-    // 3. INICIALIZACIÓN DE VISTA (PASO 1)
-    // ==========================================
-    const selectionGrid = document.getElementById("selection-grid");
-    for (let i = 0; i < 6; i++) {
-      selectionGrid.innerHTML += `
+      // ==========================================
+      // 3. INICIALIZACIÓN DE VISTA (PASO 1)
+      // ==========================================
+      const selectionGrid = document.getElementById("selection-grid");
+      for (let i = 0; i < 6; i++) {
+        selectionGrid.innerHTML += `
                 <div class="pokemon-slot" id="select-slot-${i}" style="background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; display: flex; gap: 15px; align-items: center;">
-                    <div style="font-size: 1.5em; font-weight: bold; color: #444; width: 20px;">${i + 1
-        }</div>
+                    <div style="font-size: 1.5em; font-weight: bold; color: #444; width: 20px;">${
+                      i + 1
+                    }</div>
                     <div style="width: 50px; height: 50px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #333;">
                         <img id="prev-img-${i}" 
                              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" 
@@ -466,65 +607,88 @@
                     </div>
                     <button onclick="limpiarInput(${i})" style="background: none; border: none; color: #d32f2f; cursor: pointer;"><i class="fas fa-trash"></i></button>
                 </div>`;
-    }
-
-    function actualizarPreview(i) {
-      const input = document.getElementById(`poke-name-${i}`);
-      const img = document.getElementById(`prev-img-${i}`);
-      const val = input.value.trim();
-
-      // Usamos nuestra función inteligente para obtener la URL
-      img.src = getPokemonImage(val, false);
-
-      if (val.length > 2 && pokemonDb[val.toLowerCase()]) {
-        img.style.opacity = "1";
-      } else {
-        img.style.opacity = "0.5";
-      }
-    }
-
-    function limpiarInput(i) {
-      document.getElementById(`poke-name-${i}`).value = "";
-      actualizarPreview(i);
-    }
-
-    // ==========================================
-    // 4. LÓGICA DE TRANSICIÓN Y EDICIÓN
-    // ==========================================
-
-    function cargarDatosEdicion() {
-      if (!equipoEditar) return;
-
-      // 1. Rellenar Paso 1
-      document.getElementById("nombreEquipo").value = equipoEditar.nombre;
-      document.getElementById("descEquipo").value = equipoEditar.descripcion;
-      document.getElementById("esPublico").value =
-        equipoEditar.publico.toString();
-
-      equipoTemporal.id = equipoEditar.id;
-
-      // 2. Rellenar Slots
-      if (equipoEditar.miembros && equipoEditar.miembros.length > 0) {
-        equipoEditar.miembros.forEach((m, index) => {
-          if (index < 6) {
-            const input = document.getElementById(`poke-name-${index}`);
-            input.value = m.nombrePokemon;
-            actualizarPreview(index);
-          }
-        });
       }
 
-      document.querySelector("h2").innerHTML =
-        '<i class="fas fa-edit"></i> Editar Equipo';
+      function actualizarPreview(i) {
+        const input = document.getElementById(`poke-name-${i}`);
+        const img = document.getElementById(`prev-img-${i}`);
+        const val = input.value.trim();
+
+        // Usamos nuestra función inteligente para obtener la URL
+        img.src = getPokemonImage(val, false);
+
+        if (val.length > 2 && pokemonDb[val.toLowerCase()]) {
+          img.style.opacity = "1";
+        } else {
+          img.style.opacity = "0.5";
+        }
+      }
+
+      function limpiarInput(i) {
+        document.getElementById(`poke-name-${i}`).value = "";
+        actualizarPreview(i);
+      }
+
+      // ==========================================
+      // 4. LÓGICA DE TRANSICIÓN Y EDICIÓN
+      // ==========================================
+
+      function cargarDatosEdicion() {
+        if (!equipoEditar) return;
+
+        // 1. Rellenar Paso 1
+        document.getElementById("nombreEquipo").value = equipoEditar.nombre;
+        document.getElementById("descEquipo").value = equipoEditar.descripcion;
+        document.getElementById("esPublico").value =
+          equipoEditar.publico.toString();
+
+        equipoTemporal.id = equipoEditar.id;
+
+        // 2. Rellenar Slots
+        if (equipoEditar.miembros && equipoEditar.miembros.length > 0) {
+          equipoEditar.miembros.forEach((m, index) => {
+            if (index < 6) {
+              const input = document.getElementById(`poke-name-${index}`);
+              input.value = m.nombrePokemon;
+              actualizarPreview(index);
+            }
+          });
+        }
+
+        document.querySelector("h2").innerHTML =
+          '<i class="fas fa-edit"></i> Editar Equipo';
+      }
+
+      // === NUEVAS FUNCIONES PARA EL MODAL DE ALERTA ===
+    function showModalAlert(message) {
+        document.getElementById('modalAlertMessage').textContent = message;
+        const modal = document.getElementById('modalAlert');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex'; // Asegura centrado flex
     }
 
-    function irAPaso2() {
+    function closeModalAlert() {
+        const modal = document.getElementById('modalAlert');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+
+      function irAPaso2() {
+        // 1. Validar Nombre
       const nombre = document.getElementById("nombreEquipo").value;
-      if (!nombre) {
-        alert("Ponle un nombre a tu equipo.");
+      if (!nombre || nombre.trim() === "") {
+        showModalAlert("Ponle un nombre a tu equipo."); // <--- CAMBIADO
         return;
       }
 
+      // 2. Validar Visibilidad
+      const visibilidadSelect = document.getElementById("esPublico");
+      if (visibilidadSelect.value === "") {
+        showModalAlert("Por favor, selecciona la visibilidad del equipo (Público o Privado)."); // <--- CAMBIADO
+        return;
+      }
+
+      // 3. Validar Pokémon
       const elegidos = [];
       for (let i = 0; i < 6; i++) {
         const val = document.getElementById(`poke-name-${i}`).value;
@@ -533,117 +697,138 @@
       }
 
       if (elegidos.length === 0) {
-        alert("Elige al menos 1 Pokémon.");
+        showModalAlert("Elige al menos 1 Pokémon para continuar."); // <--- CAMBIADO
         return;
       }
 
-      equipoTemporal.nombre = nombre;
-      equipoTemporal.descripcion =
-        document.getElementById("descEquipo").value;
-      equipoTemporal.publico =
-        document.getElementById("esPublico").value === "true";
+        equipoTemporal.nombre = nombre;
+        equipoTemporal.descripcion =
+          document.getElementById("descEquipo").value;
+        equipoTemporal.publico =
+          document.getElementById("esPublico").value === "true";
 
-      renderizarDetalles(elegidos);
+        renderizarDetalles(elegidos);
 
-      // PRE-RELLENAR SI ESTAMOS EDITANDO
-      // PRE-RELLENAR DATOS SI ESTAMOS EDITANDO
-      if (equipoEditar && equipoEditar.miembros) {
-        elegidos.forEach((elegido, i) => {
-          const miembroOriginal = equipoEditar.miembros[i];
+        // PRE-RELLENAR SI ESTAMOS EDITANDO
+        // PRE-RELLENAR DATOS SI ESTAMOS EDITANDO
+        if (equipoEditar && equipoEditar.miembros) {
+          elegidos.forEach((elegido, i) => {
+            const miembroOriginal = equipoEditar.miembros[i];
 
-          // Verificamos que coincida el nombre por seguridad
-          if (miembroOriginal && miembroOriginal.nombrePokemon.toLowerCase() === elegido.nombre.toLowerCase()) {
-            const card = document.getElementById(`detail-card-${i}`);
-            if (card) {
-              // Textos básicos
-              if (miembroOriginal.mote) card.querySelector('.d-mote').value = miembroOriginal.mote;
-              if (miembroOriginal.objeto) card.querySelector('.d-objeto').value = miembroOriginal.objeto;
-              if (miembroOriginal.habilidad) card.querySelector('.d-habilidad').value = miembroOriginal.habilidad;
-              if (miembroOriginal.naturaleza) card.querySelector('.d-naturaleza').value = miembroOriginal.naturaleza;
+            // Verificamos que coincida el nombre por seguridad
+            if (
+              miembroOriginal &&
+              miembroOriginal.nombrePokemon.toLowerCase() ===
+                elegido.nombre.toLowerCase()
+            ) {
+              const card = document.getElementById(`detail-card-${i}`);
+              if (card) {
+                // Textos básicos
+                if (miembroOriginal.mote)
+                  card.querySelector(".d-mote").value = miembroOriginal.mote;
+                if (miembroOriginal.objeto)
+                  card.querySelector(".d-objeto").value =
+                    miembroOriginal.objeto;
+                if (miembroOriginal.habilidad)
+                  card.querySelector(".d-habilidad").value =
+                    miembroOriginal.habilidad;
+                if (miembroOriginal.naturaleza)
+                  card.querySelector(".d-naturaleza").value =
+                    miembroOriginal.naturaleza;
 
-              // Movimientos
-              if (miembroOriginal.movimiento1) card.querySelector('.d-move-1').value = miembroOriginal.movimiento1;
-              if (miembroOriginal.movimiento2) card.querySelector('.d-move-2').value = miembroOriginal.movimiento2;
-              if (miembroOriginal.movimiento3) card.querySelector('.d-move-3').value = miembroOriginal.movimiento3;
-              if (miembroOriginal.movimiento4) card.querySelector('.d-move-4').value = miembroOriginal.movimiento4;
+                // Movimientos
+                if (miembroOriginal.movimiento1)
+                  card.querySelector(".d-move-1").value =
+                    miembroOriginal.movimiento1;
+                if (miembroOriginal.movimiento2)
+                  card.querySelector(".d-move-2").value =
+                    miembroOriginal.movimiento2;
+                if (miembroOriginal.movimiento3)
+                  card.querySelector(".d-move-3").value =
+                    miembroOriginal.movimiento3;
+                if (miembroOriginal.movimiento4)
+                  card.querySelector(".d-move-4").value =
+                    miembroOriginal.movimiento4;
 
-              // --- NUEVO: CARGAR EVS ---
-              // Función auxiliar para actualizar input y slider a la vez
-              const setEV = (stat, valor) => {
-                const inputNum = document.getElementById(`ev-${stat}-${i}`);
-                const inputRange = card.querySelector(`.ev-slider[data-target="ev-${stat}-${i}"]`);
-                if (inputNum && inputRange) {
-                  inputNum.value = valor || 0;
-                  inputRange.value = valor || 0;
-                }
-              };
+                // --- NUEVO: CARGAR EVS ---
+                // Función auxiliar para actualizar input y slider a la vez
+                const setEV = (stat, valor) => {
+                  const inputNum = document.getElementById(`ev-${stat}-${i}`);
+                  const inputRange = card.querySelector(
+                    `.ev-slider[data-target="ev-${stat}-${i}"]`,
+                  );
+                  if (inputNum && inputRange) {
+                    inputNum.value = valor || 0;
+                    inputRange.value = valor || 0;
+                  }
+                };
 
-              setEV('hp', miembroOriginal.hpEv);
-              setEV('attack', miembroOriginal.attackEv);
-              setEV('defense', miembroOriginal.defenseEv);
-              setEV('spAttack', miembroOriginal.spAttackEv);
-              setEV('spDefense', miembroOriginal.spDefenseEv);
-              setEV('speed', miembroOriginal.speedEv);
+                setEV("hp", miembroOriginal.hpEv);
+                setEV("attack", miembroOriginal.attackEv);
+                setEV("defense", miembroOriginal.defenseEv);
+                setEV("spAttack", miembroOriginal.spAttackEv);
+                setEV("spDefense", miembroOriginal.spDefenseEv);
+                setEV("speed", miembroOriginal.speedEv);
 
-              // Actualizar el contador de "Restantes" visualmente
-              // Disparamos el evento oninput manualmente en uno de ellos
-              const trigger = document.getElementById(`ev-hp-${i}`);
-              if (trigger) updateEV(trigger, i);
-              // -------------------------
+                // Actualizar el contador de "Restantes" visualmente
+                // Disparamos el evento oninput manualmente en uno de ellos
+                const trigger = document.getElementById(`ev-hp-${i}`);
+                if (trigger) updateEV(trigger, i);
+                // -------------------------
+              }
             }
-          }
-        });
+          });
+        }
+
+        document.getElementById("paso1").classList.add("hidden");
+        document.getElementById("paso2").classList.remove("hidden");
+        document.getElementById("labelPaso1").classList.remove("active");
+        document.getElementById("labelPaso2").classList.add("active");
+        window.scrollTo(0, 0);
       }
 
-      document.getElementById("paso1").classList.add("hidden");
-      document.getElementById("paso2").classList.remove("hidden");
-      document.getElementById("labelPaso1").classList.remove("active");
-      document.getElementById("labelPaso2").classList.add("active");
-      window.scrollTo(0, 0);
-    }
+      function volverAPaso1() {
+        document.getElementById("paso2").classList.add("hidden");
+        document.getElementById("paso1").classList.remove("hidden");
+        document.getElementById("labelPaso2").classList.remove("active");
+        document.getElementById("labelPaso1").classList.add("active");
+        cerrarPanel();
+      }
 
-    function volverAPaso1() {
-      document.getElementById("paso2").classList.add("hidden");
-      document.getElementById("paso1").classList.remove("hidden");
-      document.getElementById("labelPaso2").classList.remove("active");
-      document.getElementById("labelPaso1").classList.add("active");
-      cerrarPanel();
-    }
+      // --- RENDERIZADO DE DETALLES CON EVs ---
+      function renderizarDetalles(miembros) {
+        const container = document.getElementById("detalles-container");
+        container.innerHTML = "";
 
-    // --- RENDERIZADO DE DETALLES CON EVs ---
-    function renderizarDetalles(miembros) {
-      const container = document.getElementById("detalles-container");
-      container.innerHTML = "";
+        const stats = ["HP", "Atk", "Def", "SpA", "SpD", "Spe"];
+        const statsKeys = [
+          "hp",
+          "attack",
+          "defense",
+          "spAttack",
+          "spDefense",
+          "speed",
+        ]; // Para el DTO
 
-      const stats = ["HP", "Atk", "Def", "SpA", "SpD", "Spe"];
-      const statsKeys = [
-        "hp",
-        "attack",
-        "defense",
-        "spAttack",
-        "spDefense",
-        "speed",
-      ]; // Para el DTO
+        miembros.forEach((m, i) => {
+          const nombreCap =
+            m.nombre.charAt(0).toUpperCase() + m.nombre.slice(1);
+          const imgUrl = getPokemonImage(m.nombre, false);
 
-      miembros.forEach((m, i) => {
-        const nombreCap =
-          m.nombre.charAt(0).toUpperCase() + m.nombre.slice(1);
-        const imgUrl = getPokemonImage(m.nombre, false);
-
-        // Generamos las 6 filas de EVs
-        let evsHtml = "";
-        stats.forEach((stat, idx) => {
-          // key será: ev-hp-0, ev-attack-0, etc.
-          const key = `ev-${statsKeys[idx]}-${i}`;
-          evsHtml += `
+          // Generamos las 6 filas de EVs
+          let evsHtml = "";
+          stats.forEach((stat, idx) => {
+            // key será: ev-hp-0, ev-attack-0, etc.
+            const key = `ev-${statsKeys[idx]}-${i}`;
+            evsHtml += `
                     <div class="ev-row">
                         <span class="ev-label">${stat}</span>
                         <input type="range" min="0" max="252" value="0" class="ev-slider" data-target="${key}" oninput="updateEV(this, ${i})">
                         <input type="number" min="0" max="252" value="0" class="ev-input" id="${key}" oninput="updateEV(this, ${i})">
                     </div>`;
-        });
+          });
 
-        const html = `
+          const html = `
                 <div class="pokemon-detail-card" id="detail-card-${i}">
                     <div class="pokemon-detail-header">
                         <div class="poke-img-container">
@@ -693,131 +878,131 @@
                         </div>
                     </div>
                 </div>`;
-        container.innerHTML += html;
-      });
-    }
+          container.innerHTML += html;
+        });
+      }
 
-    // --- LÓGICA DE CONTROL DE EVS ---
-    function updateEV(element, cardIndex) {
-      const isSlider = element.type === "range";
-      const targetId = isSlider ? element.dataset.target : element.id;
+      // --- LÓGICA DE CONTROL DE EVS ---
+      function updateEV(element, cardIndex) {
+        const isSlider = element.type === "range";
+        const targetId = isSlider ? element.dataset.target : element.id;
 
-      // Sincronizar Slider <-> Input
-      let partner;
-      if (isSlider) {
-        partner = document.getElementById(targetId); // El input numérico
-      } else {
-        partner = document.querySelector(
-          `.ev-slider[data-target="${targetId}"]`
+        // Sincronizar Slider <-> Input
+        let partner;
+        if (isSlider) {
+          partner = document.getElementById(targetId); // El input numérico
+        } else {
+          partner = document.querySelector(
+            `.ev-slider[data-target="${targetId}"]`,
+          );
+        }
+
+        let val = parseInt(element.value) || 0;
+
+        // 1. Limitar a 252 individualmente
+        if (val > 252) val = 252;
+        if (val < 0) val = 0;
+
+        // 2. Calcular total actual
+        const inputs = document.querySelectorAll(
+          `#detail-card-${cardIndex} .ev-input`,
         );
+        let currentTotal = 0;
+        inputs.forEach((inp) => {
+          if (inp.id !== targetId) currentTotal += parseInt(inp.value) || 0;
+        });
+
+        // 3. Comprobar límite global (508)
+        const MAX_TOTAL = 508;
+        if (currentTotal + val > MAX_TOTAL) {
+          val = MAX_TOTAL - currentTotal; // Reducimos al máximo permitido
+        }
+
+        // Aplicar valores
+        element.value = val;
+        partner.value = val;
+
+        // Actualizar texto de restantes
+        const finalTotal = currentTotal + val;
+        const remaining = MAX_TOTAL - finalTotal;
+        const totalLabel = document.getElementById(`ev-total-${cardIndex}`);
+        totalLabel.innerText = `Restantes: ${remaining}`;
+
+        if (remaining < 0) totalLabel.classList.add("error");
+        else totalLabel.classList.remove("error");
       }
 
-      let val = parseInt(element.value) || 0;
-
-      // 1. Limitar a 252 individualmente
-      if (val > 252) val = 252;
-      if (val < 0) val = 0;
-
-      // 2. Calcular total actual
-      const inputs = document.querySelectorAll(
-        `#detail-card-${cardIndex} .ev-input`
-      );
-      let currentTotal = 0;
-      inputs.forEach((inp) => {
-        if (inp.id !== targetId) currentTotal += parseInt(inp.value) || 0;
-      });
-
-      // 3. Comprobar límite global (508)
-      const MAX_TOTAL = 508;
-      if (currentTotal + val > MAX_TOTAL) {
-        val = MAX_TOTAL - currentTotal; // Reducimos al máximo permitido
+      // ==========================================
+      // 5. SHINY TOGGLE
+      // ==========================================
+      function toggleShiny(index, nombre) {
+        const img = document.getElementById(`detail-img-${index}`);
+        const btn = document.getElementById(`shiny-btn-${index}`);
+        const inputVal = document.getElementById(`shiny-val-${index}`);
+        const newState = !(inputVal.value === "true");
+        inputVal.value = newState;
+        if (newState) {
+          btn.classList.add("active");
+          img.src = getPokemonImage(nombre, true);
+        } else {
+          btn.classList.remove("active");
+          img.src = getPokemonImage(nombre, false);
+        }
       }
 
-      // Aplicar valores
-      element.value = val;
-      partner.value = val;
+      // ==========================================
+      // 6. SELECTOR INTELIGENTE Y GRAPHQL
+      // ==========================================
 
-      // Actualizar texto de restantes
-      const finalTotal = currentTotal + val;
-      const remaining = MAX_TOTAL - finalTotal;
-      const totalLabel = document.getElementById(`ev-total-${cardIndex}`);
-      totalLabel.innerText = `Restantes: ${remaining}`;
+      function abrirSelector(input, tipo, slotIndex) {
+        const nombrePoke = document.querySelector(
+          `#detail-card-${slotIndex} .d-nombre`,
+        ).value;
+        if (!nombrePoke) return;
 
-      if (remaining < 0) totalLabel.classList.add("error");
-      else totalLabel.classList.remove("error");
-    }
+        // 1. Filtrar movimientos usados
+        let movimientosUsados = [];
+        if (tipo === "Movimiento") {
+          const inputsMoves = [
+            document.querySelector(`#detail-card-${slotIndex} .d-move-1`),
+            document.querySelector(`#detail-card-${slotIndex} .d-move-2`),
+            document.querySelector(`#detail-card-${slotIndex} .d-move-3`),
+            document.querySelector(`#detail-card-${slotIndex} .d-move-4`),
+          ];
+          movimientosUsados = inputsMoves
+            .filter((inp) => inp !== input && inp.value.trim() !== "")
+            .map((inp) => inp.value.toUpperCase());
+        }
 
-    // ==========================================
-    // 5. SHINY TOGGLE
-    // ==========================================
-    function toggleShiny(index, nombre) {
-      const img = document.getElementById(`detail-img-${index}`);
-      const btn = document.getElementById(`shiny-btn-${index}`);
-      const inputVal = document.getElementById(`shiny-val-${index}`);
-      const newState = !(inputVal.value === "true");
-      inputVal.value = newState;
-      if (newState) {
-        btn.classList.add("active");
-        img.src = getPokemonImage(nombre, true);
-      } else {
-        btn.classList.remove("active");
-        img.src = getPokemonImage(nombre, false);
-      }
-    }
+        // 2. Posicionamiento Inteligente
+        const panel = document.getElementById("showdown-panel");
+        const rect = input.getBoundingClientRect();
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const viewportWidth = window.innerWidth;
+        const panelWidth = 320;
 
-    // ==========================================
-    // 6. SELECTOR INTELIGENTE Y GRAPHQL
-    // ==========================================
+        let leftPos = rect.right + 10;
+        if (leftPos + panelWidth > viewportWidth) {
+          leftPos = rect.left - panelWidth - 10;
+        }
+        let topPos = rect.top + scrollTop - 50;
 
-    function abrirSelector(input, tipo, slotIndex) {
-      const nombrePoke = document.querySelector(
-        `#detail-card-${slotIndex} .d-nombre`
-      ).value;
-      if (!nombrePoke) return;
+        panel.style.top = topPos + "px";
+        panel.style.left = leftPos + "px";
+        panel.classList.remove("hidden");
 
-      // 1. Filtrar movimientos usados
-      let movimientosUsados = [];
-      if (tipo === "Movimiento") {
-        const inputsMoves = [
-          document.querySelector(`#detail-card-${slotIndex} .d-move-1`),
-          document.querySelector(`#detail-card-${slotIndex} .d-move-2`),
-          document.querySelector(`#detail-card-${slotIndex} .d-move-3`),
-          document.querySelector(`#detail-card-${slotIndex} .d-move-4`),
-        ];
-        movimientosUsados = inputsMoves
-          .filter((inp) => inp !== input && inp.value.trim() !== "")
-          .map((inp) => inp.value.toUpperCase());
-      }
+        document.getElementById("panel-title").innerText = `Elegir ${tipo}`;
+        const lista = document.getElementById("panel-list");
+        lista.innerHTML =
+          '<li style="color:#888; text-align:center;">Cargando en español...</li>';
+        document.getElementById("panel-description").innerHTML =
+          '<p style="color:#aaa; text-align:center;">Pasa el ratón para ver detalles.</p>';
 
-      // 2. Posicionamiento Inteligente
-      const panel = document.getElementById("showdown-panel");
-      const rect = input.getBoundingClientRect();
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const viewportWidth = window.innerWidth;
-      const panelWidth = 320;
-
-      let leftPos = rect.right + 10;
-      if (leftPos + panelWidth > viewportWidth) {
-        leftPos = rect.left - panelWidth - 10;
-      }
-      let topPos = rect.top + scrollTop - 50;
-
-      panel.style.top = topPos + "px";
-      panel.style.left = leftPos + "px";
-      panel.classList.remove("hidden");
-
-      document.getElementById("panel-title").innerText = `Elegir ${tipo}`;
-      const lista = document.getElementById("panel-list");
-      lista.innerHTML =
-        '<li style="color:#888; text-align:center;">Cargando en español...</li>';
-      document.getElementById("panel-description").innerHTML =
-        '<p style="color:#aaa; text-align:center;">Pasa el ratón para ver detalles.</p>';
-
-      // 3. Cargar Datos
-      if (tipo === "Objeto") {
-        mostrarOpcionesTraducidas(objetosComunes, input, "item");
-      } else {
-        const query = `
+        // 3. Cargar Datos
+        if (tipo === "Objeto") {
+          mostrarOpcionesTraducidas(objetosComunes, input, "item");
+        } else {
+          const query = `
                 query {
                   pokemon_v2_pokemon(where: {name: {_eq: "${nombrePoke.toLowerCase()}"}}) {
                     pokemon_v2_pokemonmoves(distinct_on: move_id) {
@@ -840,315 +1025,322 @@
                 }
                 `;
 
-        fetch("https://beta.pokeapi.co/graphql/v1beta", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: query }),
-        })
-          .then((res) => res.json())
-          .then((result) => {
-            const data = result.data.pokemon_v2_pokemon[0];
-            let opciones = [];
+          fetch("https://beta.pokeapi.co/graphql/v1beta", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: query }),
+          })
+            .then((res) => res.json())
+            .then((result) => {
+              const data = result.data.pokemon_v2_pokemon[0];
+              let opciones = [];
 
-            if (tipo === "Habilidad") {
-              opciones = data.pokemon_v2_pokemonabilities.map((a) => ({
-                id: a.pokemon_v2_ability.name,
-                nombre:
-                  a.pokemon_v2_ability.pokemon_v2_abilitynames[0]?.name ||
-                  a.pokemon_v2_ability.name,
-              }));
-            } else {
-              const rawMoves = data.pokemon_v2_pokemonmoves.map((m) => ({
-                id: m.pokemon_v2_move.name,
-                nombre:
-                  m.pokemon_v2_move.pokemon_v2_movenames[0]?.name ||
-                  m.pokemon_v2_move.name,
-              }));
+              if (tipo === "Habilidad") {
+                opciones = data.pokemon_v2_pokemonabilities.map((a) => ({
+                  id: a.pokemon_v2_ability.name,
+                  nombre:
+                    a.pokemon_v2_ability.pokemon_v2_abilitynames[0]?.name ||
+                    a.pokemon_v2_ability.name,
+                }));
+              } else {
+                const rawMoves = data.pokemon_v2_pokemonmoves.map((m) => ({
+                  id: m.pokemon_v2_move.name,
+                  nombre:
+                    m.pokemon_v2_move.pokemon_v2_movenames[0]?.name ||
+                    m.pokemon_v2_move.name,
+                }));
 
-              opciones = rawMoves.filter(
-                (op) => !movimientosUsados.includes(op.nombre.toUpperCase())
+                opciones = rawMoves.filter(
+                  (op) => !movimientosUsados.includes(op.nombre.toUpperCase()),
+                );
+              }
+
+              opciones.sort((a, b) => a.nombre.localeCompare(b.nombre));
+              mostrarOpcionesTraducidas(
+                opciones,
+                input,
+                tipo === "Habilidad" ? "ability" : "move",
               );
-            }
+            });
+        }
+      }
 
-            opciones.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            mostrarOpcionesTraducidas(
-              opciones,
-              input,
-              tipo === "Habilidad" ? "ability" : "move"
-            );
+      function mostrarOpcionesTraducidas(opciones, inputDestino, categoriaApi) {
+        const lista = document.getElementById("panel-list");
+        lista.innerHTML = "";
+
+        opciones.forEach((op) => {
+          const li = document.createElement("li");
+          li.textContent = op.nombre;
+
+          li.onclick = () => {
+            inputDestino.value = op.nombre;
+            inputDestino.setAttribute("data-api-slug", op.id);
+            cerrarPanel();
+          };
+          li.onmouseenter = () => {
+            cargarDetalles(categoriaApi, op.id);
+          };
+
+          lista.appendChild(li);
+        });
+      }
+
+      // ==========================================
+      // 7. DETALLES (HOVER)
+      // ==========================================
+
+      function cargarDetalles(categoria, slug) {
+        const descBox = document.getElementById("panel-description");
+        const apiSlug = slug.toLowerCase().trim().replace(/ /g, "-");
+        const cacheKey = `${categoria}:${apiSlug}`;
+
+        if (detailsCache[cacheKey]) {
+          pintarDetalles(detailsCache[cacheKey]);
+          return;
+        }
+        descBox.innerHTML =
+          '<p style="color:#FFDE00; text-align:center;">Cargando...</p>';
+
+        const url = `https://pokeapi.co/api/v2/${categoria}/${apiSlug}`;
+
+        fetch(url)
+          .then((res) => {
+            if (!res.ok) throw new Error("404");
+            return res.json();
+          })
+          .then((data) => {
+            const info = procesarInfoApi(data, categoria);
+            detailsCache[cacheKey] = info;
+            pintarDetalles(info);
+          })
+          .catch((err) => {
+            console.error(err);
+            descBox.innerHTML =
+              '<p style="color:red; text-align:center;">Detalles no disponibles.</p>';
           });
       }
-    }
 
-    function mostrarOpcionesTraducidas(opciones, inputDestino, categoriaApi) {
-      const lista = document.getElementById("panel-list");
-      lista.innerHTML = "";
+      function procesarInfoApi(data, categoria) {
+        const nombreObj = data.names.find((n) => n.language.name === "es");
+        const nombreEsp = nombreObj
+          ? nombreObj.name
+          : data.name.replace(/-/g, " ").toUpperCase();
 
-      opciones.forEach((op) => {
-        const li = document.createElement("li");
-        li.textContent = op.nombre;
+        let descripcion = "Descripción no disponible en español.";
 
-        li.onclick = () => {
-          inputDestino.value = op.nombre;
-          inputDestino.setAttribute("data-api-slug", op.id);
-          cerrarPanel();
-        };
-        li.onmouseenter = () => {
-          cargarDetalles(categoriaApi, op.id);
-        };
-
-        lista.appendChild(li);
-      });
-    }
-
-    // ==========================================
-    // 7. DETALLES (HOVER)
-    // ==========================================
-
-    function cargarDetalles(categoria, slug) {
-      const descBox = document.getElementById("panel-description");
-      const apiSlug = slug.toLowerCase().trim().replace(/ /g, "-");
-      const cacheKey = `${categoria}:${apiSlug}`;
-
-      if (detailsCache[cacheKey]) {
-        pintarDetalles(detailsCache[cacheKey]);
-        return;
-      }
-      descBox.innerHTML =
-        '<p style="color:#FFDE00; text-align:center;">Cargando...</p>';
-
-      const url = `https://pokeapi.co/api/v2/${categoria}/${apiSlug}`;
-
-      fetch(url)
-        .then((res) => {
-          if (!res.ok) throw new Error("404");
-          return res.json();
-        })
-        .then((data) => {
-          const info = procesarInfoApi(data, categoria);
-          detailsCache[cacheKey] = info;
-          pintarDetalles(info);
-        })
-        .catch((err) => {
-          console.error(err);
-          descBox.innerHTML =
-            '<p style="color:red; text-align:center;">Detalles no disponibles.</p>';
-        });
-    }
-
-    function procesarInfoApi(data, categoria) {
-      const nombreObj = data.names.find((n) => n.language.name === "es");
-      const nombreEsp = nombreObj
-        ? nombreObj.name
-        : data.name.replace(/-/g, " ").toUpperCase();
-
-      let descripcion = "Descripción no disponible en español.";
-
-      if (data.flavor_text_entries) {
-        const entriesEsp = data.flavor_text_entries.filter(
-          (f) => f.language.name === "es"
-        );
-        if (entriesEsp.length > 0) {
-          const entry = entriesEsp[entriesEsp.length - 1];
-          descripcion = entry.text || entry.flavor_text;
+        if (data.flavor_text_entries) {
+          const entriesEsp = data.flavor_text_entries.filter(
+            (f) => f.language.name === "es",
+          );
+          if (entriesEsp.length > 0) {
+            const entry = entriesEsp[entriesEsp.length - 1];
+            descripcion = entry.text || entry.flavor_text;
+          }
+        } else if (data.effect_entries) {
+          const entry = data.effect_entries.find(
+            (e) => e.language.name === "en",
+          );
+          if (entry) descripcion = "(Inglés) " + entry.short_effect;
         }
-      } else if (data.effect_entries) {
-        const entry = data.effect_entries.find(
-          (e) => e.language.name === "en"
-        );
-        if (entry) descripcion = "(Inglés) " + entry.short_effect;
-      }
 
-      descripcion = descripcion.replace(/\n|\f|\r/g, " ");
-      let extraHtml = "";
+        descripcion = descripcion.replace(/\n|\f|\r/g, " ");
+        let extraHtml = "";
 
-      if (categoria === "move") {
-        const typeName = data.type.name;
-        const damageClassName = data.damage_class.name;
+        if (categoria === "move") {
+          const typeName = data.type.name;
+          const damageClassName = data.damage_class.name;
 
-        const tipoTraducido = DICCIONARIO.tipos[typeName] || typeName;
-        const claseTraducida =
-          DICCIONARIO.clases[damageClassName] || damageClassName;
-        let classCss =
-          damageClassName === "physical"
-            ? "cat-physical"
-            : damageClassName === "special"
-              ? "cat-special"
-              : "cat-status";
+          const tipoTraducido = DICCIONARIO.tipos[typeName] || typeName;
+          const claseTraducida =
+            DICCIONARIO.clases[damageClassName] || damageClassName;
+          let classCss =
+            damageClassName === "physical"
+              ? "cat-physical"
+              : damageClassName === "special"
+                ? "cat-special"
+                : "cat-status";
 
-        extraHtml = `<div style="margin-bottom:8px; display:flex; gap:5px;">
+          extraHtml = `<div style="margin-bottom:8px; display:flex; gap:5px;">
                     <span class="move-stat-badge ${classCss}">${claseTraducida.toUpperCase()}</span>
                     <span class="move-stat-badge" style="border-color:var(--type-${typeName});color:var(--type-${typeName})">${tipoTraducido.toUpperCase()}</span>
-                    <span class="move-stat-badge">Pot: ${data.power || "-"
-          }</span>
-                    <span class="move-stat-badge">Prec: ${data.accuracy || "-"
-          }%</span>
+                    <span class="move-stat-badge">Pot: ${
+                      data.power || "-"
+                    }</span>
+                    <span class="move-stat-badge">Prec: ${
+                      data.accuracy || "-"
+                    }%</span>
                 </div>`;
-      } else if (categoria === "item") {
-        const catItem = data.category
-          ? data.category.name.replace(/-/g, " ")
-          : "Objeto";
-        extraHtml = `<div style="margin-bottom:8px;"><span class="move-stat-badge" style="background:#555; color:#eee;">${catItem.toUpperCase()}</span></div>`;
+        } else if (categoria === "item") {
+          const catItem = data.category
+            ? data.category.name.replace(/-/g, " ")
+            : "Objeto";
+          extraHtml = `<div style="margin-bottom:8px;"><span class="move-stat-badge" style="background:#555; color:#eee;">${catItem.toUpperCase()}</span></div>`;
+        }
+
+        return { nombre: nombreEsp, desc: descripcion, extra: extraHtml };
       }
 
-      return { nombre: nombreEsp, desc: descripcion, extra: extraHtml };
-    }
-
-    function pintarDetalles(info) {
-      document.getElementById(
-        "panel-description"
-      ).innerHTML = `<strong style="color:#FFDE00; font-size:1.1em; display:block; margin-bottom:5px;">${info.nombre}</strong>${info.extra}<p style="margin:0; color:#ddd;">${info.desc}</p>`;
-    }
-
-    function cerrarPanel() {
-      document.getElementById("showdown-panel").classList.add("hidden");
-    }
-    document.addEventListener("click", function (e) {
-      const panel = document.getElementById("showdown-panel");
-      if (
-        !panel.classList.contains("hidden") &&
-        !e.target.closest(".showdown-panel") &&
-        !e.target.hasAttribute("readonly")
-      )
-        cerrarPanel();
-    });
-
-    // ==========================================
-    // 8. GUARDADO FINAL CON VALIDACIONES
-    // ==========================================
-    function guardarEquipoFinal() {
-      const container = document.getElementById("detalles-container");
-      const cards = container.querySelectorAll(".pokemon-detail-card");
-
-      const listaFinalMiembros = [];
-      let hayErrores = false;
-
-      for (let i = 0; i < cards.length; i++) {
-        const card = cards[i];
-        const nombrePoke = card.querySelector(".d-nombre").value;
-        const habilidad = card.querySelector(".d-habilidad").value.trim();
-        const naturaleza = card.querySelector(".d-naturaleza").value;
-
-        const m1 = card.querySelector(".d-move-1").value.trim();
-        const m2 = card.querySelector(".d-move-2").value.trim();
-        const m3 = card.querySelector(".d-move-3").value.trim();
-        const m4 = card.querySelector(".d-move-4").value.trim();
-
-        // LEER EVS
-        const hp = parseInt(document.getElementById(`ev-hp-${i}`).value) || 0;
-        const atk =
-          parseInt(document.getElementById(`ev-attack-${i}`).value) || 0;
-        const def =
-          parseInt(document.getElementById(`ev-defense-${i}`).value) || 0;
-        const spa =
-          parseInt(document.getElementById(`ev-spAttack-${i}`).value) || 0;
-        const spd =
-          parseInt(document.getElementById(`ev-spDefense-${i}`).value) || 0;
-        const spe =
-          parseInt(document.getElementById(`ev-speed-${i}`).value) || 0;
-
-        if (!habilidad) {
-          alert(
-            `El Pokémon #${i + 1
-            } (${nombrePoke}) no tiene Habilidad seleccionada.`
-          );
-          hayErrores = true;
-          break;
-        }
-        if (!naturaleza) {
-          alert(
-            `El Pokémon #${i + 1
-            } (${nombrePoke}) no tiene Naturaleza seleccionada.`
-          );
-          hayErrores = true;
-          break;
-        }
-        if (!m1 && !m2 && !m3 && !m4) {
-          alert(
-            `El Pokémon #${i + 1
-            } (${nombrePoke}) debe tener al menos un movimiento.`
-          );
-          hayErrores = true;
-          break;
-        }
-
-        const miembro = {
-          nombrePokemon: nombrePoke,
-          mote: card.querySelector(".d-mote").value,
-          objeto: card.querySelector(".d-objeto").value,
-          habilidad: habilidad,
-          naturaleza: naturaleza,
-          movimiento1: m1,
-          movimiento2: m2,
-          movimiento3: m3,
-          movimiento4: m4,
-          // AÑADIR ESTOS:
-          hpEv: hp,
-          attackEv: atk,
-          defenseEv: def,
-          spAttackEv: spa,
-          spDefenseEv: spd,
-          speedEv: spe,
-        };
-        listaFinalMiembros.push(miembro);
+      function pintarDetalles(info) {
+        document.getElementById("panel-description").innerHTML =
+          `<strong style="color:#FFDE00; font-size:1.1em; display:block; margin-bottom:5px;">${info.nombre}</strong>${info.extra}<p style="margin:0; color:#ddd;">${info.desc}</p>`;
       }
 
-      if (hayErrores) return;
+      function cerrarPanel() {
+        document.getElementById("showdown-panel").classList.add("hidden");
+      }
+      document.addEventListener("click", function (e) {
+        const panel = document.getElementById("showdown-panel");
+        if (
+          !panel.classList.contains("hidden") &&
+          !e.target.closest(".showdown-panel") &&
+          !e.target.hasAttribute("readonly")
+        )
+          cerrarPanel();
+      });
 
-      const equipoDTO = {
-        id: equipoTemporal.id,
-        nombre: equipoTemporal.nombre,
-        descripcion: equipoTemporal.descripcion,
-        publico: equipoTemporal.publico,
-        miembros: listaFinalMiembros,
-      };
+      // ==========================================
+      // 8. GUARDADO FINAL CON VALIDACIONES
+      // ==========================================
+      function guardarEquipoFinal() {
+        const container = document.getElementById("detalles-container");
+        const cards = container.querySelectorAll(".pokemon-detail-card");
 
-      fetch("/equipos/guardar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(equipoDTO),
-      })
-        .then((res) => res.text())
-        .then((data) => {
-          if (data === "OK") {
-            window.location.href = "/equipos";
-          } else {
-            alert("Error al guardar: " + data);
+        const listaFinalMiembros = [];
+        let hayErrores = false;
+
+        for (let i = 0; i < cards.length; i++) {
+          const card = cards[i];
+          const nombrePoke = card.querySelector(".d-nombre").value;
+          const habilidad = card.querySelector(".d-habilidad").value.trim();
+          const naturaleza = card.querySelector(".d-naturaleza").value;
+
+          const m1 = card.querySelector(".d-move-1").value.trim();
+          const m2 = card.querySelector(".d-move-2").value.trim();
+          const m3 = card.querySelector(".d-move-3").value.trim();
+          const m4 = card.querySelector(".d-move-4").value.trim();
+
+          // LEER EVS
+          const hp = parseInt(document.getElementById(`ev-hp-${i}`).value) || 0;
+          const atk =
+            parseInt(document.getElementById(`ev-attack-${i}`).value) || 0;
+          const def =
+            parseInt(document.getElementById(`ev-defense-${i}`).value) || 0;
+          const spa =
+            parseInt(document.getElementById(`ev-spAttack-${i}`).value) || 0;
+          const spd =
+            parseInt(document.getElementById(`ev-spDefense-${i}`).value) || 0;
+          const spe =
+            parseInt(document.getElementById(`ev-speed-${i}`).value) || 0;
+
+          if (!habilidad) {
+            alert(
+              `El Pokémon #${
+                i + 1
+              } (${nombrePoke}) no tiene Habilidad seleccionada.`,
+            );
+            hayErrores = true;
+            break;
           }
-        });
-    }
+          if (!naturaleza) {
+            alert(
+              `El Pokémon #${
+                i + 1
+              } (${nombrePoke}) no tiene Naturaleza seleccionada.`,
+            );
+            hayErrores = true;
+            break;
+          }
+          if (!m1 && !m2 && !m3 && !m4) {
+            alert(
+              `El Pokémon #${
+                i + 1
+              } (${nombrePoke}) debe tener al menos un movimiento.`,
+            );
+            hayErrores = true;
+            break;
+          }
 
-    // Ejecutar carga inicial si estamos editando
-    cargarDatosEdicion();
+          const miembro = {
+            nombrePokemon: nombrePoke,
+            mote: card.querySelector(".d-mote").value,
+            objeto: card.querySelector(".d-objeto").value,
+            habilidad: habilidad,
+            naturaleza: naturaleza,
+            movimiento1: m1,
+            movimiento2: m2,
+            movimiento3: m3,
+            movimiento4: m4,
+            // AÑADIR ESTOS:
+            hpEv: hp,
+            attackEv: atk,
+            defenseEv: def,
+            spAttackEv: spa,
+            spDefenseEv: spd,
+            speedEv: spe,
+          };
+          listaFinalMiembros.push(miembro);
+        }
 
-    /*]]>*/
-  </script>
-</body>
-<footer class="main-footer">
-  <div class="footer-content-wrapper">
-    <div class="footer-info">
-      <img th:src="@{/img/Logo.png}" alt="Logo de la Pokédex" class="footer-logo" />
-      <p class="description">
-        Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
-        de Kanto!<br />
-        Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
-        evolutivas de todos tus Pokémon favoritos.
-        <br />¡Atrapa la información!
-      </p>
+        if (hayErrores) return;
+
+        const equipoDTO = {
+          id: equipoTemporal.id,
+          nombre: equipoTemporal.nombre,
+          descripcion: equipoTemporal.descripcion,
+          publico: equipoTemporal.publico,
+          miembros: listaFinalMiembros,
+        };
+
+        fetch("/equipos/guardar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(equipoDTO),
+        })
+          .then((res) => res.text())
+          .then((data) => {
+            if (data === "OK") {
+              window.location.href = "/equipos";
+            } else {
+              alert("Error al guardar: " + data);
+            }
+          });
+      }
+
+      // Ejecutar carga inicial si estamos editando
+      cargarDatosEdicion();
+
+      /*]]>*/
+    </script>
+  </body>
+  <footer class="main-footer">
+    <div class="footer-content-wrapper">
+      <div class="footer-info">
+        <img
+          th:src="@{/img/Logo.png}"
+          alt="Logo de la Pokédex"
+          class="footer-logo"
+        />
+        <p class="description">
+          Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+          de Kanto!<br />
+          Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+          evolutivas de todos tus Pokémon favoritos.
+          <br />¡Atrapa la información!
+        </p>
+      </div>
+
+      <div class="footer-meta">
+        <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+        <p class="copyright">
+          ©2025 El Diario de Kanto. Todos los derechos reservados.
+        </p>
+        <p class="disclaimer">
+          Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+          sus nombres son marcas registradas de Nintendo, Game Freak y The
+          Pokémon Company.
+        </p>
+      </div>
     </div>
-
-    <div class="footer-meta">
-      <p class="creator">Creado por: Pablo Herrera Domínguez</p>
-      <p class="copyright">
-        ©2025 El Diario de Kanto. Todos los derechos reservados.
-      </p>
-      <p class="disclaimer">
-        Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
-        sus nombres son marcas registradas de Nintendo, Game Freak y The
-        Pokémon Company.
-      </p>
-    </div>
-  </div>
-</footer>
-
+  </footer>
 </html>

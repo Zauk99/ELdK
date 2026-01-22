@@ -2280,3 +2280,25 @@ a {
     cursor: pointer;
     color: #888;/* Un poco más separado del borde */
 }
+
+/* ... En styles.css ... */
+
+/* Estilos para el cuerpo del texto de la noticia */
+#news-text-content {
+    /* Estas líneas arreglan el desbordamiento */
+    overflow-wrap: break-word;  /* Estándar moderno */
+    word-wrap: break-word;      /* Compatibilidad antigua */
+    word-break: break-word;     /* Rompe solo si es necesario */
+    
+    /* Tu estilo existente (si lo tenías) */
+    color: #f1f1f1;
+}
+
+#news-text-content p {
+    line-height: 1.8;
+    margin-bottom: 15px;
+    text-align: justify;
+    
+    /* También puedes añadirlo aquí por seguridad */
+    overflow-wrap: break-word;
+}
