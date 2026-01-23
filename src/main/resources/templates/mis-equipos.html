@@ -8,30 +8,60 @@
 </head>
 <body>
     <header class="header">
-        <div class="header-container">
-            <div class="logo-area">
-                <a th:href="@{/}" class="site-title-link">
-                    <img th:src="@{/img/Logo.png}" alt="Logo" width="100px" />
-                </a>
-            </div>
-            <div class="user-menu-container">
-                <button id="userMenuBtn" class="user-button">
-                    <img th:src="${#authentication.principal.fotoPerfilUrl}" alt="Avatar" class="user-avatar" style="object-fit: cover" />
-                    <span th:text="${#authentication.principal.username}">Usuario</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div id="userDropdown" class="user-dropdown-content">
-                    <a th:href="@{/}" class="dropdown-item" style="display: block; padding: 12px 16px; color: white; text-decoration: none; border-bottom: 1px solid #444; text-align: left;">
-                        <i class="fas fa-home" style="width: 20px"></i> Volver al Inicio
-                    </a>
-                    <form th:action="@{/logout}" method="post" style="margin: 0">
-                        <button type="submit">
-                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                        </button>
-                    </form>
-                </div>
-            </div>
+      <div class="header-container">
+        <div class="logo-area">
+          <a th:href="@{/}" class="site-title-link"
+            ><img th:src="@{/img/Logo.png}" alt="Logo" width="100px"
+          /></a>
         </div>
+        <div class="user-menu-container">
+          <button id="userMenuBtn" class="user-button">
+            <img
+              th:src="${#authentication.principal.fotoPerfilUrl}"
+              alt="Avatar"
+              class="user-avatar"
+              style="object-fit: cover"
+            />
+            <span th:text="${#authentication.principal.username}">Usuario</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div id="userDropdown" class="user-dropdown-content">
+            <a
+              th:href="@{/}"
+              class="dropdown-item"
+              style="
+                display: block;
+                padding: 12px 16px;
+                color: white;
+                text-decoration: none;
+                border-bottom: 1px solid #444;
+                text-align: left;
+              "
+            >
+              <i class="fas fa-home" style="width: 20px"></i> Volver al Inicio
+            </a>
+            <div
+              th:if="${error}"
+              style="
+                background-color: #ffe6e6;
+                color: #d32f2f;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                border-left: 5px solid #d32f2f;
+              "
+            >
+              <i class="fas fa-exclamation-circle"></i>
+              <span th:text="${error}">Error</span>
+            </div>
+            <form th:action="@{/logout}" method="post" style="margin: 0">
+              <button type="submit">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main class="content-container">
