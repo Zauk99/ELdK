@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html
   lang="es"
   xmlns:th="http://www.thymeleaf.org"
@@ -145,6 +145,13 @@
             th:each="equipo : ${equipos}"
             class="team-card"
             style="
+              /* AÑADIDO: Forzamos verticalidad para anular el estilo horizontal de 'Mis Equipos' */
+              display: flex;
+              flex-direction: column;
+              align-items: stretch;
+              height: 100%;
+
+              /* Estilos originales */
               background-color: #222;
               border-radius: 10px;
               overflow: hidden;
@@ -202,7 +209,11 @@
                   th:src="@{'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/' + ${pokemonIds.get(#strings.toLowerCase(miembro.nombrePokemon))} + '.png'}"
                   th:alt="${miembro.nombrePokemon}"
                   style="width: 100%; height: 100%; object-fit: contain"
-                  onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';"
+                  onerror="
+                    this.onerror = null;
+                    this.src =
+                      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+                  "
                 />
               </div>
             </div>

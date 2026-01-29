@@ -27,11 +27,6 @@
           <input type="text" name="query" th:value="${queryActual}" placeholder="Buscar Pokémon..."
             style="background: none; border: none; outline: none; color: white; width: 100%; font-size: 1rem;"
             autocomplete="off" />
-
-          <button type="submit"
-            style="background: none; border: none; color: rgba(255, 255, 255, 0.8); cursor: pointer; padding: 5px;">
-            <i class="fas fa-search"></i>
-          </button>
         </form>
       </div>
 
@@ -187,40 +182,45 @@
         </section>
 
         <section class="evolution-section"
-          style="margin-top: 20px; padding: 20px; background-color: #2a2a2a; border-radius: 10px;">
-          <h2 style="color: #ffd700; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;">
-            Línea Evolutiva
-          </h2>
-          <div style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap;">
-            <th:block th:each="evo, stat : ${pokemon.lineaEvolutiva}">
-              <div th:if="${!stat.first}" style="text-align: center; color: #888; font-size: 0.9em; margin: 0 5px;">
-                <div style="margin-bottom: 2px;"><i class="fas fa-arrow-right"></i></div>
-                <span th:text="${evo.condicionEvolucion}"
-                  style="background: #444; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; white-space: nowrap;">Condición</span>
+  style="margin-top: 20px; padding: 20px; background-color: #2a2a2a; border-radius: 10px;">
+  
+  <h2 style="color: #ffd700; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;">
+    Familia Evolutiva
+  </h2>
+
+  <div class="evolution-grid">
+    
+    <th:block th:each="evo, stat : ${pokemon.lineaEvolutiva}">
+      
+      <div class="evolution-card" th:classappend="${evo.id == pokemon.id} ? 'current-evo' : ''">
+        
+        <div th:if="${!stat.first}" class="evo-condition-badge">
+           <i class="fas fa-arrow-down"></i> <span th:text="${evo.condicionEvolucion}">Nivel 16</span>
+        </div>
+
+        <div style="position: relative;">
+            <button onclick="toggleShiny(this)"
+              style="position: absolute; top: 0; right: 0; z-index: 10; background: none; border: none; color: #FFD700; cursor: pointer;">
+              <i class="fas fa-star"></i>
+            </button>
+
+            <a th:href="@{/pokemon/{id}(id=${evo.id})}" style="text-decoration: none; color: white;">
+              <div class="evo-img-circle">
+                <img th:src="${evo.imagenUrl}" 
+                     th:data-normal="${evo.imagenUrl}"
+                     th:data-shiny="${evo.imagenShinyUrl}" 
+                     class="pokemon-img-display"
+                     style="width: 80%; height: auto;">
               </div>
+              
+              <h4 th:text="${#strings.capitalize(evo.nombre)}" style="margin-top: 10px; margin-bottom: 0;">Nombre</h4>
+            </a>
+        </div>
+      </div>
 
-              <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
-                <button onclick="toggleShiny(this)"
-                  style="position: absolute; top: 0; right: 0; z-index: 10; background: none; border: none; color: #FFD700; cursor: pointer;">
-                  <i class="fas fa-star"></i>
-                </button>
-
-                <a th:href="@{/pokemon/{id}(id=${evo.id})}"
-                  style="text-decoration: none; text-align: center; color: white;">
-                  <div
-                    style="background-color: #333; padding: 15px; border-radius: 50%; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; border: 2px solid #444;"
-                    th:styleappend="${evo.id == pokemon.id} ? 'border-color: #FFDE00; box-shadow: 0 0 10px rgba(255, 222, 0, 0.3);'">
-
-                    <img th:src="${evo.imagenUrl}" th:data-normal="${evo.imagenUrl}"
-                      th:data-shiny="${evo.imagenShinyUrl}" class="pokemon-img-display"
-                      style="width: 90%; height: auto;">
-                  </div>
-                  <h4 th:text="${#strings.capitalize(evo.nombre)}" style="margin-top: 10px;">Nombre</h4>
-                </a>
-              </div>
-            </th:block>
-          </div>
-        </section>
+    </th:block>
+  </div>
+</section>
 
         <section th:if="${!pokemon.variaciones.empty}" class="variations-section"
           style="margin-top: 20px; padding: 20px; background-color: #2a2a2a; border-radius: 10px;">

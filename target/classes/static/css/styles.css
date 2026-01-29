@@ -1026,6 +1026,14 @@ body {
     .filter-toggle {
         width: 100%;
     }
+
+    /* --- NUEVO: Arreglo de alineación de filtros --- */
+    .dropdown-menu, .filter-panel {
+        right: auto !important; /* Soltamos la derecha */
+        left: 0 !important;     /* Pegamos a la izquierda */
+        width: 100%;            /* Opcional: que ocupe todo el ancho para ser más fácil de leer */
+        max-width: 300px;       /* Límite para que no sea gigante */
+    }
 }
 
 @media (max-width: 600px) {
@@ -2301,4 +2309,359 @@ a {
     
     /* También puedes añadirlo aquí por seguridad */
     overflow-wrap: break-word;
+}
+
+/* =========================================
+   OPTIMIZACIÓN MÓVIL (RESPONSIVE)
+   ========================================= */
+
+/* Estilos base para la grid de equipos (Reemplaza el inline style) */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    /* Ajustes del Header */
+    .header-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .logo-area img {
+        width: 80px; /* Logo más pequeño */
+    }
+
+    .nav-tabs-wrapper {
+        flex-wrap: wrap; /* Que los botones bajen si no caben */
+    }
+    
+    .nav-item {
+        font-size: 0.9em;
+        padding: 8px 10px;
+    }
+
+    /* Ajustes de Equipo Detalle */
+    .team-grid {
+        grid-template-columns: 1fr; /* Una sola columna en móvil */
+    }
+
+    .pokemon-detail-card {
+        padding: 15px; /* Menos relleno para ganar espacio */
+    }
+    
+    .pokemon-header h3 {
+        font-size: 1.1em; /* Texto un poco más pequeño */
+    }
+}
+
+/* =========================================
+   OPTIMIZACIÓN PERFIL Y EQUIPOS (MÓVIL)
+   ========================================= */
+
+/* 1. Estilos Base para el Wrapper del Perfil (PC) */
+.profile-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.profile-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #444;
+}
+
+.profile-content {
+    flex-grow: 1;
+    width: 100%; /* Asegura que ocupe el resto */
+}
+
+/* 2. Estilos Base para la Tarjeta de Equipo (PC) */
+.team-card {
+    background: #333;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+/* 3. MEDIA QUERY PARA MÓVILES (Menos de 768px) */
+@media (max-width: 768px) {
+    
+    /* A. Que la barra lateral y el contenido se apilen */
+    .profile-wrapper {
+        flex-direction: column; /* Uno debajo del otro */
+        gap: 20px;
+    }
+
+    .profile-sidebar {
+        width: 100%; /* La barra ocupa todo el ancho */
+        margin-bottom: 10px;
+    }
+
+    /* B. Menú lateral horizontal en móvil (Opcional, para que no ocupe tanto alto) */
+    .sidebar-menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .sidebar-menu li {
+        width: auto; /* Botones automáticos */
+    }
+
+    /* C. Transformar la Tarjeta de Equipo para Móvil */
+    .team-card {
+        flex-direction: column; /* Elementos uno debajo del otro */
+        text-align: center;
+        gap: 15px;
+    }
+
+    /* Ajustar los contenedores internos de la tarjeta */
+    .team-card > div {
+        width: 100%;
+        justify-content: center; /* Centrar iconos y botones */
+    }
+
+    /* Ajustar iconos de Pokémon para que no sean diminutos */
+    .team-card img {
+        width: 35px; 
+        height: 35px;
+    }
+    
+    /* D. Ajuste de la cabecera "Mis Equipos" y botón "Nuevo" */
+    .profile-content > div:first-child {
+        flex-direction: row; /* Mantener en fila */
+        align-items: center;
+    }
+}
+
+/* =========================================
+   OPTIMIZACIÓN GESTIÓN USUARIOS (ADMIN)
+   ========================================= */
+
+/* Estilos base para el input de búsqueda (limpio) */
+.admin-search-input {
+    padding-left: 35px;
+    background: #222;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 5px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    width: 300px; /* Ancho por defecto en PC */
+    transition: border-color 0.3s;
+}
+
+.admin-search-input:focus {
+    border-color: #FFDE00;
+    outline: none;
+}
+
+/* Contenedor del formulario */
+.search-container form {
+    display: flex;
+    flex-wrap: wrap; /* Permite que baje si no cabe */
+    gap: 10px;
+    align-items: center;
+}
+
+/* El div que envuelve al input (para el icono de lupa) */
+.search-container form > div {
+    position: relative;
+}
+
+/* --- VERSIÓN MÓVIL (Menos de 768px) --- */
+@media (max-width: 768px) {
+    
+    /* Cambiamos a columna para que se apilen verticalmente */
+    .search-container form {
+        flex-direction: column;
+        align-items: stretch; /* Estira los elementos al 100% */
+    }
+
+    /* El input ocupa todo el ancho */
+    .admin-search-input {
+        width: 100% !important; 
+    }
+    
+    /* El contenedor del input también al 100% */
+    .search-container form > div {
+        width: 100%;
+    }
+
+    /* Ajuste de botones para que sean grandes y fáciles de tocar */
+    .search-container button, 
+    .search-container .btn-cancelar {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        margin-top: 5px;
+        padding: 12px; /* Más gorditos para el dedo */
+    }
+    
+    /* Optimización de la tabla para que no se desborde */
+    .admin-table-container {
+        overflow-x: auto; /* Scroll horizontal si la tabla es muy ancha */
+    }
+    
+    .admin-table th, .admin-table td {
+        padding: 10px 5px; /* Menos padding lateral en celdas */
+        font-size: 0.9em;  /* Letra un pelín más pequeña */
+    }
+    
+    /* Ocultar columnas menos importantes en móvil muy pequeño si quieres */
+    /* .admin-table th:nth-child(2), .admin-table td:nth-child(2) { display: none; } */ /* (Avatar) */
+}
+
+/* =========================================
+   ARREGLO DE ROLES EN TABLA (MÓVIL)
+   ========================================= */
+
+/* 1. Definición base de la etiqueta de rol */
+.role-badge {
+    display: inline-flex;       /* Alinea icono y texto en fila */
+    align-items: center;        /* Centra verticalmente */
+    gap: 5px;                   /* Espacio entre icono y texto */
+    padding: 4px 8px;           /* Relleno interno */
+    border-radius: 4px;         /* Bordes redondeados */
+    font-weight: bold;
+    font-size: 0.85em;
+    white-space: nowrap;        /* <--- ¡LA CLAVE! Prohíbe romper la línea */
+}
+
+/* 2. Colores específicos (por si no los tenías definidos o para asegurar) */
+.role-admin {
+    background-color: rgba(255, 222, 0, 0.2);
+    color: #FFDE00;
+    border: 1px solid #FFDE00;
+}
+
+.role-user {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+}
+
+/* 3. Ajuste extra para la celda de la tabla en móvil */
+@media (max-width: 768px) {
+    .admin-table td {
+        white-space: nowrap; /* Evita que CUALQUIER celda se parta fea */
+    }
+}
+
+/* =========================================
+   MEJORA DE LÍNEA EVOLUTIVA (SCROLL)
+   ========================================= */
+
+.evolution-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 5px;
+    
+    /* CRÍTICO: Permite scroll horizontal en lugar de romper la línea */
+    overflow-x: auto; 
+    flex-wrap: nowrap; /* Fuerza una sola línea */
+    
+    /* Centrado en PC si hay pocos elementos */
+    justify-content: center; 
+    
+    /* Estética de la barra de scroll */
+    scrollbar-width: thin;
+    scrollbar-color: #FFDE00 #222;
+}
+
+/* =========================================
+   DISEÑO DE EVOLUCIONES (GRID / GALERÍA)
+   ========================================= */
+
+/* Contenedor principal: Grid Responsive */
+.evolution-grid {
+    display: grid;
+    /* Automáticamente rellena columnas. Mínimo 130px de ancho por tarjeta */
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Tarjeta individual */
+.evolution-card {
+    background-color: #333;
+    border-radius: 10px;
+    padding: 15px 10px;
+    text-align: center;
+    position: relative;
+    border: 1px solid #444;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Alinea contenido abajo */
+}
+
+.evolution-card:hover {
+    transform: translateY(-3px);
+    border-color: #FFDE00;
+}
+
+/* Marca para el Pokémon actual que estás viendo */
+.current-evo {
+    border: 2px solid #FFDE00;
+    background-color: #3d3d3d;
+    box-shadow: 0 0 10px rgba(255, 222, 0, 0.2);
+}
+
+/* Círculo de la imagen */
+.evo-img-circle {
+    width: 90px;
+    height: 90px;
+    background: #222;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #444;
+}
+
+/* Etiqueta de condición (La flecha y el texto arriba) */
+.evo-condition-badge {
+    background-color: #444;
+    color: #ccc;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    display: inline-block;
+    border: 1px solid #555;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.evo-condition-badge i {
+    color: #FFDE00;
+    margin-right: 3px;
+}
+
+/* --- AJUSTES MÓVIL --- */
+@media (max-width: 600px) {
+    /* En móvil, hacemos 2 columnas fijas para que se vean bien los grupos grandes como Eevee */
+    .evolution-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .evo-img-circle {
+        width: 70px;
+        height: 70px;
+    }
 }

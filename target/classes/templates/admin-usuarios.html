@@ -2,6 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestión de Usuarios | Panel Admin</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <link
@@ -53,20 +54,13 @@
               </a>
             </li>
             <li>
-              <a href="#" style="color: #666; cursor: not-allowed">
-                <i class="fas fa-heart" style="margin-right: 10px"></i> Mis
-                Favoritos (Pronto)
-              </a>
-            </li>
-            <li>
               <a th:href="@{/equipos/mis-equipos}">
                 <i class="fas fa-users" style="margin-right: 10px"></i> Mis
                 Equipos
               </a>
             </li>
             <li sec:authorize="hasRole('ADMIN')">
-              <a th:href="@{/admin/usuarios}"
-               class="active">
+              <a th:href="@{/admin/usuarios}" class="active">
                 <i
                   class="fas fa-users-cog"
                   style="margin-right: 10px; color: #000000"
@@ -101,25 +95,12 @@
           <div class="search-container" style="margin-bottom: 20px">
             <form th:action="@{/admin/usuarios}" method="get">
               <div style="position: relative">
-                <i
-                  class="fas fa-search"
-                  style="position: absolute; left: 10px; top: 10px; color: #888"
-                ></i>
                 <input
                   type="text"
                   name="buscar"
                   th:value="${buscar}"
                   placeholder="Buscar por nombre o usuario..."
-                  style="
-                    padding-left: 35px;
-                    background: #222;
-                    border: 1px solid #444;
-                    color: white;
-                    border-radius: 5px;
-                    padding-top: 8px;
-                    padding-bottom: 8px;
-                    width: 300px;
-                  "
+                  class="admin-search-input"
                 />
               </div>
 
@@ -347,35 +328,35 @@
     </main>
 
     <footer class="main-footer">
-    <div class="footer-content-wrapper">
-      <div class="footer-info">
-        <img
-          th:src="@{/img/Logo.png}"
-          alt="Logo de la Pokédex"
-          class="footer-logo"
-        />
-        <p class="description">
-          Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
-          de Kanto!<br />
-          Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
-          evolutivas de todos tus Pokémon favoritos.
-          <br />¡Atrapa la información!
-        </p>
-      </div>
+      <div class="footer-content-wrapper">
+        <div class="footer-info">
+          <img
+            th:src="@{/img/Logo.png}"
+            alt="Logo de la Pokédex"
+            class="footer-logo"
+          />
+          <p class="description">
+            Tu portal informativo sobre Pokémon favorito. Bienvenido a El Diario
+            de Kanto!<br />
+            Tu Pokédex interactiva. Explora detalles, movimientos y cadenas
+            evolutivas de todos tus Pokémon favoritos.
+            <br />¡Atrapa la información!
+          </p>
+        </div>
 
-      <div class="footer-meta">
-        <p class="creator">Creado por: Pablo Herrera Domínguez</p>
-        <p class="copyright">
-          ©2025 El Diario de Kanto. Todos los derechos reservados.
-        </p>
-        <p class="disclaimer">
-          Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
-          sus nombres son marcas registradas de Nintendo, Game Freak y The
-          Pokémon Company.
-        </p>
+        <div class="footer-meta">
+          <p class="creator">Creado por: Pablo Herrera Domínguez</p>
+          <p class="copyright">
+            ©2025 El Diario de Kanto. Todos los derechos reservados.
+          </p>
+          <p class="disclaimer">
+            Nota: Esta web usa la API no oficial de Pokémon (PokeAPI). Pokémon y
+            sus nombres son marcas registradas de Nintendo, Game Freak y The
+            Pokémon Company.
+          </p>
+        </div>
       </div>
-    </div>
-  </footer>
+    </footer>
 
     <div id="modalBorrar" class="modal-overlay">
       <div class="modal-box">

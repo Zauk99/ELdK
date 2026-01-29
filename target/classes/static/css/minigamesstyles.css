@@ -400,3 +400,119 @@
     display: flex;
     justify-content: flex-start;
 }
+
+/* =========================================
+   MEDIA QUERIES PARA MÓVILES
+   ========================================= */
+
+@media (max-width: 600px) {
+    
+    /* --- VOLTORB FLIP MÓVIL --- */
+    .game-container {
+        padding: 15px;
+        max-width: 100%;
+        border-width: 2px;
+    }
+
+    .game-container h1 {
+        font-size: 1.5rem; /* Título más pequeño */
+    }
+
+    /* Reducimos el tablero para que quepa */
+    .grid {
+        /* Calculamos el tamaño para que quepa en pantallas de ~350px */
+        grid-template-columns: repeat(6, 45px); 
+        grid-template-rows: repeat(6, 45px);
+        gap: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .cell {
+        width: 45px;
+        height: 45px;
+        font-size: 18px; /* Números más pequeños */
+    }
+
+    /* Ajuste de las pistas (Hints) */
+    .cell.hint {
+        font-size: 12px;
+    }
+    
+    .cell[data-mark]:not([data-mark="💣"])::after {
+        font-size: 10px; /* Marcas de lápiz más pequeñas */
+        top: 2px;
+        right: 2px;
+    }
+
+    /* Herramientas más compactas */
+    .toolbar {
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .tool {
+        min-width: 50px;
+        padding: 8px;
+    }
+
+    .icon { font-size: 1.2rem; }
+    .label { font-size: 0.6rem; }
+
+    /* --- ADIVINA EL POKÉMON MÓVIL --- */
+    .guess-wrapper {
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    .game-card {
+        width: 100%; /* Ocupar todo el ancho disponible */
+        padding: 1.5rem;
+    }
+
+    .game-card h1 {
+        font-size: 1.5rem;
+    }
+
+    #image-container {
+        width: 180px; /* Imagen más pequeña */
+        height: 180px;
+        border-width: 5px;
+    }
+
+    .game-card input {
+        width: 100%; /* Input a ancho completo */
+    }
+
+    .button-group {
+        flex-direction: column; /* Botones uno debajo de otro */
+        width: 100%;
+    }
+
+    .guess-btn, .reset-btn {
+        width: 100%;
+    }
+}
+
+/* 1. Estilos Base para el Wrapper del Perfil (PC) */
+.profile-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: stretch; /* Importante: stretch para que el sidebar llegue hasta abajo */
+    /* AÑADIDO: Fuerza una altura mínima del 70% de la pantalla */
+    min-height: 70vh;
+}
+
+.profile-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    background: #2a2a2a;
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #444;
+}
+
+.profile-content {
+    flex-grow: 1;
+    width: 100%; /* Asegura que ocupe el resto */
+}
