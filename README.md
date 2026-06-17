@@ -2,7 +2,7 @@ Diario de Kanto - Frontend (Portal de Noticias y Pokédex)
 
 Este repositorio contiene la interfaz de usuario y la lógica de cliente para "El Diario de Kanto", una plataforma web Full-Stack orientada a los fans de Pokémon. La aplicación incluye un portal de noticias, una Pokédex interactiva, minijuegos clásicos y gestión de perfiles de usuario.
 
-⚠️ AVISO IMPORTANTE: Este frontend consume una API REST propia desarrollada desde cero. Puedes consultar el código fuente del backend, la base de datos y los endpoints en el siguiente repositorio: [PON AQUÍ EL ENLACE A TU REPO DE LA API]
+⚠️ AVISO IMPORTANTE: Este frontend consume una API REST propia desarrollada desde cero. Puedes consultar el código fuente del backend, la base de datos y los endpoints en el siguiente repositorio: (https://github.com/Zauk99/ELdK_Api)
 
 Stack Técnico:
 
